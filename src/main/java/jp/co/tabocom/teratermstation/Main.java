@@ -1,0 +1,572 @@
+package jp.co.tabocom.teratermstation;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import jp.co.tabocom.teratermstation.model.Initial;
+import jp.co.tabocom.teratermstation.model.Tab;
+import jp.co.tabocom.teratermstation.model.ToolDefinition;
+import jp.co.tabocom.teratermstation.plugin.TeraTermStationPlugin;
+import jp.co.tabocom.teratermstation.preference.BasePreferencePage;
+import jp.co.tabocom.teratermstation.preference.PathPreferencePage;
+import jp.co.tabocom.teratermstation.preference.PluginPreferencePage;
+import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
+import jp.co.tabocom.teratermstation.ui.ConnToolTabFolder;
+import jp.co.tabocom.teratermstation.ui.EnvTabItem;
+
+import org.apache.log4j.Logger;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.jface.preference.PreferenceNode;
+import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+
+import com.sun.jna.WString;
+import com.sun.jna.platform.win32.DBT;
+import com.sun.jna.platform.win32.DBT.DEV_BROADCAST_DEVICEINTERFACE;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef.HMODULE;
+import com.sun.jna.platform.win32.WinDef.HWND;
+import com.sun.jna.platform.win32.WinDef.LPARAM;
+import com.sun.jna.platform.win32.WinDef.LRESULT;
+import com.sun.jna.platform.win32.WinDef.WPARAM;
+import com.sun.jna.platform.win32.WinUser;
+import com.sun.jna.platform.win32.WinUser.HDEVNOTIFY;
+import com.sun.jna.platform.win32.WinUser.WNDCLASSEX;
+import com.sun.jna.platform.win32.WinUser.WindowProc;
+import com.sun.jna.platform.win32.Wtsapi32;
+
+public class Main implements PropertyChangeListener, WindowProc {
+
+    public static final String ROOT_DIR = "sample";
+
+    private Shell shell;
+
+    // 各種定義(xmlから定義をロードしたオブジェクト)
+    private ToolDefinition toolDefine;
+
+    private Map<String, EnvTabItem> tabItemMap;
+
+    // タブフォルダ
+    private ConnToolTabFolder tabFolder;
+
+    // TTL生成のみチェックボックス
+    private Button onlyTtlGenChkBox;
+    // 一括起動ボタン
+    private Button bulkExecuteBtn;
+
+    private PreferenceStore preferenceStore;
+
+    // Diff取得識別子に指定できる文字定義
+    public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+
+    private String authUsrCache;
+    private String authPwdCache;
+    private String authUsrGroup;
+    private String authPwdGroup;
+
+    private HDEVNOTIFY hDevNotify;
+    private HWND hWnd;
+    private WString windowClass;
+    private HMODULE hInst;
+
+    private String loadDirErrorMsg;
+    private String openingMsg;
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        Main main = new Main();
+        main.initialize();
+        main.createPart();
+    }
+
+    private void win32EventOn() {
+        // define new window class
+        windowClass = new WString("MyWindowClass");
+        hInst = Kernel32.INSTANCE.GetModuleHandle("");
+
+        WNDCLASSEX wClass = new WNDCLASSEX();
+        wClass.hInstance = hInst;
+        wClass.lpfnWndProc = Main.this;
+        wClass.lpszClassName = windowClass;
+
+        // register window class
+        User32.INSTANCE.RegisterClassEx(wClass);
+        getLastError();
+
+        // create new window
+        hWnd = User32.INSTANCE.CreateWindowEx(User32.WS_EX_TOPMOST, windowClass, "My hidden helper window, used only to catch the windows events", 0,
+                0, 0, 0, 0, null, // WM_DEVICECHANGE
+                                  // contradicts
+                                  // parent=WinUser.HWND_MESSAGE
+                null, hInst, null);
+
+        getLastError();
+        System.out.println("window sucessfully created! window hwnd: " + hWnd.getPointer().toString());
+
+        Wtsapi32.INSTANCE.WTSRegisterSessionNotification(hWnd, Wtsapi32.NOTIFY_FOR_THIS_SESSION);
+
+        /* this filters for all device classes */
+        // DEV_BROADCAST_HDR notificationFilter = new DEV_BROADCAST_HDR();
+        // notificationFilter.dbch_devicetype = DBT.DBT_DEVTYP_DEVICEINTERFACE;
+
+        /* this filters for all usb device classes */
+        DEV_BROADCAST_DEVICEINTERFACE notificationFilter = new DEV_BROADCAST_DEVICEINTERFACE();
+        notificationFilter.dbcc_size = notificationFilter.size();
+        notificationFilter.dbcc_devicetype = DBT.DBT_DEVTYP_DEVICEINTERFACE;
+        notificationFilter.dbcc_classguid = DBT.GUID_DEVINTERFACE_USB_DEVICE;
+
+        /*
+         * use User32.DEVICE_NOTIFY_ALL_INTERFACE_CLASSES instead of DEVICE_NOTIFY_WINDOW_HANDLE to ignore the dbcc_classguid value
+         */
+        hDevNotify = User32.INSTANCE.RegisterDeviceNotification(hWnd, notificationFilter, User32.DEVICE_NOTIFY_WINDOW_HANDLE);
+
+        getLastError();
+        if (hDevNotify != null) {
+            System.out.println("RegisterDeviceNotification was sucessfully!");
+        }
+    }
+
+    /**
+     * Gets the last error.
+     * 
+     * @return the last error
+     */
+    public int getLastError() {
+        int rc = Kernel32.INSTANCE.GetLastError();
+
+        if (rc != 0)
+            System.out.println("error: " + rc);
+
+        return rc;
+    }
+
+    private void win32EventOff() {
+        User32.INSTANCE.UnregisterDeviceNotification(hDevNotify);
+        Wtsapi32.INSTANCE.WTSUnRegisterSessionNotification(hWnd);
+        User32.INSTANCE.UnregisterClass(windowClass, hInst);
+        User32.INSTANCE.DestroyWindow(hWnd);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sun.jna.platform.win32.User32.WindowProc#callback(com.sun.jna. platform .win32.WinDef.HWND, int,
+     * com.sun.jna.platform.win32.WinDef.WPARAM, com.sun.jna.platform.win32.WinDef.LPARAM)
+     */
+    public LRESULT callback(HWND hwnd, int uMsg, WPARAM wParam, LPARAM lParam) {
+        switch (uMsg) {
+            case WinUser.WM_SESSION_CHANGE: {
+                this.onSessionChange(wParam, lParam);
+                return new LRESULT(0);
+            }
+            default:
+                return User32.INSTANCE.DefWindowProc(hwnd, uMsg, wParam, lParam);
+        }
+    }
+
+    /**
+     * On session change.
+     * 
+     * @param wParam
+     *            the w param
+     * @param lParam
+     *            the l param
+     */
+    protected void onSessionChange(WPARAM wParam, LPARAM lParam) {
+        switch (wParam.intValue()) {
+            case Wtsapi32.WTS_SESSION_LOCK: {
+                this.onMachineLocked(lParam.intValue());
+                break;
+            }
+            case Wtsapi32.WTS_SESSION_UNLOCK: {
+                this.onMachineUnlocked(lParam.intValue());
+                break;
+            }
+        }
+    }
+
+    /**
+     * On machine locked.
+     * 
+     * @param sessionId
+     *            the session id
+     */
+    protected void onMachineLocked(int sessionId) {
+        System.out.println("onMachineLocked: " + sessionId);
+    }
+
+    /**
+     * On machine unlocked.
+     * 
+     * @param sessionId
+     *            the session id
+     */
+    protected void onMachineUnlocked(int sessionId) {
+        System.out.println("onMachineUnlocked: " + sessionId);
+        boolean clearFlg = false;
+        for (EnvTabItem item : tabItemMap.values()) {
+            if (item.isPwdAutoClearFlg()) {
+                clearFlg |= item.clearPassword();
+            }
+        }
+        if (clearFlg) {
+            // パスワードをクリアした時だけメッセージを出す。
+            MessageDialog.openInformation(shell, "セキュリティ対応", "PCロックに伴い、パスワード情報をクリアしました。");
+        }
+    }
+
+    private void initialize() {
+        try {
+            String homeDir = System.getProperty("user.home");
+            this.preferenceStore = new PreferenceStore(homeDir + "\\conntool.properties");
+            try {
+                this.preferenceStore.load();
+            } catch (FileNotFoundException fnfe) {
+                this.preferenceStore = new PreferenceStore("conntool.properties");
+                this.preferenceStore.load();
+            }
+
+            String rootDir = this.preferenceStore.getString(PreferenceConstants.TARGET_DIR);
+            if (rootDir == null || rootDir.isEmpty()) {
+                rootDir = ROOT_DIR;
+            }
+            toolDefine = new ToolDefinition(Paths.get(rootDir));
+            try {
+                toolDefine.initialize();
+            } catch (Exception e) {
+                loadDirErrorMsg = "サーバ定義の読み込みに失敗したため、サンプル定義(sample)でツールを起動します。\r\nご指定のサーバ定義に問題がないか、ご確認ください。";
+                toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
+                try {
+                    toolDefine.initialize();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    loadDirErrorMsg = "サーバ定義の読み込み、さらにサンプル定義(sample)の読み込みにも失敗しました。。\r\nご指定のサーバ定義に問題がないか、ご確認ください。";
+                }
+            }
+        } catch (FileNotFoundException fnfe) {
+            // conntool.propertiesがない場合(初回など)は初期値用のプロパティファイルを読み込む.
+            try {
+                toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
+                try {
+                    toolDefine.initialize();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Initial initial = this.toolDefine.getInitial();
+                if (initial != null) {
+                    this.preferenceStore.setValue(PreferenceConstants.TTPMACRO_EXE, initial.getTtpMacroExe());
+                    this.preferenceStore.setValue(PreferenceConstants.WORK_DIR, initial.getWorkDir());
+                    this.preferenceStore.setValue(PreferenceConstants.LOG_DIR, initial.getLogDir());
+                    this.preferenceStore.setValue(PreferenceConstants.INIFILE_DIR, initial.getIniFileDir());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            openingMsg = "まず最初に基本設定を行なってください。\r\nデフォルト値と異なる箇所については適宜変更してください。\r\nとくにワーク領域やttpmacro.exeのパスが重要です。";
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    private void createPart() {
+        Display display = new Display();
+        shell = new Shell(display, SWT.TITLE | SWT.MIN | SWT.CLOSE);
+        shell.setData("main", this);
+        shell.setText(String.format("TeraTermStation - %s", toolDefine.getSystem()));
+        if (toolDefine.getWidth() > 0 && toolDefine.getHeight() > 0) {
+            shell.setSize(toolDefine.getWidth(), toolDefine.getHeight());
+        } else {
+            shell.setSize(500, 500);
+        }
+        // アイコンセットアップ
+        Image[] imageArray = new Image[5];
+        imageArray[0] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon16.png"));
+        imageArray[1] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon24.png"));
+        imageArray[2] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon32.png"));
+        imageArray[3] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon48.png"));
+        imageArray[4] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon128.png"));
+        shell.setImages(imageArray);
+        shell.addShellListener(new ShellListener() {
+            @Override
+            public void shellIconified(ShellEvent event) {
+            }
+
+            @Override
+            public void shellDeiconified(ShellEvent event) {
+            }
+
+            @Override
+            public void shellDeactivated(ShellEvent event) {
+            }
+
+            @Override
+            public void shellClosed(ShellEvent event) {
+                int idx = tabFolder.getSelectionIndex();
+                // 開いていたタブを記憶しておく。
+                preferenceStore.setValue(PreferenceConstants.OPENED_TAB_IDX, idx);
+                try {
+                    preferenceStore.save();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+
+            @Override
+            public void shellActivated(ShellEvent event) {
+            }
+        });
+
+        GridLayout baseLayout = new GridLayout(1, false);
+        baseLayout.marginWidth = 10;
+        shell.setLayout(baseLayout);
+
+        if (loadDirErrorMsg != null && !loadDirErrorMsg.isEmpty()) {
+            MessageDialog.openError(shell, "サーバ定義ロード", loadDirErrorMsg);
+        }
+        if (openingMsg != null && !openingMsg.isEmpty()) {
+            MessageDialog.openInformation(shell, "ご利用ありがとうございます。", openingMsg);
+        }
+
+        // Target Group
+        tabFolder = new ConnToolTabFolder(shell, this);
+        tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        // ==================== ここで各環境のタブを生成しています ==================== //
+        this.tabItemMap = new HashMap<String, EnvTabItem>();
+        if (this.toolDefine.getTabMap() != null) {
+            // 挿入順（正確には辞書順）となるように制御
+            List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap().keySet());
+            for (int i = keys.size() - 1; i >= 0; i--) {
+                Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
+                tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
+            }
+            // これは普通のやりかた
+            // for (String key : toolDefine.getTabMap().keySet()) {
+            // Tab tab = toolDefine.getTabMap().get(key);
+            // tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
+            // }
+            for (EnvTabItem item : tabItemMap.values()) {
+                item.addPropertyChangeListener(this);
+            }
+        }
+        // ============================================================================
+        // //
+
+        int idx = this.preferenceStore.getInt(PreferenceConstants.OPENED_TAB_IDX);
+        tabFolder.setSelection(idx);
+
+        tabFolder.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent arg0) {
+
+            }
+
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                TabFolder folder = (TabFolder) event.getSource();
+                EnvTabItem tabItem = (EnvTabItem) folder.getItem(folder.getSelectionIndex());
+                tabItem.propertyChangeUpdate();
+                tabItem.setAuthUsrPwdText(authUsrGroup, authUsrCache, authPwdGroup, authPwdCache);
+            }
+        });
+
+        // Execute Group
+        Composite executeGrp = new Composite(shell, SWT.NULL);
+        GridLayout executeGrpLt = new GridLayout(5, true);
+        executeGrpLt.horizontalSpacing = 10;
+        executeGrpLt.verticalSpacing = 5;
+        executeGrp.setLayout(executeGrpLt);
+        GridData executeGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        executeGrpGrDt.heightHint = 80;
+        executeGrp.setLayoutData(executeGrpGrDt);
+        // executeGrp.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+
+        // ========== 管理用グループ ==========
+        Group adminGrp = new Group(executeGrp, SWT.NONE);
+        GridLayout adminGrpLt = new GridLayout(1, false);
+        // adminGrpLt.marginLeft = 5;
+        // adminGrpLt.marginRight = 5;
+        adminGrpLt.verticalSpacing = 5;
+        adminGrp.setLayout(adminGrpLt);
+        GridData adminGrpGrDt = new GridData(GridData.FILL_BOTH);
+        adminGrpGrDt.horizontalSpan = 1;
+        adminGrp.setLayoutData(adminGrpGrDt);
+        adminGrp.setText("管理");
+
+        // ========== 設定ボタン ==========
+        Button settingsBtn = new Button(adminGrp, SWT.PUSH);
+        settingsBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        settingsBtn.setText("基本設定");
+        settingsBtn.setToolTipText("動作に必要な設定を行います。");
+        settingsBtn.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                PreferenceManager mgr = new PreferenceManager();
+                PreferenceNode toolNode = new PreferenceNode("base", new BasePreferencePage());
+                PreferenceNode baseNode = new PreferenceNode("path", new PathPreferencePage());
+                mgr.addToRoot(toolNode);
+                mgr.addTo(toolNode.getId(), baseNode);
+
+                PreferenceNode pluginsNode = new PreferenceNode("plugins", new PluginPreferencePage());
+                mgr.addToRoot(pluginsNode);
+                for (TeraTermStationPlugin plugin : toolDefine.getNodePluginList()) {
+                    if (plugin.getPreferencePage() != null) {
+                        PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
+                        mgr.addTo(pluginsNode.getId(), pluginNode);
+                    }
+                }
+                PreferenceDialog dialog = new PreferenceDialog(shell, mgr);
+                dialog.setPreferenceStore(preferenceStore);
+                dialog.open();
+                try {
+                    preferenceStore.save();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) {
+            }
+        });
+
+        // ========== TTLのみ作成チェックボックス ==========
+        onlyTtlGenChkBox = new Button(adminGrp, SWT.CHECK);
+        onlyTtlGenChkBox.setText("TTLのみ生成");
+        onlyTtlGenChkBox.setToolTipText("TTLマクロの実行までは行わず、TTLファイルの生成のみ行います。\n事前に処理内容を確認したい場合にチェックを入れて実行してください。");
+
+        // ========== 一括グループ ==========
+        Composite bulkGrp = new Composite(executeGrp, SWT.NULL);
+        bulkGrp.setLayout(new GridLayout(1, false));
+        GridData bulkGrpGrDt = new GridData(GridData.FILL_BOTH);
+        bulkGrpGrDt.horizontalSpan = 3;
+        // bulkGrpGrDt.widthHint = 100;
+        bulkGrp.setLayoutData(bulkGrpGrDt);
+        // bulkGrp.setBackground(display.getSystemColor(SWT.COLOR_RED));
+
+        // ========== 一括起動ボタン ==========
+        bulkExecuteBtn = new Button(bulkGrp, SWT.PUSH);
+        bulkExecuteBtn.setLayoutData(new GridData(GridData.FILL_BOTH));
+        bulkExecuteBtn.setText("一括接続");
+        bulkExecuteBtn.setToolTipText("対象サーバすべてに一括接続をします。");
+        bulkExecuteBtn.setEnabled(false);
+        bulkExecuteBtn.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                ((EnvTabItem) tabFolder.getItem(tabFolder.getSelectionIndex())).bulkConnection();
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) {
+            }
+        });
+
+        Logger logger = Logger.getLogger("conntool");
+
+        uiUpdate();
+        shell.open();
+        win32EventOn();
+        try {
+            while (!shell.isDisposed()) {
+                if (!display.readAndDispatch()) {
+                    display.sleep();
+                }
+            }
+        } catch (Exception e) {
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            e.printStackTrace(printWriter);
+            String trace = stringWriter.toString();
+            logger.error(trace);
+        }
+        win32EventOff();
+        display.dispose();
+    }
+
+    private void uiUpdate() {
+        if (tabItemMap.size() > 0) {
+            ((EnvTabItem) tabFolder.getItem(tabFolder.getSelectionIndex())).propertyChangeUpdate();
+        }
+    }
+
+    public PreferenceStore getPreferenceStore() {
+        return preferenceStore;
+    }
+
+    public boolean isTtlOnly() {
+        return this.onlyTtlGenChkBox.getSelection();
+    }
+
+    public void tabItemRefresh() {
+        for (TabItem item : this.tabFolder.getItems()) {
+            ((EnvTabItem) item).refreshTree();
+        }
+    }
+
+    /**
+     * 現在選択されているタブを返します。<br>
+     * 
+     * @return EnvTabItem 現在選択されているタブ
+     */
+    public EnvTabItem getCurrentTabItem() {
+        return (EnvTabItem) tabFolder.getItem(tabFolder.getSelectionIndex());
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        if ("authInput".equals(event.getPropertyName())) {
+            Boolean enableFlg = (Boolean) event.getNewValue();
+            this.bulkExecuteBtn.setEnabled(enableFlg.booleanValue());
+        } else if ("nodeChange".equals(event.getPropertyName())) {
+            tabItemRefresh();
+        } else if ("authUsr".equals(event.getPropertyName())) {
+            String value = (String) event.getNewValue();
+            this.authUsrGroup = value.split("/")[0];
+            if (value.split("/").length > 1) {
+                this.authUsrCache = value.split("/")[1];
+            } else {
+                this.authUsrCache = "";
+            }
+        } else if ("authPwd".equals(event.getPropertyName())) {
+            String value = (String) event.getNewValue();
+            this.authPwdGroup = value.split("/")[0];
+            if (value.split("/").length > 1) {
+                this.authPwdCache = value.split("/")[1];
+            } else {
+                this.authPwdCache = "";
+            }
+        }
+    }
+
+    public ToolDefinition getToolDefine() {
+        return toolDefine;
+    }
+}
