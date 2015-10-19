@@ -1,0 +1,4 @@
+ipaddress = 172.91.49.111
+hostname = oyoyo001
+loginuser = root
+loginpassword = password
