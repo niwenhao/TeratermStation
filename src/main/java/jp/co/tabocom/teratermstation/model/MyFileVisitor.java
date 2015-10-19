@@ -47,16 +47,16 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         switch (depth) {
         // ========== BASE ========== //
             case 1: {
-                System.out.format("Šî“_: %s\n", dirName);
+                System.out.format("åŸºç‚¹: %s\n", dirName);
                 this.system = dirName;
                 break;
             }
             // ========== TAB ========== //
-            case 2: { // ƒ^ƒu
+            case 2: { // ã‚¿ãƒ–
                 if (dirName.equals("plugins")) {
                     break;
                 }
-                System.out.format("ƒ^ƒu: %s\n", dirName);
+                System.out.format("ã‚¿ãƒ–: %s\n", dirName);
                 Tab tab = new Tab();
                 tab.setName(dirName);
                 tab.setDirPath(dirPath.toString());
@@ -64,8 +64,8 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 break;
             }
             // ========== GROUP ========== //
-            case 3: { // ƒOƒ‹[ƒv
-                System.out.format("ƒJƒeƒSƒŠ: %s\n", dirName);
+            case 3: { // ã‚°ãƒ«ãƒ¼ãƒ—
+                System.out.format("ã‚«ãƒ†ã‚´ãƒª: %s\n", dirName);
                 Category category = new Category();
                 category.setName(dirName);
                 Tab tab = this.tabMap.get(dirPath.getName(1 + this.depthCnt).toString());
@@ -74,8 +74,8 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 break;
             }
             // ========== GROUP ========== //
-            case 4: { // ƒOƒ‹[ƒv
-                System.out.format("ƒOƒ‹[ƒv: %s\n", dirName);
+            case 4: { // ã‚°ãƒ«ãƒ¼ãƒ—
+                System.out.format("ã‚°ãƒ«ãƒ¼ãƒ—: %s\n", dirName);
                 TargetNode node = new TargetNode();
                 node.setFile(dirPath.toFile());
                 node.setName(dirName);
@@ -108,7 +108,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
             case 2: {
                 // ========== SETTINGS.INI ========== //
                 if (fileName.equals("settings.ini")) {
-                    System.out.println("Šî–{İ’è");
+                    System.out.println("åŸºæœ¬è¨­å®š");
                     this.width = Integer.parseInt(prop.getProperty("width"));
                     this.height = Integer.parseInt(prop.getProperty("height"));
                     this.iniFile = prop.getProperty("inifile");
@@ -126,7 +126,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
             case 3: {
                 // ========== TAB.INI ========== //
                 if (fileName.equals("tab.ini")) {
-                    System.out.println("ƒ^ƒuİ’è");
+                    System.out.println("ã‚¿ãƒ–è¨­å®š");
                     Gateway gw = new Gateway();
                     gw.setGwIpAddr(prop.getProperty("gateway_ipaddress"));
                     gw.setErrPtn(prop.getProperty("gateway_errptn"));
@@ -146,7 +146,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 }
                 // ========== ICON.PNG ========== //
                 if (fileName.equals("icon.png")) {
-                    System.out.println("ƒ^ƒuƒAƒCƒRƒ“");
+                    System.out.println("ã‚¿ãƒ–ã‚¢ã‚¤ã‚³ãƒ³");
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     tab.setIconPath(filePath.toString());
                 }
@@ -160,7 +160,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
             case 4: {
                 // ========== CATEGORY.INI ========== //
                 if (fileName.equals("category.ini")) {
-                    System.out.println("ƒJƒeƒSƒŠİ’è");
+                    System.out.println("ã‚«ãƒ†ã‚´ãƒªè¨­å®š");
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     category.setLoginUsr(prop.getProperty("loginuser", null));
@@ -170,10 +170,10 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 }
                 // ========== SERVER.TXT ========== //
                 if (fileName.endsWith(".txt")) {
-                    System.out.println("ƒT[ƒo’è‹`iƒOƒ‹[ƒvŠ‘®‚È‚µj");
+                    System.out.println("ã‚µãƒ¼ãƒå®šç¾©ï¼ˆã‚°ãƒ«ãƒ¼ãƒ—æ‰€å±ãªã—ï¼‰");
                     TargetNode node = new TargetNode();
                     node.setFile(file);
-                    node.setName(FilenameUtils.getBaseName(file.getName())); // Šg’£qtxt‚ğæ‚èœ‚­
+                    node.setName(FilenameUtils.getBaseName(file.getName())); // æ‹¡å¼µå­txtã‚’å–ã‚Šé™¤ã
                     node.setHostName(prop.getProperty("hostname"));
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));
@@ -195,7 +195,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
             case 5: {
                 // ========== GROUP.INI ========== //
                 if (fileName.equals("group.ini")) {
-                    System.out.println("ƒOƒ‹[ƒvİ’è");
+                    System.out.println("ã‚°ãƒ«ãƒ¼ãƒ—è¨­å®š");
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());
@@ -206,10 +206,10 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 }
                 // ========== SERVER.TXT ========== //
                 if (fileName.endsWith(".txt")) {
-                    System.out.println("ƒT[ƒo’è‹`");
+                    System.out.println("ã‚µãƒ¼ãƒå®šç¾©");
                     TargetNode node = new TargetNode();
                     node.setFile(file);
-                    node.setName(FilenameUtils.getBaseName(file.getName())); // Šg’£qtxt‚ğæ‚èœ‚­
+                    node.setName(FilenameUtils.getBaseName(file.getName())); // æ‹¡å¼µå­txtã‚’å–ã‚Šé™¤ã
                     node.setHostName(prop.getProperty("hostname"));
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));

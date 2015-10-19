@@ -4,19 +4,19 @@ public class PreferenceConstants {
 
     public static final String TARGET_DIR = new String("jp.co.tabocom.conntool.targetDir");
 
-    // TeraTermƒ}ƒNƒexe‚Ìƒtƒ‹ƒpƒX
+    // TeraTermãƒã‚¯ãƒ­exeã®ãƒ•ãƒ«ãƒ‘ã‚¹
     public static final String TTPMACRO_EXE = new String("jp.co.tabocom.conntool.ttpmacroExe");
-    // ========== Às‚É•K—v‚ÈƒfƒBƒŒƒNƒgƒŠŠÖ˜A ========== //
-    // ì‹Æ—pƒfƒBƒŒƒNƒgƒŠittlƒtƒ@ƒCƒ‹‚Ì’u‚«êŠj
+    // ========== å®Ÿè¡Œã«å¿…è¦ãªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªé–¢é€£ ========== //
+    // ä½œæ¥­ç”¨ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼ˆttlãƒ•ã‚¡ã‚¤ãƒ«ã®ç½®ãå ´æ‰€ï¼‰
     public static final String WORK_DIR = new String("jp.co.tabocom.conntool.workDir");
-    // ƒƒOƒfƒBƒŒƒNƒgƒŠilogƒtƒ@ƒCƒ‹‚ª’u‚©‚ê‚Ü‚·j
+    // ãƒ­ã‚°ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼ˆlogãƒ•ã‚¡ã‚¤ãƒ«ãŒç½®ã‹ã‚Œã¾ã™ï¼‰
     public static final String LOG_DIR = new String("jp.co.tabocom.conntool.logDir");
-    // TeraTerm‚ÌINIƒtƒ@ƒCƒ‹‚Ì’u‚«êŠiŠî–{‚±‚Ì’†‚ÌINIƒtƒ@ƒCƒ‹‚ğg—p‚µ‚Ü‚·j
+    // TeraTermã®INIãƒ•ã‚¡ã‚¤ãƒ«ã®ç½®ãå ´æ‰€ï¼ˆåŸºæœ¬ã“ã®ä¸­ã®INIãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½¿ç”¨ã—ã¾ã™ï¼‰
     public static final String INIFILE_DIR = new String("jp.co.tabocom.conntool.inifileDir");
 
-    // ========== ‚»‚Ì‘¼ ========== //
-    // ŠJ‚¢‚Ä‚éƒ^ƒu‚ÌˆÊ’u‚Ì•Û‘¶—piŸ‚Éƒc[ƒ‹‚ğ‹N“®‚µ‚½‚ÉÅŒã‚ÉŠJ‚¢‚Ä‚½ƒ^ƒu‚ª‘I‘ğ‚³‚ê‚é‚æ‚¤‚É‚·‚é‚½‚ßj
+    // ========== ãã®ä»– ========== //
+    // é–‹ã„ã¦ã‚‹ã‚¿ãƒ–ã®ä½ç½®ã®ä¿å­˜ç”¨ï¼ˆæ¬¡ã«ãƒ„ãƒ¼ãƒ«ã‚’èµ·å‹•ã—ãŸæ™‚ã«æœ€å¾Œã«é–‹ã„ã¦ãŸã‚¿ãƒ–ãŒé¸æŠã•ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚ï¼‰
     public static final String OPENED_TAB_IDX = new String("jp.co.tabocom.conntool.openedTabIdx");
-    // ŠJ”­ŠÂ‹«‚Åg—p‚·‚é‚Æ‚«‚É–ˆ‰ñID‚ÆƒpƒXƒ[ƒh‚ğ“ü‚ê‚é‚Ì‚ª–Ê“|‚È‚Ì‚ÅA‚»‚ê‚Åg—p‚·‚é‚½‚ß‚Ì‚à‚Ìi“Ç‚İ‚İê—pj
+    // é–‹ç™ºç’°å¢ƒã§ä½¿ç”¨ã™ã‚‹ã¨ãã«æ¯å›IDã¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥ã‚Œã‚‹ã®ãŒé¢å€’ãªã®ã§ã€ãã‚Œã§ä½¿ç”¨ã™ã‚‹ãŸã‚ã®ã‚‚ã®ï¼ˆèª­ã¿è¾¼ã¿å°‚ç”¨ï¼‰
     public static final String AUTH_USER_PWD = new String("jp.co.tabocom.conntool.authinfo_");
 }

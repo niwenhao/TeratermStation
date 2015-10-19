@@ -124,14 +124,14 @@ public class EnvTabItem extends TabItem {
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
     /**
-     * ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^<br>
+     * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿<br>
      * 
      * @param tabName
-     *            ƒ^ƒu‚Ì–¼‘O
+     *            ã‚¿ãƒ–ã®åå‰
      * @param parent
-     *            TabFolder —v‚·‚é‚Ée‹Ê
+     *            TabFolder è¦ã™ã‚‹ã«è¦ªç‰
      * @param targetList
-     *            •\¦‚·‚éƒT[ƒoƒcƒŠ[‚ÌƒIƒuƒWƒFƒNƒgƒŠƒXƒg
+     *            è¡¨ç¤ºã™ã‚‹ã‚µãƒ¼ãƒãƒ„ãƒªãƒ¼ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒªã‚¹ãƒˆ
      */
     public EnvTabItem(Tab tab, TabFolder parent) {
         super(parent, SWT.NONE);
@@ -155,19 +155,19 @@ public class EnvTabItem extends TabItem {
             }
         }
         setText(tab.getName());
-        // UI\’z
+        // UIæ§‹ç¯‰
         createItemArea();
     }
 
     private void createItemArea() {
-        // eComposite‚Ì€”õi‚±‚ê‚ªUI•”•i‚Ìe•ªj
+        // è¦ªCompositeã®æº–å‚™ï¼ˆã“ã‚ŒãŒUIéƒ¨å“ã®è¦ªåˆ†ï¼‰
         final Composite composite = new Composite(getParent(), SWT.NULL);
         composite.setLayout(new GridLayout(this.targetMap.size(), true));
 
-        // İ’è‚Ìæ“¾
+        // è¨­å®šã®å–å¾—
         final PreferenceStore ps = ((ConnToolTabFolder) getParent()).getMain().getPreferenceStore();
 
-        // ==================== ”FØİ’èƒOƒ‹[ƒv ====================
+        // ==================== èªè¨¼è¨­å®šã‚°ãƒ«ãƒ¼ãƒ— ====================
         Group authGrp = new Group(composite, SWT.NONE);
         GridLayout authGrpLt = new GridLayout(4, false);
         authGrpLt.marginWidth = 10;
@@ -176,24 +176,24 @@ public class EnvTabItem extends TabItem {
         GridData authGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
         authGrpGrDt.horizontalSpan = this.targetMap.size();
         authGrp.setLayoutData(authGrpGrDt);
-        authGrp.setText("”FØî•ñ");
+        authGrp.setText("èªè¨¼æƒ…å ±");
         authGrp.setEnabled(this.authFlg);
 
-        // •Û‘¶‚³‚ê‚Ä‚¢‚éProxyÚ‘±î•ñ‚ğæ“¾iŠJ”­—p‚Å‚Ì‚İg—pj
-        // "userid/password"‚ÌŒ`®‚É‚È‚Á‚Ä‚Ü‚·B
+        // ä¿å­˜ã•ã‚Œã¦ã„ã‚‹Proxyæ¥ç¶šæƒ…å ±ã‚’å–å¾—ï¼ˆé–‹ç™ºç”¨ã§ã®ã¿ä½¿ç”¨ï¼‰
+        // "userid/password"ã®å½¢å¼ã«ãªã£ã¦ã¾ã™ã€‚
         String defineUserPwd = ps.getString(PreferenceConstants.AUTH_USER_PWD + this.pwdGroup);
 
-        // ---------- ƒ†[ƒU[ID ----------
+        // ---------- ãƒ¦ãƒ¼ã‚¶ãƒ¼ID ----------
         usrTxt = new Text(authGrp, SWT.BORDER);
         usrTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        usrTxt.setMessage("ƒ†[ƒU[ID");
+        usrTxt.setMessage("ãƒ¦ãƒ¼ã‚¶ãƒ¼ID");
         usrTxt.setEnabled(this.authFlg);
         if (this.memoryPwdFlg) {
             if (defineUserPwd != null && !defineUserPwd.isEmpty()) {
                 usrTxt.setText(defineUserPwd.split("/")[0]);
             }
         }
-        // IMEƒ‚[ƒhİ’è
+        // IMEãƒ¢ãƒ¼ãƒ‰è¨­å®š
         usrTxt.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {
@@ -205,13 +205,13 @@ public class EnvTabItem extends TabItem {
             }
         });
         usrTxt.addVerifyListener(new VerifyListener() {
-            // Enter‚ğ‰Ÿ‚µ‚½‚Æ‚«‚É‚ÍA‚±‚Ìƒƒ\ƒbƒh‚ÍŒÄ‚Ño‚³‚ê‚È‚¢
+            // Enterã‚’æŠ¼ã—ãŸã¨ãã«ã¯ã€ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯å‘¼ã³å‡ºã•ã‚Œãªã„
             public void verifyText(VerifyEvent e) {
-                // Backspace‚âDelete‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚Í—LŒø‚É‚·‚éB‚»‚ê‚ÆƒvƒƒOƒ‰ƒ€“à•”‚©‚çsetText‚³‚ê‚½ê‡‚à—LŒø‚É‚·‚éB
+                // Backspaceã‚„DeleteãŒæŠ¼ã•ã‚ŒãŸã¨ãã¯æœ‰åŠ¹ã«ã™ã‚‹ã€‚ãã‚Œã¨ãƒ—ãƒ­ã‚°ãƒ©ãƒ å†…éƒ¨ã‹ã‚‰setTextã•ã‚ŒãŸå ´åˆã‚‚æœ‰åŠ¹ã«ã™ã‚‹ã€‚
                 if (e.character == SWT.BS || e.character == SWT.DEL || e.keyCode == 0) {
                     return;
                 }
-                // ACCEPTABLE_CHAR‚É’è‹`‚³‚ê‚Ä‚¢‚é•¶š—ñˆÈŠO‚Í–³‹
+                // ACCEPTABLE_CHARã«å®šç¾©ã•ã‚Œã¦ã„ã‚‹æ–‡å­—åˆ—ä»¥å¤–ã¯ç„¡è¦–
                 if (ACCEPTABLE_CHAR.indexOf(Character.toString(e.character)) == -1) {
                     e.doit = false;
                 }
@@ -221,18 +221,18 @@ public class EnvTabItem extends TabItem {
         Label slashLbl = new Label(authGrp, SWT.NONE);
         slashLbl.setText("/");
 
-        // ---------- ƒpƒXƒ[ƒh ----------
+        // ---------- ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ ----------
         pwdTxt = new Text(authGrp, SWT.BORDER);
         pwdTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         pwdTxt.setEchoChar('*');
-        pwdTxt.setMessage("ƒpƒXƒ[ƒh");
+        pwdTxt.setMessage("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰");
         pwdTxt.setEnabled(this.authFlg);
         if (this.memoryPwdFlg) {
             if (defineUserPwd != null && !defineUserPwd.isEmpty()) {
                 pwdTxt.setText(defineUserPwd.split("/")[1]);
             }
         }
-        // IMEƒ‚[ƒhİ’è
+        // IMEãƒ¢ãƒ¼ãƒ‰è¨­å®š
         pwdTxt.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {
@@ -244,20 +244,20 @@ public class EnvTabItem extends TabItem {
             }
         });
 
-        // ---------- ”FØ‹L‰¯ƒ{ƒ^ƒ“ ----------
+        // ---------- èªè¨¼è¨˜æ†¶ãƒœã‚¿ãƒ³ ----------
         idPwdMemoryBtn = new Button(authGrp, SWT.PUSH);
-        idPwdMemoryBtn.setText("‹L‰¯");
-        idPwdMemoryBtn.setEnabled(false); // ‰Šúó‘Ô‚Å‚Íg‚¦‚È‚­‚µ‚Ä‚¨‚­
-        idPwdMemoryBtn.setToolTipText("”FØî•ñ‚ğ‹L‰¯‚µ‚Ü‚·B");
+        idPwdMemoryBtn.setText("è¨˜æ†¶");
+        idPwdMemoryBtn.setEnabled(false); // åˆæœŸçŠ¶æ…‹ã§ã¯ä½¿ãˆãªãã—ã¦ãŠã
+        idPwdMemoryBtn.setToolTipText("èªè¨¼æƒ…å ±ã‚’è¨˜æ†¶ã—ã¾ã™ã€‚");
         idPwdMemoryBtn.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 ps.setValue(PreferenceConstants.AUTH_USER_PWD + pwdGroup, String.format("%s/%s", usrTxt.getText(), pwdTxt.getText()));
                 try {
                     ps.save();
-                    MessageDialog.openInformation(getParent().getShell(), "”FØî•ñ", "”FØî•ñ‚ğ‹L‰¯‚µ‚Ü‚µ‚½B");
+                    MessageDialog.openInformation(getParent().getShell(), "èªè¨¼æƒ…å ±", "èªè¨¼æƒ…å ±ã‚’è¨˜æ†¶ã—ã¾ã—ãŸã€‚");
                 } catch (IOException ioe) {
-                    MessageDialog.openError(getParent().getShell(), "”FØî•ñ", "”FØî•ñ‚Ì‹L‰¯‚É¸”s‚µ‚Ü‚µ‚½B");
+                    MessageDialog.openError(getParent().getShell(), "èªè¨¼æƒ…å ±", "èªè¨¼æƒ…å ±ã®è¨˜æ†¶ã«å¤±æ•—ã—ã¾ã—ãŸã€‚");
                 }
             }
 
@@ -266,12 +266,12 @@ public class EnvTabItem extends TabItem {
             }
         });
 
-        // ---------- ƒT[ƒoƒtƒBƒ‹ƒ^ƒŠƒ“ƒO ----------
+        // ---------- ã‚µãƒ¼ãƒãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚° ----------
         filterTxt = new Text(composite, SWT.BORDER);
         GridData filterTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
         filterTxtGrDt.horizontalSpan = this.targetMap.size() - 1;
         filterTxt.setLayoutData(filterTxtGrDt);
-        filterTxt.setMessage("ƒT[ƒo‚ğƒtƒBƒ‹ƒ^ƒŠƒ“ƒO‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B—áFWebAP, EXE‚È‚Ç");
+        filterTxt.setMessage("ã‚µãƒ¼ãƒã‚’ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚ä¾‹ï¼šWebAP, EXEãªã©");
         filterTxt.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent event) {
@@ -288,11 +288,11 @@ public class EnvTabItem extends TabItem {
             }
         });
 
-        // ---------- “WŠJƒT[ƒoƒ`ƒFƒbƒNƒ{ƒ^ƒ“ ----------
+        // ---------- å±•é–‹ã‚µãƒ¼ãƒãƒã‚§ãƒƒã‚¯ãƒœã‚¿ãƒ³ ----------
         allCheckBtn = new Button(composite, SWT.PUSH);
         allCheckBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        allCheckBtn.setText("“WŠJ‚³‚ê‚Ä‚¢‚éƒT[ƒo‚ğ‘S‚Äƒ`ƒFƒbƒN");
-        allCheckBtn.setToolTipText("“WŠJ‚³‚ê‚Ä‚¢‚éƒT[ƒo‘S‚Ä‚Éƒ`ƒFƒbƒN‚ğ“ü‚ê‚Ü‚·B");
+        allCheckBtn.setText("å±•é–‹ã•ã‚Œã¦ã„ã‚‹ã‚µãƒ¼ãƒã‚’å…¨ã¦ãƒã‚§ãƒƒã‚¯");
+        allCheckBtn.setToolTipText("å±•é–‹ã•ã‚Œã¦ã„ã‚‹ã‚µãƒ¼ãƒå…¨ã¦ã«ãƒã‚§ãƒƒã‚¯ã‚’å…¥ã‚Œã¾ã™ã€‚");
         allCheckBtn.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -309,7 +309,7 @@ public class EnvTabItem extends TabItem {
             }
         });
 
-        // ==================== ƒT[ƒo‘I‘ğƒOƒ‹[ƒv ====================
+        // ==================== ã‚µãƒ¼ãƒé¸æŠã‚°ãƒ«ãƒ¼ãƒ— ====================
         this.treeMap = new HashMap<String, CheckboxTreeViewer>();
         for (Category target : this.targetMap.values()) {
             Group targetSubGrp = new Group(composite, SWT.NONE);
@@ -324,11 +324,11 @@ public class EnvTabItem extends TabItem {
             chkTree.setInput(target.getTargetNode());
             final Tree tree = chkTree.getTree();
             tree.setLayoutData(new GridData(GridData.FILL_BOTH));
-            tree.setToolTipText("‘ÎÛ‚ÌƒT[ƒo‚Éƒ`ƒFƒbƒN‚ğ“ü‚ê‚Ä‚­‚¾‚³‚¢B");
-            // ---------- ‘ÎÛƒT[ƒo‘I‘ğCheckBoxTreeViewerƒ`ƒFƒbƒNƒŠƒXƒi[ ----------
+            tree.setToolTipText("å¯¾è±¡ã®ã‚µãƒ¼ãƒã«ãƒã‚§ãƒƒã‚¯ã‚’å…¥ã‚Œã¦ãã ã•ã„ã€‚");
+            // ---------- å¯¾è±¡ã‚µãƒ¼ãƒé¸æŠCheckBoxTreeViewerãƒã‚§ãƒƒã‚¯ãƒªã‚¹ãƒŠãƒ¼ ----------
             chkTree.addCheckStateListener(new ICheckStateListener() {
                 public void checkStateChanged(CheckStateChangedEvent event) {
-                    // ƒ`ƒFƒbƒNƒ{ƒbƒNƒX‚Éƒ`ƒFƒbƒN‚ª“ü‚ê‚ç‚ê‚½‚çA‚»‚ê‚É‰‚¶‚Äe‚Æ‚©q‚Ìƒm[ƒh‚Éƒ`ƒFƒbƒN‚ğ˜A“®‚µ‚Ä“ü‚ê‚é‚Æ‚©‚»‚¤‚¢‚¤‚±‚Æ‚ğ‚µ‚Ä‚¢‚éB
+                    // ãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹ã«ãƒã‚§ãƒƒã‚¯ãŒå…¥ã‚Œã‚‰ã‚ŒãŸã‚‰ã€ãã‚Œã«å¿œã˜ã¦è¦ªã¨ã‹å­ã®ãƒãƒ¼ãƒ‰ã«ãƒã‚§ãƒƒã‚¯ã‚’é€£å‹•ã—ã¦å…¥ã‚Œã‚‹ã¨ã‹ãã†ã„ã†ã“ã¨ã‚’ã—ã¦ã„ã‚‹ã€‚
                     viewerRefreshForTreeViewer(chkTree, event.getElement(), event.getChecked());
                 }
             });
@@ -336,7 +336,7 @@ public class EnvTabItem extends TabItem {
             chkTree.addDoubleClickListener(new IDoubleClickListener() {
                 @Override
                 public void doubleClick(DoubleClickEvent event) {
-                    // ‰½‚ğ‚µ‚Ä‚¢‚é‚©‚Æ‚¢‚¤‚ÆA—v‚Íeƒm[ƒh‚ªƒ_ƒuƒ‹ƒNƒŠƒbƒN‚³‚ê‚½‚çAƒcƒŠ[‚ğ“WŠJ‚·‚é‚Æ‚©A‹t‚É•Â‚¶‚é‚Æ‚©‚Ìˆ—‚ğ‚µ‚Ä‚¢‚éB
+                    // ä½•ã‚’ã—ã¦ã„ã‚‹ã‹ã¨ã„ã†ã¨ã€è¦ã¯è¦ªãƒãƒ¼ãƒ‰ãŒãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã‚‰ã€ãƒ„ãƒªãƒ¼ã‚’å±•é–‹ã™ã‚‹ã¨ã‹ã€é€†ã«é–‰ã˜ã‚‹ã¨ã‹ã®å‡¦ç†ã‚’ã—ã¦ã„ã‚‹ã€‚
                     IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                     if (!selection.isEmpty()) {
                         TreeViewer treeViewer = (TreeViewer) event.getSource();
@@ -346,7 +346,7 @@ public class EnvTabItem extends TabItem {
                             if (!authFlg || authInputStatus) {
                                 makeAndExecuteTTL(node, 1, null);
                             } else {
-                                MessageDialog.openError(getParent().getShell(), "ƒT[ƒoÚ‘±", "”FØî•ñ‚ª“ü—Í‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+                                MessageDialog.openError(getParent().getShell(), "ã‚µãƒ¼ãƒæ¥ç¶š", "èªè¨¼æƒ…å ±ãŒå…¥åŠ›ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
                             }
                             return;
                         }
@@ -360,7 +360,7 @@ public class EnvTabItem extends TabItem {
                 }
             });
 
-            // Ctrl+c‚É‘Î‰
+            // Ctrl+cã«å¯¾å¿œ
             tree.addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent e) {
@@ -369,7 +369,7 @@ public class EnvTabItem extends TabItem {
                         TargetNode node = (TargetNode) item.getData();
                         StringBuilder builder = new StringBuilder();
                         if (node.getChildren().isEmpty()) {
-                            // —v‚Íq‹ŸiƒT[ƒo†‹@j‚Ìê‡
+                            // è¦ã¯å­ä¾›ï¼ˆã‚µãƒ¼ãƒå·æ©Ÿï¼‰ã®å ´åˆ
                             builder.append(String.format("%-8s", node.getHostName()));
                             builder.append(",");
                             builder.append(String.format("%-15s", node.getIpAddr()));
@@ -378,7 +378,7 @@ public class EnvTabItem extends TabItem {
                             builder.append(",");
                             builder.append(node.getName());
                         } else {
-                            // —v‚ÍeiƒT[ƒoí•Êj‚Ìê‡
+                            // è¦ã¯è¦ªï¼ˆã‚µãƒ¼ãƒç¨®åˆ¥ï¼‰ã®å ´åˆ
                             builder.append(node.getName());
                             builder.append("\r\n");
                             for (TargetNode nd : node.getChildren()) {
@@ -390,17 +390,17 @@ public class EnvTabItem extends TabItem {
                                 builder.append("\r\n");
                             }
                         }
-                        // ƒNƒŠƒbƒvƒ{[ƒh
+                        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰
                         Clipboard clipBoard = new Clipboard(composite.getShell().getDisplay());
                         clipBoard.setContents(new Object[] { builder.toString() }, new Transfer[] { TextTransfer.getInstance() });
                     }
                 }
             });
 
-            // ‚ ‚Æ‚ÅTreeViewer‚É‘Î‚µ‚ÄˆêŠ‡‚Å‚È‚ñ‚¾‚©‚ñ‚¾‚â‚é‚Ì‚ÅAMap‚ÉŠi”[‚µ‚Ä‚¨‚­B
+            // ã‚ã¨ã§TreeViewerã«å¯¾ã—ã¦ä¸€æ‹¬ã§ãªã‚“ã ã‹ã‚“ã ã‚„ã‚‹ã®ã§ã€Mapã«æ ¼ç´ã—ã¦ãŠãã€‚
             this.treeMap.put(target.getName(), chkTree);
 
-            // ‚±‚±‚©‚çƒT[ƒoƒcƒŠ[‚Ì‰EƒNƒŠƒbƒNƒƒjƒ…[‚Ìİ’è
+            // ã“ã“ã‹ã‚‰ã‚µãƒ¼ãƒãƒ„ãƒªãƒ¼ã®å³ã‚¯ãƒªãƒƒã‚¯ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è¨­å®š
             MenuManager manager = new MenuManager();
             manager.setRemoveAllWhenShown(true);
             manager.addMenuListener(new IMenuListener() {
@@ -422,16 +422,16 @@ public class EnvTabItem extends TabItem {
         bottomGrpGrDt.horizontalSpan = this.targetMap.size();
         bottomGrp.setLayoutData(bottomGrpGrDt);
 
-        // ==================== ƒT[ƒo‘I‘ğó‘Ô •Û‘¶A“ÇƒOƒ‹[ƒv ====================
+        // ==================== ã‚µãƒ¼ãƒé¸æŠçŠ¶æ…‹ ä¿å­˜ã€èª­è¾¼ã‚°ãƒ«ãƒ¼ãƒ— ====================
         Composite defaultGrp = new Composite(bottomGrp, SWT.NONE);
         defaultGrp.setLayout(new GridLayout(1, true));
         GridData defaultGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
         defaultGrpGrDt.horizontalAlignment = SWT.LEFT;
-        // ---------- ƒfƒtƒHƒ‹ƒg‚Ì•œŒ³ƒ{ƒ^ƒ“ ----------
+        // ---------- ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®å¾©å…ƒãƒœã‚¿ãƒ³ ----------
         Button defaultBtn = new Button(defaultGrp, SWT.PUSH);
         defaultBtn.setImage(new Image(getDisplay(), Main.class.getClassLoader().getResourceAsStream("refresh-icon.png")));
-        defaultBtn.setText("ƒfƒtƒHƒ‹ƒg‚Ì•œŒ³");
-        defaultBtn.setToolTipText("ƒT[ƒoƒcƒŠ[‚ğƒfƒtƒHƒ‹ƒg‚Ìó‘Ô‚É–ß‚µ‚Ü‚·B");
+        defaultBtn.setText("ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®å¾©å…ƒ");
+        defaultBtn.setToolTipText("ã‚µãƒ¼ãƒãƒ„ãƒªãƒ¼ã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®çŠ¶æ…‹ã«æˆ»ã—ã¾ã™ã€‚");
         defaultBtn.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent arg0) {
@@ -443,7 +443,7 @@ public class EnvTabItem extends TabItem {
             }
         });
 
-        // ==================== ƒ†[ƒU[ID‚ÆƒpƒXƒ[ƒh‚ÌƒŠƒXƒi[“o˜^ ====================
+        // ==================== ãƒ¦ãƒ¼ã‚¶ãƒ¼IDã¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ãƒªã‚¹ãƒŠãƒ¼ç™»éŒ² ====================
         this.usrTxt.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 authInputChange();
@@ -462,13 +462,13 @@ public class EnvTabItem extends TabItem {
     }
 
     public boolean isAnythingChecked() {
-        // ‚Ü‚¸CheckBoxTreeViewer‚Åƒ`ƒFƒbƒN‚Ì“ü‚Á‚Ä‚¢‚é‚à‚Ì‚ğæ“¾‚·‚éB
+        // ã¾ãšCheckBoxTreeViewerã§ãƒã‚§ãƒƒã‚¯ã®å…¥ã£ã¦ã„ã‚‹ã‚‚ã®ã‚’å–å¾—ã™ã‚‹ã€‚
         List<Object> checkedTreeList = new ArrayList<Object>();
         for (CheckboxTreeViewer tree : treeMap.values()) {
             checkedTreeList.addAll(Arrays.asList(tree.getCheckedElements()));
         }
         if (checkedTreeList.isEmpty()) {
-            // ‚P‚Â‚àƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çfalse‚ğ•Ô‚·B
+            // ï¼‘ã¤ã‚‚ãƒã‚§ãƒƒã‚¯ã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰falseã‚’è¿”ã™ã€‚
             return false;
         }
         return true;
@@ -494,7 +494,7 @@ public class EnvTabItem extends TabItem {
 
     /**
      * authInputChange<br>
-     * ƒ†[ƒU[IDAƒpƒXƒ[ƒh‚Ì“ü—Íó‘Ô‚ğƒ`ƒFƒbƒN‚µ‚ÄA”FØƒ{ƒ^ƒ“‚âˆêŠ‡‹N“®ƒ{ƒ^ƒ“‚Ìó‘Ô‚ğ•ÏX‚µ‚Ä‚Ü‚·B
+     * ãƒ¦ãƒ¼ã‚¶ãƒ¼IDã€ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®å…¥åŠ›çŠ¶æ…‹ã‚’ãƒã‚§ãƒƒã‚¯ã—ã¦ã€èªè¨¼ãƒœã‚¿ãƒ³ã‚„ä¸€æ‹¬èµ·å‹•ãƒœã‚¿ãƒ³ã®çŠ¶æ…‹ã‚’å¤‰æ›´ã—ã¦ã¾ã™ã€‚
      */
     private void authInputChange() {
         if (this.usrTxt.getText().isEmpty() || this.pwdTxt.getText().isEmpty()) {
@@ -514,7 +514,7 @@ public class EnvTabItem extends TabItem {
 
     /**
      * refreshTree<br>
-     * ‘S‚Ä‚ÌTreeViewer‚Ìó‘Ô‚ğXV‚µ‚ÄÄ•`‰æ‚µ‚Ü‚·B
+     * å…¨ã¦ã®TreeViewerã®çŠ¶æ…‹ã‚’æ›´æ–°ã—ã¦å†æç”»ã—ã¾ã™ã€‚
      */
     public void refreshTree() {
         for (CheckboxTreeViewer tree : treeMap.values()) {
@@ -524,10 +524,10 @@ public class EnvTabItem extends TabItem {
 
     /**
      * bulkConnection<br>
-     * ˆêŠ‡‹N“®ƒ{ƒ^ƒ“‚©‚çÀs‚³‚ê‚éˆ—‚Å‚·B
+     * ä¸€æ‹¬èµ·å‹•ãƒœã‚¿ãƒ³ã‹ã‚‰å®Ÿè¡Œã•ã‚Œã‚‹å‡¦ç†ã§ã™ã€‚
      */
     public void bulkConnection() {
-        // ‚Ü‚¸CheckBoxTreeViewer‚Åƒ`ƒFƒbƒN‚Ì“ü‚Á‚Ä‚¢‚é‚à‚Ì‚ğæ“¾‚·‚éB
+        // ã¾ãšCheckBoxTreeViewerã§ãƒã‚§ãƒƒã‚¯ã®å…¥ã£ã¦ã„ã‚‹ã‚‚ã®ã‚’å–å¾—ã™ã‚‹ã€‚
         List<TargetNode> checkedTreeList = new ArrayList<TargetNode>();
         for (CheckboxTreeViewer tree : treeMap.values()) {
             for (Object obj : tree.getCheckedElements()) {
@@ -538,32 +538,32 @@ public class EnvTabItem extends TabItem {
             }
         }
         if (checkedTreeList.isEmpty()) {
-            // ‚P‚Â‚àƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çƒGƒ‰[ƒ_ƒCƒAƒƒO‚ğo‚µ‚ÄI—¹
-            MessageDialog.openError(getParent().getShell(), "ˆêŠ‡‹N“®", "‘ÎÛƒT[ƒo‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+            // ï¼‘ã¤ã‚‚ãƒã‚§ãƒƒã‚¯ã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ã‚¨ãƒ©ãƒ¼ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’å‡ºã—ã¦çµ‚äº†
+            MessageDialog.openError(getParent().getShell(), "ä¸€æ‹¬èµ·å‹•", "å¯¾è±¡ã‚µãƒ¼ãƒãŒé¸æŠã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
             return;
         }
         ConnToolTabFolder tabFolder = (ConnToolTabFolder) getParent();
         Main main = (Main) tabFolder.getMain();
 
-        // ”O‚Ì‚½‚ßŠm”Fƒ_ƒCƒAƒƒO‚ğo‚·B
+        // å¿µã®ãŸã‚ç¢ºèªãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’å‡ºã™ã€‚
         String templateCmd = null;
-        String dialogMsg = "ˆêŠ‡‚ÅÚ‘±‚µ‚Ü‚·B‚æ‚ë‚µ‚¢‚Å‚·‚©H";
+        String dialogMsg = "ä¸€æ‹¬ã§æ¥ç¶šã—ã¾ã™ã€‚ã‚ˆã‚ã—ã„ã§ã™ã‹ï¼Ÿ";
         String[] buttonArray;
-        // –{”Ô’[––º‚Å‚Íƒeƒ“ƒvƒŒ[ƒg‹@”\‚ğg‚¦‚È‚­‚µ‚Ä‚Ü‚·B
+        // æœ¬ç•ªç«¯æœ«å®¤ã§ã¯ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆæ©Ÿèƒ½ã‚’ä½¿ãˆãªãã—ã¦ã¾ã™ã€‚
         if (this.tab.getUseMacroType() != UseMacroType.UNUSED) {
-            dialogMsg += "\r\niƒeƒ“ƒvƒŒ[ƒg‚ğ‘I‘ğ‚·‚é‚±‚Æ‚à‚Å‚«‚Ü‚·j";
-            buttonArray = new String[] { "OK", "Cancel", "ƒeƒ“ƒvƒŒ[ƒg‘I‘ğ..." };
+            dialogMsg += "\r\nï¼ˆãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’é¸æŠã™ã‚‹ã“ã¨ã‚‚ã§ãã¾ã™ï¼‰";
+            buttonArray = new String[] { "OK", "Cancel", "ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé¸æŠ..." };
         } else {
             buttonArray = new String[] { "OK", "Cancel" };
         }
-        MessageDialog dialog = new MessageDialog(getParent().getShell(), "ˆêŠ‡‹N“®", null, dialogMsg, MessageDialog.QUESTION, buttonArray, 0);
+        MessageDialog dialog = new MessageDialog(getParent().getShell(), "ä¸€æ‹¬èµ·å‹•", null, dialogMsg, MessageDialog.QUESTION, buttonArray, 0);
         int result = dialog.open();
         switch (result) {
             case 0: // OK
                 break;
             case 2: // Template
                 FileDialog fileDialog = new FileDialog(getParent().getShell());
-                fileDialog.setText("ƒeƒ“ƒvƒŒ[ƒgƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B");
+                fileDialog.setText("ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚");
                 fileDialog.setFilterPath(tab.getDirPath());
                 fileDialog.setFilterExtensions(new String[] { "*.macro" });
                 String file = fileDialog.open();
@@ -574,7 +574,7 @@ public class EnvTabItem extends TabItem {
                 try {
                     templateCmd = genTemplateCmd(templateFile);
                 } catch (Exception e) {
-                    MessageDialog.openError(getParent().getShell(), "ÀsƒGƒ‰[", "ƒRƒ}ƒ“ƒh‚Ì¶¬‚ÅƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½B\n" + e.getMessage());
+                    MessageDialog.openError(getParent().getShell(), "å®Ÿè¡Œæ™‚ã‚¨ãƒ©ãƒ¼", "ã‚³ãƒãƒ³ãƒ‰ã®ç”Ÿæˆã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚\n" + e.getMessage());
                     return;
                 }
                 break;
@@ -582,16 +582,16 @@ public class EnvTabItem extends TabItem {
                 return;
         }
         try {
-            // ƒ`ƒFƒbƒN‚³‚ê‚Ä‚¢‚éƒm[ƒh‚·‚×‚Ä‚ÅÀs‚µ‚Ü‚·B‚à‚¿‚ë‚ñeƒm[ƒhiƒT[ƒoí•Ê‚ğ•\‚·ƒm[ƒhj‚Í‘ÎÛŠO‚Å‚·B
+            // ãƒã‚§ãƒƒã‚¯ã•ã‚Œã¦ã„ã‚‹ãƒãƒ¼ãƒ‰ã™ã¹ã¦ã§å®Ÿè¡Œã—ã¾ã™ã€‚ã‚‚ã¡ã‚ã‚“è¦ªãƒãƒ¼ãƒ‰ï¼ˆã‚µãƒ¼ãƒç¨®åˆ¥ã‚’è¡¨ã™ãƒãƒ¼ãƒ‰ï¼‰ã¯å¯¾è±¡å¤–ã§ã™ã€‚
             int idx = 1;
             for (TargetNode target : checkedTreeList) {
                 makeAndExecuteTTL(target, idx, templateCmd);
                 idx++;
-                Thread.sleep(BULK_INTERVAL); // ƒXƒŠ[ƒv‚µ‚È‚­‚Ä‚à–â‘è‚Í‚È‚¢‚¯‚ÇA‚ ‚Ü‚è‚É‚à˜A‘±‚Åƒ^[ƒ~ƒiƒ‹‚ªŠJ‚­‚Ì‚à‚ ‚ê‚È‚Ì‚ÅB
+                Thread.sleep(BULK_INTERVAL); // ã‚¹ãƒªãƒ¼ãƒ—ã—ãªãã¦ã‚‚å•é¡Œã¯ãªã„ã‘ã©ã€ã‚ã¾ã‚Šã«ã‚‚é€£ç¶šã§ã‚¿ãƒ¼ãƒŸãƒŠãƒ«ãŒé–‹ãã®ã‚‚ã‚ã‚Œãªã®ã§ã€‚
             }
             if (main.isTtlOnly()) {
-                // TTLƒtƒ@ƒCƒ‹‚Ìì¬‚Ì‚İ‚¾‚Á‚½‚çAƒtƒ@ƒCƒ‹ì¬ŒãAƒ_ƒCƒAƒƒO‚ğo‚·B
-                MessageDialog.openInformation(getParent().getShell(), "TTLƒ}ƒNƒ¶¬", "TTLƒ}ƒNƒ‚ğ¶¬‚µ‚Ü‚µ‚½B");
+                // TTLãƒ•ã‚¡ã‚¤ãƒ«ã®ä½œæˆã®ã¿ã ã£ãŸã‚‰ã€ãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆå¾Œã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’å‡ºã™ã€‚
+                MessageDialog.openInformation(getParent().getShell(), "TTLãƒã‚¯ãƒ­ç”Ÿæˆ", "TTLãƒã‚¯ãƒ­ã‚’ç”Ÿæˆã—ã¾ã—ãŸã€‚");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -600,17 +600,17 @@ public class EnvTabItem extends TabItem {
 
     /**
      * makeAndExecuteTTL<br>
-     * —^‚¦‚ç‚ê‚½î•ñ‚©‚çTTL‚ğ¶¬‚µ‚ÄÀs‚µ‚Ü‚·B
+     * ä¸ãˆã‚‰ã‚ŒãŸæƒ…å ±ã‹ã‚‰TTLã‚’ç”Ÿæˆã—ã¦å®Ÿè¡Œã—ã¾ã™ã€‚
      * 
      * @param target
-     *            ‘ÎÛƒT[ƒo‚Ìƒm[ƒh
+     *            å¯¾è±¡ã‚µãƒ¼ãƒã®ãƒãƒ¼ãƒ‰
      * @param befaft
-     *            ˆ—‹æ•ª
+     *            å‡¦ç†åŒºåˆ†
      */
     public void makeAndExecuteTTL(TargetNode target, int idx, String templateCmd) {
-        // İ’èƒNƒ‰ƒX‚ğæ“¾
+        // è¨­å®šã‚¯ãƒ©ã‚¹ã‚’å–å¾—
         IPreferenceStore ps = ((ConnToolTabFolder) getParent()).getMain().getPreferenceStore();
-        // ‚Ü‚¸‚ÍTTLƒtƒ@ƒCƒ‹‚ğì¬‚·‚éƒfƒBƒŒƒNƒgƒŠ‚ğæ“¾
+        // ã¾ãšã¯TTLãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å–å¾—
         String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
         if (this.authFlg) {
             ttlDir = ttlDir + "\\" + this.usrTxt.getText();
@@ -618,8 +618,8 @@ public class EnvTabItem extends TabItem {
                 return;
             }
         }
-        // ========== ƒtƒ@ƒCƒ‹ƒpƒX¶¬ ‚±‚±‚©‚ç ==========
-        // —áj C:\library\work\4–Ê-VWebAP_con_t-shiozaki.ttl
+        // ========== ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ç”Ÿæˆ ã“ã“ã‹ã‚‰ ==========
+        // ä¾‹ï¼‰ C:\library\work\4é¢-æ–°WebAP_con_t-shiozaki.ttl
         StringBuilder ttlFile = new StringBuilder(ttlDir);
         ttlFile.append("\\");
         ttlFile.append(target.getParent().getName());
@@ -628,7 +628,7 @@ public class EnvTabItem extends TabItem {
         ttlFile.append("_");
         ttlFile.append(this.usrTxt.getText());
         ttlFile.append(".ttl");
-        // ========== ƒtƒ@ƒCƒ‹ƒpƒX¶¬ ‚±‚±‚Ü‚Å ==========
+        // ========== ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ç”Ÿæˆ ã“ã“ã¾ã§ ==========
 
         File outputFile = new File(ttlFile.toString());
         try {
@@ -636,17 +636,17 @@ public class EnvTabItem extends TabItem {
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             PrintWriter pw = new PrintWriter(osw);
             try {
-                // ++++++++++++++++++++ Ú‘±A”FØ•¶š—ñ‚Ìæ“¾ ++++++++++++++++++++ //
+                // ++++++++++++++++++++ æ¥ç¶šã€èªè¨¼æ–‡å­—åˆ—ã®å–å¾— ++++++++++++++++++++ //
                 pw.println(genConnText(target, idx, templateCmd));
             } catch (CommandGenException cge) {
-                MessageDialog.openError(getParent().getShell(), "ÀsƒGƒ‰[", "ƒRƒ}ƒ“ƒh‚Ì¶¬‚ÅƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½B\n" + cge.getMessage());
+                MessageDialog.openError(getParent().getShell(), "å®Ÿè¡Œæ™‚ã‚¨ãƒ©ãƒ¼", "ã‚³ãƒãƒ³ãƒ‰ã®ç”Ÿæˆã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚\n" + cge.getMessage());
                 return;
             } finally {
                 pw.close();
             }
-            // uTTLƒtƒ@ƒCƒ‹‚Ìì¬‚Ì‚İv‚Éƒ`ƒFƒbƒN‚ª“ü‚Á‚Ä‚¢‚é‚©æ“¾
+            // ã€ŒTTLãƒ•ã‚¡ã‚¤ãƒ«ã®ä½œæˆã®ã¿ã€ã«ãƒã‚§ãƒƒã‚¯ãŒå…¥ã£ã¦ã„ã‚‹ã‹å–å¾—
             ConnToolTabFolder tabFolder = (ConnToolTabFolder) getParent();
-            if (!((Main) tabFolder.getMain()).isTtlOnly()) { // TTLì¬‚Ì‚İ‚Å‚È‚©‚Á‚½‚ç–{“–‚ÉÀs‚·‚é
+            if (!((Main) tabFolder.getMain()).isTtlOnly()) { // TTLä½œæˆã®ã¿ã§ãªã‹ã£ãŸã‚‰æœ¬å½“ã«å®Ÿè¡Œã™ã‚‹
                 Thread.sleep(FILE_INTERVAL);
                 Runtime runtime = Runtime.getRuntime();
                 String pwdArg = this.pwdTxt.getText();
@@ -654,40 +654,40 @@ public class EnvTabItem extends TabItem {
                 runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
             }
         } catch (FileNotFoundException fnfe) {
-            MessageDialog.openError(getParent().getShell(), "ÀsƒGƒ‰[", "Šî–{İ’è‚É‚ ‚éì‹Æ—ÌˆæiƒfƒBƒŒƒNƒgƒŠj‚Í‚¿‚á‚ñ‚Æì¬‚³‚ê‚Ä‚¢‚Ü‚·‚©H" + fnfe.getMessage());
+            MessageDialog.openError(getParent().getShell(), "å®Ÿè¡Œæ™‚ã‚¨ãƒ©ãƒ¼", "åŸºæœ¬è¨­å®šã«ã‚ã‚‹ä½œæ¥­é ˜åŸŸï¼ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼‰ã¯ã¡ã‚ƒã‚“ã¨ä½œæˆã•ã‚Œã¦ã„ã¾ã™ã‹ï¼Ÿ" + fnfe.getMessage());
         } catch (Exception e) {
-            MessageDialog.openError(getParent().getShell(), "ÀsƒGƒ‰[", "ÀsŠÂ‹«‚É–â‘è‚ª‚ ‚è‚Ü‚·B‰Šúİ’è‚Í‚¨Ï‚İ‚Å‚µ‚å‚¤‚©H\n" + e.getMessage());
+            MessageDialog.openError(getParent().getShell(), "å®Ÿè¡Œæ™‚ã‚¨ãƒ©ãƒ¼", "å®Ÿè¡Œç’°å¢ƒã«å•é¡ŒãŒã‚ã‚Šã¾ã™ã€‚åˆæœŸè¨­å®šã¯ãŠæ¸ˆã¿ã§ã—ã‚‡ã†ã‹ï¼Ÿ\n" + e.getMessage());
         }
     }
 
     /**
      * genConnText<br>
-     * —^‚¦‚ç‚ê‚½î•ñ‚©‚çÚ‘±—p‚ÌƒlƒSƒVƒG[ƒVƒ‡ƒ“•¶š—ñ‚ğ¶¬‚µ‚Ä•Ô‚µ‚Ü‚·B
+     * ä¸ãˆã‚‰ã‚ŒãŸæƒ…å ±ã‹ã‚‰æ¥ç¶šç”¨ã®ãƒã‚´ã‚·ã‚¨ãƒ¼ã‚·ãƒ§ãƒ³æ–‡å­—åˆ—ã‚’ç”Ÿæˆã—ã¦è¿”ã—ã¾ã™ã€‚
      * 
      * @param node
-     *            ‘ÎÛƒT[ƒoî•ñ
-     * @return Ú‘±—p‚ÌƒlƒSƒVƒG[ƒVƒ‡ƒ“•¶š—ñ
+     *            å¯¾è±¡ã‚µãƒ¼ãƒæƒ…å ±
+     * @return æ¥ç¶šç”¨ã®ãƒã‚´ã‚·ã‚¨ãƒ¼ã‚·ãƒ§ãƒ³æ–‡å­—åˆ—
      */
     private String genConnText(TargetNode node, int idx, String templateCmd) throws CommandGenException {
         StringBuilder word = new StringBuilder();
         try {
-            // İ’èƒNƒ‰ƒX‚ğæ“¾
+            // è¨­å®šã‚¯ãƒ©ã‚¹ã‚’å–å¾—
             IPreferenceStore ps = ((ConnToolTabFolder) getParent()).getMain().getPreferenceStore();
 
-            // ---------- ‚à‚ë‚à‚ëî•ñ‚ğæ“¾ ‚±‚±‚©‚ç ----------
+            // ---------- ã‚‚ã‚ã‚‚ã‚æƒ…å ±ã‚’å–å¾— ã“ã“ã‹ã‚‰ ----------
             String authUsr = this.usrTxt.getText();
             String ipAddr = node.getIpAddr();
             String targetSvr = node.getName();
             String svrType = node.getParent().getName();
             String loginUsr = node.getLoginUsr();
             String loginPwd = node.getLoginPwd();
-            // INIƒtƒ@ƒCƒ‹
+            // INIãƒ•ã‚¡ã‚¤ãƒ«
             String iniFile = ps.getString(PreferenceConstants.INIFILE_DIR) + "\\" + node.getIniFile();
             String seqNo = String.format("%03d. ", idx);
-            // ---------- ‚à‚ë‚à‚ëî•ñ‚ğæ“¾ ‚±‚±‚Ü‚Å ----------
+            // ---------- ã‚‚ã‚ã‚‚ã‚æƒ…å ±ã‚’å–å¾— ã“ã“ã¾ã§ ----------
             Map<String, String> valuesMap = new TreeMap<String, String>();
             valuesMap.put("authuser", authUsr);
-            valuesMap.put("authpassword", "PASSWORD"); // Ú‘±‚Ìê‡‚Í”FØƒpƒXƒ[ƒh‚Íˆø”“n‚µ‚È‚Ì‚Å•Ï”‰»‚µ‚Ä‚¨‚­B
+            valuesMap.put("authpassword", "PASSWORD"); // æ¥ç¶šã®å ´åˆã¯èªè¨¼ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã¯å¼•æ•°æ¸¡ã—ãªã®ã§å¤‰æ•°åŒ–ã—ã¦ãŠãã€‚
             valuesMap.put("ipaddress", ipAddr);
             valuesMap.put("loginuser", loginUsr);
             valuesMap.put("loginpassword", loginPwd);
@@ -702,10 +702,10 @@ public class EnvTabItem extends TabItem {
 
             String NEW_LINE = System.getProperty("line.separator");
             if (this.tab.getNegotiation() != null && this.authFlg) {
-                word.append("PASSWORD=param2" + NEW_LINE); // ”FØƒpƒXƒ[ƒh‚ÍƒZƒLƒ…ƒŠƒeƒB‚Ì‚½‚ßƒ}ƒNƒÀsˆø”‚Å“n‚µ‚Ü‚·B
+                word.append("PASSWORD=param2" + NEW_LINE); // èªè¨¼ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã¯ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£ã®ãŸã‚ãƒã‚¯ãƒ­å®Ÿè¡Œå¼•æ•°ã§æ¸¡ã—ã¾ã™ã€‚
                 word.append("strlen PASSWORD" + NEW_LINE);
                 word.append("if result = 0 then" + NEW_LINE);
-                word.append("    passwordbox 'ƒpƒXƒ[ƒh‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B[" + authUsr + "]' '”FØ'" + NEW_LINE);
+                word.append("    passwordbox 'ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚[" + authUsr + "]' 'èªè¨¼'" + NEW_LINE);
                 word.append("    strlen inputstr" + NEW_LINE);
                 word.append("    if result = 0 then" + NEW_LINE);
                 word.append("        exit" + NEW_LINE);
@@ -715,16 +715,16 @@ public class EnvTabItem extends TabItem {
                 word.append("endif" + NEW_LINE);
             }
             word.append(connect + NEW_LINE);
-            word.append("settitle '" + seqNo + svrType + " - " + targetSvr + "'" + NEW_LINE); // ƒ^ƒCƒgƒ‹‚ÍƒT[ƒoí•Ê‚ÆƒT[ƒo–¼
+            word.append("settitle '" + seqNo + svrType + " - " + targetSvr + "'" + NEW_LINE); // ã‚¿ã‚¤ãƒˆãƒ«ã¯ã‚µãƒ¼ãƒç¨®åˆ¥ã¨ã‚µãƒ¼ãƒå
             word.append(genLogOpen(node));
             if (this.tab.getNegotiation() != null) {
                 for (String negoLine : sub.replace(this.tab.getNegotiation()).split("\r\n")) {
                     word.append(negoLine.trim() + NEW_LINE);
                 }
             }
-            // ‚±‚±‚Ü‚Å
+            // ã“ã“ã¾ã§
 
-            // ƒeƒ“ƒvƒŒ[ƒg‘Î‰
+            // ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¯¾å¿œ
             word.append(genTemplateCmd(node, templateCmd));
         } catch (Exception e) {
             e.printStackTrace();
@@ -734,14 +734,14 @@ public class EnvTabItem extends TabItem {
     }
 
     private String genLogOpen(TargetNode node) {
-        // İ’èƒNƒ‰ƒX‚ğæ“¾
+        // è¨­å®šã‚¯ãƒ©ã‚¹ã‚’å–å¾—
         IPreferenceStore ps = ((ConnToolTabFolder) getParent()).getMain().getPreferenceStore();
         String logDir = ps.getString(PreferenceConstants.LOG_DIR);
 
-        // ’[–––¼‚ğæ“¾
+        // ç«¯æœ«åã‚’å–å¾—
         String pcName = System.getenv("COMPUTERNAME");
 
-        // ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ğæ“¾
+        // ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’å–å¾—
         Calendar objCal = Calendar.getInstance();
         SimpleDateFormat monthFmt = new SimpleDateFormat("yyyyMM");
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyyMMdd");
@@ -750,30 +750,30 @@ public class EnvTabItem extends TabItem {
         String date = dateFmt.format(objCal.getTime());
         String timestamp = timeFmt.format(objCal.getTime());
 
-        // ƒƒOƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ÍŒ‹‹Ç‚Í‰º‚Ì‚æ‚¤‚È\¬‚Å‚·B
+        // ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã¯çµå±€ã¯ä¸‹ã®ã‚ˆã†ãªæ§‹æˆã§ã™ã€‚
         // C:\library\log\201207\20120710\20120710-121212_WebAP_WebAP(A)#1_PTP95049.log
         String monthDir = logDir + "\\" + month;
         String dateDir = logDir + "\\" + month + "\\" + date;
         String[] dirArray = new String[] { logDir, monthDir, dateDir };
 
-        // ƒƒOƒtƒ@ƒCƒ‹
+        // ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«
         String svrType = node.getParent().getName();
         String targetSvr = node.getName();
         String logFile = dateDir + "\\" + timestamp + "_" + svrType + "_" + targetSvr + "_" + pcName + ".log";
 
         StringBuilder word = new StringBuilder();
         String NEW_LINE = System.getProperty("line.separator");
-        // dirArray‚É‚Í 'YYYYMM' ‚Æ 'YYYYMM\YYYYMMDD' ‚ª“ü‚Á‚Ä‚¢‚é‚Ì‚Å
-        // ‚±‚Ìƒ‹[ƒv‚Å‚ÍÅ‰‚ÉYYYYMM‚É‚Â‚¢‚Äƒ`ƒFƒbƒN‚È‚¯‚ê‚Îì¬‚ğs‚¢
-        // Ÿ‚ÉYYYYMMDD‚Ìƒ`ƒFƒbƒN‚È‚¯‚ê‚Îì¬‚ğ‚â‚Á‚Ä‚¢‚éB
-        // ‚Ü‚ ƒfƒBƒŒƒNƒgƒŠ‚ªˆá‚¤‚¾‚¯‚Å‚Ü‚Á‚½‚­“¯‚¶ˆ—‚È‚Ì‚Åƒ‹[ƒv‚É‚µ‚½‚¾‚¯‚Å‚·B
+        // dirArrayã«ã¯ 'YYYYMM' ã¨ 'YYYYMM\YYYYMMDD' ãŒå…¥ã£ã¦ã„ã‚‹ã®ã§
+        // ã“ã®ãƒ«ãƒ¼ãƒ—ã§ã¯æœ€åˆã«YYYYMMã«ã¤ã„ã¦ãƒã‚§ãƒƒã‚¯ãªã‘ã‚Œã°ä½œæˆã‚’è¡Œã„
+        // æ¬¡ã«YYYYMMDDã®ãƒã‚§ãƒƒã‚¯ãªã‘ã‚Œã°ä½œæˆã‚’ã‚„ã£ã¦ã„ã‚‹ã€‚
+        // ã¾ã‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒé•ã†ã ã‘ã§ã¾ã£ãŸãåŒã˜å‡¦ç†ãªã®ã§ãƒ«ãƒ¼ãƒ—ã«ã—ãŸã ã‘ã§ã™ã€‚
         for (String dir : dirArray) {
             word.append("logdir = '" + dir + "'" + NEW_LINE);
             word.append("filesearch logdir" + NEW_LINE);
             word.append("if result = 0 then" + NEW_LINE);
             word.append("    foldercreate logdir" + NEW_LINE);
             word.append("    if result != 0 then" + NEW_LINE);
-            word.append("        desc = '\\n‚ÌƒfƒBƒŒƒNƒgƒŠì¬‚É¸”s‚µ‚Ü‚µ‚½B\\nŠÇ—Ò‚É–â‚¢‡‚í‚¹‚Ä‚­‚¾‚³‚¢B'" + NEW_LINE);
+            word.append("        desc = '\\nã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚\\nç®¡ç†è€…ã«å•ã„åˆã‚ã›ã¦ãã ã•ã„ã€‚'" + NEW_LINE);
             word.append("        strspecial desc" + NEW_LINE);
             word.append("        sprintf2 msg '%s%s' logdir desc" + NEW_LINE);
             word.append("        messagebox msg ''" + NEW_LINE);
@@ -782,8 +782,8 @@ public class EnvTabItem extends TabItem {
             word.append("    endif" + NEW_LINE);
             word.append("endif" + NEW_LINE);
         }
-        // ƒƒO‚ğOPEN
-        word.append("logopen '" + logFile + "' 0 0 0 0 1" + NEW_LINE); // ƒƒO‚Ìƒ_ƒCƒAƒƒO‚ğo‚³‚È‚¢‚æ‚¤‚É‚µ‚Ä‚Ü‚·BÅŒã‚Ì‚P‚ª‚»‚¤BÚ×‚ÍTeratermƒ}ƒNƒ‚Ìƒwƒ‹ƒvŒ©‚Ä‚­‚¾‚³‚¢B
+        // ãƒ­ã‚°ã‚’OPEN
+        word.append("logopen '" + logFile + "' 0 0 0 0 1" + NEW_LINE); // ãƒ­ã‚°ã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’å‡ºã•ãªã„ã‚ˆã†ã«ã—ã¦ã¾ã™ã€‚æœ€å¾Œã®ï¼‘ãŒãã†ã€‚è©³ç´°ã¯Teratermãƒã‚¯ãƒ­ã®ãƒ˜ãƒ«ãƒ—è¦‹ã¦ãã ã•ã„ã€‚
         return word.toString();
     }
 
@@ -791,32 +791,32 @@ public class EnvTabItem extends TabItem {
         StringBuilder word = new StringBuilder();
         String NEW_LINE = System.getProperty("line.separator");
         BufferedReader br = null;
-        // ƒeƒ“ƒvƒŒ[ƒgƒtƒ@ƒCƒ‹‚ÌŠes•ÛList
+        // ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®å„è¡Œä¿æŒList
         List<String> lines = new ArrayList<String>();
-        // •ÏŠ·‚·‚éƒL[‚Æ’l•ÛMap
+        // å¤‰æ›ã™ã‚‹ã‚­ãƒ¼ã¨å€¤ä¿æŒMap
         Map<String, String> valuesMap = new TreeMap<String, String>();
-        // ˆê“I–¼’l•Û—pMap
+        // ä¸€æ™‚çš„åå€¤ä¿æŒç”¨Map
         Map<String, String> answerMap = new HashMap<String, String>();
         try {
-            // ‚Ü‚¸Å‰‚ÉList‚ÉŠes‚ğ“Ç‚İ‚ñ‚Å‚µ‚Ü‚¤B
+            // ã¾ãšæœ€åˆã«Listã«å„è¡Œã‚’èª­ã¿è¾¼ã‚“ã§ã—ã¾ã†ã€‚
             br = new BufferedReader(new FileReader(templateFile));
             String readLine;
             while ((readLine = br.readLine()) != null) {
                 lines.add(readLine);
             }
 
-            // Ÿ‚Éƒeƒ“ƒvƒŒ[ƒgƒtƒ@ƒCƒ‹“à‚Ì•Ï”‚ğE‚¢o‚·B
+            // æ¬¡ã«ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ•ã‚¡ã‚¤ãƒ«å†…ã®å¤‰æ•°ã‚’æ‹¾ã„å‡ºã™ã€‚
             for (String line : lines) {
                 if (line.startsWith("@")) {
                     valuesMap.put(line.replaceFirst("@", ""), "");
                 }
             }
 
-            // ‚»‚µ‚Ä’uŠ·‚·‚×‚«•Ï”•ª‚Ü‚í‚µ‚Ä’l‚ğ“ü—Í‚µ‚Ä‚à‚ç‚¤B
+            // ãã—ã¦ç½®æ›ã™ã¹ãå¤‰æ•°åˆ†ã¾ã‚ã—ã¦å€¤ã‚’å…¥åŠ›ã—ã¦ã‚‚ã‚‰ã†ã€‚
             for (String key : valuesMap.keySet()) {
-                String dialogMsg = String.format("‚±‚ÌƒL[[ %s ]‚É‘Î‰‚·‚é’l‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B", key);
-                final String errorMsg = "’uŠ·‚·‚é’l‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B";
-                InputDialog dialog = new InputDialog(getParent().getShell(), "ƒeƒ“ƒvƒŒ[ƒg•¶š—ñ’uŠ·", dialogMsg, "", new IInputValidator() {
+                String dialogMsg = String.format("ã“ã®ã‚­ãƒ¼[ %s ]ã«å¯¾å¿œã™ã‚‹å€¤ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚", key);
+                final String errorMsg = "ç½®æ›ã™ã‚‹å€¤ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚";
+                InputDialog dialog = new InputDialog(getParent().getShell(), "ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆæ–‡å­—åˆ—ç½®æ›", dialogMsg, "", new IInputValidator() {
                     @Override
                     public String isValid(String str) {
                         try {
@@ -835,25 +835,25 @@ public class EnvTabItem extends TabItem {
             }
 
             if (valuesMap.size() != answerMap.size()) {
-                throw new IllegalArgumentException("ƒeƒ“ƒvƒŒ[ƒg•Ï”‚É‘Î‚·‚é’uŠ·•¶š—ñ‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+                throw new IllegalArgumentException("ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¤‰æ•°ã«å¯¾ã™ã‚‹ç½®æ›æ–‡å­—åˆ—ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
             }
 
-            // “ü—Í‚µ‚Ä‚à‚ç‚Á‚½’l‚ğvaluesMap‚É‘ã“ü‚·‚éB
+            // å…¥åŠ›ã—ã¦ã‚‚ã‚‰ã£ãŸå€¤ã‚’valuesMapã«ä»£å…¥ã™ã‚‹ã€‚
             for (String key : answerMap.keySet()) {
                 valuesMap.put(key, answerMap.get(key));
             }
 
-            // •ÏŠ·—p‚ÌƒNƒ‰ƒX‚ğ¶¬‚·‚éB
+            // å¤‰æ›ç”¨ã®ã‚¯ãƒ©ã‚¹ã‚’ç”Ÿæˆã™ã‚‹ã€‚
             StrSubstitutor sub = new StrSubstitutor(valuesMap);
-            // ‰ü‚ß‚Äƒeƒ“ƒvƒŒ[ƒg‚©‚çttl•¶‚ğì¬‚·‚éB
+            // æ”¹ã‚ã¦ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‹ã‚‰ttlæ–‡ã‚’ä½œæˆã™ã‚‹ã€‚
             for (String line : lines) {
-                // •Ï”‚É‘Š“–‚·‚és‚Í–³‹‚·‚éB
+                // å¤‰æ•°ã«ç›¸å½“ã™ã‚‹è¡Œã¯ç„¡è¦–ã™ã‚‹ã€‚
                 if (line.startsWith("@")) {
                     continue;
                 }
 
                 String resolvedLine = sub.replace(line);
-                // ƒVƒ“ƒOƒ‹ƒNƒH[ƒe[ƒVƒ‡ƒ“‚à‘—‚ê‚é‚æ‚¤‚É‚µ‚Ä‚¨‚­B
+                // ã‚·ãƒ³ã‚°ãƒ«ã‚¯ã‚©ãƒ¼ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã‚‚é€ã‚Œã‚‹ã‚ˆã†ã«ã—ã¦ãŠãã€‚
                 String correctLine = resolvedLine.replaceAll("'", Matcher.quoteReplacement("'#$27'"));
                 if (correctLine.contains("?")) {
                     String waitStr = correctLine.split("\\?")[0];
@@ -916,7 +916,7 @@ public class EnvTabItem extends TabItem {
             return true;
         }
         if (!dir.mkdirs()) {
-            MessageDialog.openError(getParent().getShell(), "ƒGƒ‰[", "ƒ†[ƒU[ƒfƒBƒŒƒNƒgƒŠ‚ğì¬‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B");
+            MessageDialog.openError(getParent().getShell(), "ã‚¨ãƒ©ãƒ¼", "ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ä½œæˆã§ãã¾ã›ã‚“ã§ã—ãŸã€‚");
             return false;
         }
         return true;
@@ -925,7 +925,7 @@ public class EnvTabItem extends TabItem {
     /**
      * TreeContentProvider<br>
      * <p>
-     * ‚±‚ÌƒNƒ‰ƒX‚ÍTreeViewer‚Å•K—v‚Å‚·B Œ`®‚Î‚Á‚½‚à‚Ì‚È‚Ì‚ÅA‚ ‚Ü‚è’†g‚ğ’m‚ç‚È‚­‚Ä—Ç‚¢‚Å‚·B ‚Ç‚±‚©‚ÅTreeViewer‚ğg‚¢‚½‚¢ê‡‚Í‚±‚Ì•Ó‚à•K—v‚È‚Ì‚ÅƒRƒs[‚µ‚Äg‚Á‚Ä‚­‚¾‚³‚¢B
+     * ã“ã®ã‚¯ãƒ©ã‚¹ã¯TreeViewerã§å¿…è¦ã§ã™ã€‚ å½¢å¼ã°ã£ãŸã‚‚ã®ãªã®ã§ã€ã‚ã¾ã‚Šä¸­èº«ã‚’çŸ¥ã‚‰ãªãã¦è‰¯ã„ã§ã™ã€‚ ã©ã“ã‹ã§TreeViewerã‚’ä½¿ã„ãŸã„å ´åˆã¯ã“ã®è¾ºã‚‚å¿…è¦ãªã®ã§ã‚³ãƒ”ãƒ¼ã—ã¦ä½¿ã£ã¦ãã ã•ã„ã€‚
      * </p>
      * 
      * @author turbou
@@ -964,9 +964,9 @@ public class EnvTabItem extends TabItem {
     /**
      * TreeLabelProvider<br>
      * <p>
-     * ‚±‚ê‚àTreeViewer‚É•K—v‚ÈƒNƒ‰ƒX‚Å‚·B ‚Å‚àã‚Ì‚â‚Â‚æ‚è‚Íd—v‚Å<br>
-     * —v‚ÍTreeViewer‚Ìƒm[ƒh‚Ìƒ^ƒCƒgƒ‹‚Æ‚©‚ğ‚Ç‚Ì‚æ‚¤‚É•\¦‚·‚é‚© ‚ğ’è‹`‚·‚éƒNƒ‰ƒX‚Å‚·B getTextƒƒ\ƒbƒh‚Í•\¦‚³‚ê‚éƒ^ƒCƒgƒ‹‚ğ•Ô‚µ‚Ü‚·B<br>
-     * getToolTipText‚Íƒ}ƒEƒX‚ğƒm[ƒh‚Éd‚Ë‚½‚É‚Å‚éƒqƒ“ƒg•¶š—ñ‚Å‚·B
+     * ã“ã‚Œã‚‚TreeViewerã«å¿…è¦ãªã‚¯ãƒ©ã‚¹ã§ã™ã€‚ ã§ã‚‚ä¸Šã®ã‚„ã¤ã‚ˆã‚Šã¯é‡è¦ã§<br>
+     * è¦ã¯TreeViewerã®ãƒãƒ¼ãƒ‰ã®ã‚¿ã‚¤ãƒˆãƒ«ã¨ã‹ã‚’ã©ã®ã‚ˆã†ã«è¡¨ç¤ºã™ã‚‹ã‹ ã‚’å®šç¾©ã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚ getTextãƒ¡ã‚½ãƒƒãƒ‰ã¯è¡¨ç¤ºã•ã‚Œã‚‹ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¿”ã—ã¾ã™ã€‚<br>
+     * getToolTipTextã¯ãƒã‚¦ã‚¹ã‚’ãƒãƒ¼ãƒ‰ã«é‡ã­ãŸæ™‚ã«ã§ã‚‹ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã§ã™ã€‚
      * </p>
      * 
      * @author turbou
@@ -1002,7 +1002,7 @@ public class EnvTabItem extends TabItem {
             TargetNode node = (TargetNode) element;
             StringBuilder builder = new StringBuilder();
             if (node.getChildren().isEmpty()) {
-                // —v‚Íq‹ŸiƒT[ƒo†‹@j‚Ìê‡
+                // è¦ã¯å­ä¾›ï¼ˆã‚µãƒ¼ãƒå·æ©Ÿï¼‰ã®å ´åˆ
                 builder.append(node.getLoginUsr());
                 builder.append("@");
                 builder.append(node.getIpAddr());
@@ -1012,11 +1012,11 @@ public class EnvTabItem extends TabItem {
                     builder.append("]");
                 }
             } else {
-                // —v‚ÍeiƒT[ƒoí•Êj‚Ìê‡
+                // è¦ã¯è¦ªï¼ˆã‚µãƒ¼ãƒç¨®åˆ¥ï¼‰ã®å ´åˆ
                 builder.append(node.getName());
                 builder.append("(");
                 builder.append(node.getChildren().size());
-                builder.append("‘ä)");
+                builder.append("å°)");
             }
             return builder.toString();
         }
@@ -1024,7 +1024,7 @@ public class EnvTabItem extends TabItem {
         @Override
         public Font getToolTipFont(Object object) {
             FontRegistry fontRegistry = new FontRegistry(getDisplay());
-            fontRegistry.put("MSGothic", new FontData[] { new FontData("‚l‚r ƒSƒVƒbƒN", 9, SWT.NORMAL) });
+            fontRegistry.put("MSGothic", new FontData[] { new FontData("ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯", 9, SWT.NORMAL) });
             return fontRegistry.get("MSGothic");
         }
 
@@ -1064,9 +1064,9 @@ public class EnvTabItem extends TabItem {
 
     /**
      * viewerRefreshForTreeViewer<br>
-     * ‚±‚Ìƒƒ\ƒbƒh‚Ì’†g‚Í•¡G‚Å“ï‚µ‚¢‚Ì‚Å’†g‚ğŒ©‚È‚­‚Ä‚à—Ç‚¢‚Å‚·B<br>
-     * ˆê‰A‰½‚ğ‚µ‚Ä‚é‚©‚Æ‚¢‚¤‚ÆA‚ ‚éqƒm[ƒh‚ğƒ`ƒFƒbƒN‚µ‚½‚çe‚àƒ`ƒFƒbƒN‚ª“ü‚é‚æ‚¤‚É‚·‚é‚Æ‚©<br>
-     * eƒm[ƒh‚ğƒ`ƒFƒbƒN‚µ‚½‚çA‚»‚Ì”z‰º‚Ìqƒm[ƒh‘S•”‚Éƒ`ƒFƒbƒN‚ª“ü‚é‚Æ‚©‚µ‚Ä‚Ü‚·B
+     * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã®ä¸­èº«ã¯è¤‡é›‘ã§é›£ã—ã„ã®ã§ä¸­èº«ã‚’è¦‹ãªãã¦ã‚‚è‰¯ã„ã§ã™ã€‚<br>
+     * ä¸€å¿œã€ä½•ã‚’ã—ã¦ã‚‹ã‹ã¨ã„ã†ã¨ã€ã‚ã‚‹å­ãƒãƒ¼ãƒ‰ã‚’ãƒã‚§ãƒƒã‚¯ã—ãŸã‚‰è¦ªã‚‚ãƒã‚§ãƒƒã‚¯ãŒå…¥ã‚‹ã‚ˆã†ã«ã™ã‚‹ã¨ã‹<br>
+     * è¦ªãƒãƒ¼ãƒ‰ã‚’ãƒã‚§ãƒƒã‚¯ã—ãŸã‚‰ã€ãã®é…ä¸‹ã®å­ãƒãƒ¼ãƒ‰å…¨éƒ¨ã«ãƒã‚§ãƒƒã‚¯ãŒå…¥ã‚‹ã¨ã‹ã—ã¦ã¾ã™ã€‚
      * 
      * @param viewer
      * @param element

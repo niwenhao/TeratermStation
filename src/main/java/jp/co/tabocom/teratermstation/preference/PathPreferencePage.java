@@ -30,7 +30,7 @@ public class PathPreferencePage extends PreferencePage {
     private List<Text> textList;
 
     public PathPreferencePage() {
-        super("ƒpƒXİ’è");
+        super("ãƒ‘ã‚¹è¨­å®š");
     }
 
     @Override
@@ -39,20 +39,20 @@ public class PathPreferencePage extends PreferencePage {
         composite.setLayout(new GridLayout(3, false));
         IPreferenceStore preferenceStore = getPreferenceStore();
 
-        // ========== TeraTermƒ}ƒNƒ‚ÌêŠ ========== //
-        new Label(composite, SWT.LEFT).setText("TeraTermƒ}ƒNƒF");
+        // ========== TeraTermãƒã‚¯ãƒ­ã®å ´æ‰€ ========== //
+        new Label(composite, SWT.LEFT).setText("TeraTermãƒã‚¯ãƒ­ï¼š");
         ttmacroTxt = new Text(composite, SWT.BORDER);
         ttmacroTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         ttmacroTxt.setText(preferenceStore.getString(PreferenceConstants.TTPMACRO_EXE));
         Button ttmacroBtn = new Button(composite, SWT.NULL);
-        ttmacroBtn.setText("QÆ");
+        ttmacroBtn.setText("å‚ç…§");
         ttmacroBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
 
             public void widgetSelected(SelectionEvent e) {
                 FileDialog dialog = new FileDialog(getShell());
-                dialog.setText("TeraTermƒ}ƒNƒ(ttpmacro.exe)‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B");
+                dialog.setText("TeraTermãƒã‚¯ãƒ­(ttpmacro.exe)ã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚");
                 dialog.setFilterPath("C:\\Program Files (x86)");
                 dialog.setFilterExtensions(new String[] { "*.exe" });
                 String file = dialog.open();
@@ -67,64 +67,64 @@ public class PathPreferencePage extends PreferencePage {
         GridData dirGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
         dirGrpGrDt.horizontalSpan = 3;
         dirGrp.setLayoutData(dirGrpGrDt);
-        dirGrp.setText("ì‹Æ—Ìˆæ");
+        dirGrp.setText("ä½œæ¥­é ˜åŸŸ");
 
         this.textList = new ArrayList<Text>();
 
-        // ========== ƒ[ƒNƒfƒBƒŒƒNƒgƒŠ‚ÌêŠ ========== //
-        new Label(dirGrp, SWT.LEFT).setText("ƒ[ƒNƒfƒBƒŒƒNƒgƒŠF");
+        // ========== ãƒ¯ãƒ¼ã‚¯ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´æ‰€ ========== //
+        new Label(dirGrp, SWT.LEFT).setText("ãƒ¯ãƒ¼ã‚¯ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼š");
         workDirTxt = new Text(dirGrp, SWT.BORDER);
         workDirTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         workDirTxt.setText(preferenceStore.getString(PreferenceConstants.WORK_DIR));
         this.textList.add(workDirTxt);
         Button workDirBtn = new Button(dirGrp, SWT.NULL);
-        workDirBtn.setText("QÆ");
+        workDirBtn.setText("å‚ç…§");
         workDirBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
 
             public void widgetSelected(SelectionEvent e) {
-                String dir = dirDialogOpen("ƒ[ƒNƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B", workDirTxt.getText());
+                String dir = dirDialogOpen("ãƒ¯ãƒ¼ã‚¯ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚", workDirTxt.getText());
                 if (dir != null) {
                     workDirTxt.setText(dir);
                 }
             }
         });
 
-        // ========== ƒƒOƒfƒBƒŒƒNƒgƒŠ‚ÌêŠ ========== //
-        new Label(dirGrp, SWT.LEFT).setText("ƒƒOƒfƒBƒŒƒNƒgƒŠF");
+        // ========== ãƒ­ã‚°ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´æ‰€ ========== //
+        new Label(dirGrp, SWT.LEFT).setText("ãƒ­ã‚°ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼š");
         logDirTxt = new Text(dirGrp, SWT.BORDER);
         logDirTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         logDirTxt.setText(preferenceStore.getString(PreferenceConstants.LOG_DIR));
         this.textList.add(logDirTxt);
         Button logDirBtn = new Button(dirGrp, SWT.NULL);
-        logDirBtn.setText("QÆ");
+        logDirBtn.setText("å‚ç…§");
         logDirBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
 
             public void widgetSelected(SelectionEvent e) {
-                String dir = dirDialogOpen("ƒƒOƒfƒBƒŒƒNƒgƒŠ(Local)‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B", logDirTxt.getText());
+                String dir = dirDialogOpen("ãƒ­ã‚°ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª(Local)ã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚", logDirTxt.getText());
                 if (dir != null) {
                     logDirTxt.setText(dir);
                 }
             }
         });
 
-        // ========== INIƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠ‚ÌêŠ ========== //
-        new Label(dirGrp, SWT.LEFT).setText("INIƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠF");
+        // ========== INIãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´æ‰€ ========== //
+        new Label(dirGrp, SWT.LEFT).setText("INIãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼š");
         iniFileDirTxt = new Text(dirGrp, SWT.BORDER);
         iniFileDirTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         iniFileDirTxt.setText(preferenceStore.getString(PreferenceConstants.INIFILE_DIR));
         this.textList.add(iniFileDirTxt);
         Button iniDirBtn = new Button(dirGrp, SWT.NULL);
-        iniDirBtn.setText("QÆ");
+        iniDirBtn.setText("å‚ç…§");
         iniDirBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
 
             public void widgetSelected(SelectionEvent e) {
-                String dir = dirDialogOpen("INIƒtƒ@ƒCƒ‹‚ª’u‚©‚ê‚Ä‚¢‚éƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B", iniFileDirTxt.getText());
+                String dir = dirDialogOpen("INIãƒ•ã‚¡ã‚¤ãƒ«ãŒç½®ã‹ã‚Œã¦ã„ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚", iniFileDirTxt.getText());
                 if (dir != null) {
                     iniFileDirTxt.setText(dir);
                 }
@@ -136,14 +136,14 @@ public class PathPreferencePage extends PreferencePage {
         mkDirBtnGrDt.horizontalSpan = 3;
         mkDirBtnGrDt.horizontalAlignment = SWT.RIGHT;
         mkDirBtn.setLayoutData(mkDirBtnGrDt);
-        mkDirBtn.setText("ƒfƒBƒŒƒNƒgƒŠ‚ğì¬‚·‚é");
+        mkDirBtn.setText("ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ä½œæˆã™ã‚‹");
         mkDirBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
 
             public void widgetSelected(SelectionEvent e) {
-                // TODO Šù‚ÉƒfƒBƒŒƒNƒgƒŠ‚ª‘¶İ‚·‚éê‡‚ÍŒx‚ğo‚·‚È‚Ç‚Ì×‚©‚¢‘Î‰‚à’Ç‰Á‚µ‚½‚¢B
-                // ¡‚Í‚Æ‚è‚ ‚¦‚¸ì‚é‚¾‚¯‚Å‚·B
+                // TODO æ—¢ã«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯è­¦å‘Šã‚’å‡ºã™ãªã©ã®ç´°ã‹ã„å¯¾å¿œã‚‚è¿½åŠ ã—ãŸã„ã€‚
+                // ä»Šã¯ã¨ã‚Šã‚ãˆãšä½œã‚‹ã ã‘ã§ã™ã€‚
                 int mkNum = 0;
                 for (Text text : textList) {
                     if (!text.getText().isEmpty()) {
@@ -153,9 +153,9 @@ public class PathPreferencePage extends PreferencePage {
                     }
                 }
                 if (mkNum > 0) {
-                    MessageDialog.openInformation(composite.getShell(), "ƒfƒBƒŒƒNƒgƒŠì¬", "ƒfƒBƒŒƒNƒgƒŠ‚ğì¬‚µ‚Ü‚µ‚½B");
+                    MessageDialog.openInformation(composite.getShell(), "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ", "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ä½œæˆã—ã¾ã—ãŸã€‚");
                 } else {
-                    MessageDialog.openWarning(composite.getShell(), "ƒfƒBƒŒƒNƒgƒŠì¬", "ƒfƒBƒŒƒNƒgƒŠì¬‘ÎÛ‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+                    MessageDialog.openWarning(composite.getShell(), "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ", "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆå¯¾è±¡ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
                 }
             }
         });

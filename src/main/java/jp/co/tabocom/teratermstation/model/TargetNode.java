@@ -23,7 +23,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     private Category category;
 
-    // ========== 実データここから ========== //
+    // ========== 螳溘ョ繝ｼ繧ｿ縺薙％縺九ｉ ========== //
     private File file;
     private String ipAddr;
     private String hostName;
@@ -34,7 +34,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private UseMacroType useMacroType;
     private List<File> macroList;
 
-    // ========== 実データここまで ========== //
+    // ========== 螳溘ョ繝ｼ繧ｿ縺薙％縺ｾ縺ｧ ========== //
 
     public void propertyChange(final PropertyChangeEvent event) {
     }

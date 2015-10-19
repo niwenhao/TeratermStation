@@ -67,22 +67,22 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     private Shell shell;
 
-    // Šeí’è‹`(xml‚©‚ç’è‹`‚ğƒ[ƒh‚µ‚½ƒIƒuƒWƒFƒNƒg)
+    // å„ç¨®å®šç¾©(xmlã‹ã‚‰å®šç¾©ã‚’ãƒ­ãƒ¼ãƒ‰ã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ)
     private ToolDefinition toolDefine;
 
     private Map<String, EnvTabItem> tabItemMap;
 
-    // ƒ^ƒuƒtƒHƒ‹ƒ_
+    // ã‚¿ãƒ–ãƒ•ã‚©ãƒ«ãƒ€
     private ConnToolTabFolder tabFolder;
 
-    // TTL¶¬‚Ì‚İƒ`ƒFƒbƒNƒ{ƒbƒNƒX
+    // TTLç”Ÿæˆã®ã¿ãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹
     private Button onlyTtlGenChkBox;
-    // ˆêŠ‡‹N“®ƒ{ƒ^ƒ“
+    // ä¸€æ‹¬èµ·å‹•ãƒœã‚¿ãƒ³
     private Button bulkExecuteBtn;
 
     private PreferenceStore preferenceStore;
 
-    // Diffæ“¾¯•Êq‚Éw’è‚Å‚«‚é•¶š’è‹`
+    // Diffå–å¾—è­˜åˆ¥å­ã«æŒ‡å®šã§ãã‚‹æ–‡å­—å®šç¾©
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
     private String authUsrCache;
@@ -238,8 +238,8 @@ public class Main implements PropertyChangeListener, WindowProc {
             }
         }
         if (clearFlg) {
-            // ƒpƒXƒ[ƒh‚ğƒNƒŠƒA‚µ‚½‚¾‚¯ƒƒbƒZ[ƒW‚ğo‚·B
-            MessageDialog.openInformation(shell, "ƒZƒLƒ…ƒŠƒeƒB‘Î‰", "PCƒƒbƒN‚É”º‚¢AƒpƒXƒ[ƒhî•ñ‚ğƒNƒŠƒA‚µ‚Ü‚µ‚½B");
+            // ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢ã—ãŸæ™‚ã ã‘ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºã™ã€‚
+            MessageDialog.openInformation(shell, "ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å¯¾å¿œ", "PCãƒ­ãƒƒã‚¯ã«ä¼´ã„ã€ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰æƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã—ã¾ã—ãŸã€‚");
         }
     }
 
@@ -262,17 +262,17 @@ public class Main implements PropertyChangeListener, WindowProc {
             try {
                 toolDefine.initialize();
             } catch (Exception e) {
-                loadDirErrorMsg = "ƒT[ƒo’è‹`‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚½‚½‚ßAƒTƒ“ƒvƒ‹’è‹`(sample)‚Åƒc[ƒ‹‚ğ‹N“®‚µ‚Ü‚·B\r\n‚²w’è‚ÌƒT[ƒo’è‹`‚É–â‘è‚ª‚È‚¢‚©A‚²Šm”F‚­‚¾‚³‚¢B";
+                loadDirErrorMsg = "ã‚µãƒ¼ãƒå®šç¾©ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ãŸãŸã‚ã€ã‚µãƒ³ãƒ—ãƒ«å®šç¾©(sample)ã§ãƒ„ãƒ¼ãƒ«ã‚’èµ·å‹•ã—ã¾ã™ã€‚\r\nã”æŒ‡å®šã®ã‚µãƒ¼ãƒå®šç¾©ã«å•é¡ŒãŒãªã„ã‹ã€ã”ç¢ºèªãã ã•ã„ã€‚";
                 toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
                 try {
                     toolDefine.initialize();
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    loadDirErrorMsg = "ƒT[ƒo’è‹`‚Ì“Ç‚İ‚İA‚³‚ç‚ÉƒTƒ“ƒvƒ‹’è‹`(sample)‚Ì“Ç‚İ‚İ‚É‚à¸”s‚µ‚Ü‚µ‚½BB\r\n‚²w’è‚ÌƒT[ƒo’è‹`‚É–â‘è‚ª‚È‚¢‚©A‚²Šm”F‚­‚¾‚³‚¢B";
+                    loadDirErrorMsg = "ã‚µãƒ¼ãƒå®šç¾©ã®èª­ã¿è¾¼ã¿ã€ã•ã‚‰ã«ã‚µãƒ³ãƒ—ãƒ«å®šç¾©(sample)ã®èª­ã¿è¾¼ã¿ã«ã‚‚å¤±æ•—ã—ã¾ã—ãŸã€‚ã€‚\r\nã”æŒ‡å®šã®ã‚µãƒ¼ãƒå®šç¾©ã«å•é¡ŒãŒãªã„ã‹ã€ã”ç¢ºèªãã ã•ã„ã€‚";
                 }
             }
         } catch (FileNotFoundException fnfe) {
-            // conntool.properties‚ª‚È‚¢ê‡(‰‰ñ‚È‚Ç)‚Í‰Šú’l—p‚ÌƒvƒƒpƒeƒBƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş.
+            // conntool.propertiesãŒãªã„å ´åˆ(åˆå›ãªã©)ã¯åˆæœŸå€¤ç”¨ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€.
             try {
                 toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
                 try {
@@ -290,7 +290,7 @@ public class Main implements PropertyChangeListener, WindowProc {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            openingMsg = "‚Ü‚¸Å‰‚ÉŠî–{İ’è‚ğs‚È‚Á‚Ä‚­‚¾‚³‚¢B\r\nƒfƒtƒHƒ‹ƒg’l‚ÆˆÙ‚È‚é‰ÓŠ‚É‚Â‚¢‚Ä‚Í“K‹X•ÏX‚µ‚Ä‚­‚¾‚³‚¢B\r\n‚Æ‚­‚Éƒ[ƒN—Ìˆæ‚âttpmacro.exe‚ÌƒpƒX‚ªd—v‚Å‚·B";
+            openingMsg = "ã¾ãšæœ€åˆã«åŸºæœ¬è¨­å®šã‚’è¡Œãªã£ã¦ãã ã•ã„ã€‚\r\nãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã¨ç•°ãªã‚‹ç®‡æ‰€ã«ã¤ã„ã¦ã¯é©å®œå¤‰æ›´ã—ã¦ãã ã•ã„ã€‚\r\nã¨ãã«ãƒ¯ãƒ¼ã‚¯é ˜åŸŸã‚„ttpmacro.exeã®ãƒ‘ã‚¹ãŒé‡è¦ã§ã™ã€‚";
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -306,7 +306,7 @@ public class Main implements PropertyChangeListener, WindowProc {
         } else {
             shell.setSize(500, 500);
         }
-        // ƒAƒCƒRƒ“ƒZƒbƒgƒAƒbƒv
+        // ã‚¢ã‚¤ã‚³ãƒ³ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
         Image[] imageArray = new Image[5];
         imageArray[0] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon16.png"));
         imageArray[1] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon24.png"));
@@ -330,7 +330,7 @@ public class Main implements PropertyChangeListener, WindowProc {
             @Override
             public void shellClosed(ShellEvent event) {
                 int idx = tabFolder.getSelectionIndex();
-                // ŠJ‚¢‚Ä‚¢‚½ƒ^ƒu‚ğ‹L‰¯‚µ‚Ä‚¨‚­B
+                // é–‹ã„ã¦ã„ãŸã‚¿ãƒ–ã‚’è¨˜æ†¶ã—ã¦ãŠãã€‚
                 preferenceStore.setValue(PreferenceConstants.OPENED_TAB_IDX, idx);
                 try {
                     preferenceStore.save();
@@ -349,26 +349,26 @@ public class Main implements PropertyChangeListener, WindowProc {
         shell.setLayout(baseLayout);
 
         if (loadDirErrorMsg != null && !loadDirErrorMsg.isEmpty()) {
-            MessageDialog.openError(shell, "ƒT[ƒo’è‹`ƒ[ƒh", loadDirErrorMsg);
+            MessageDialog.openError(shell, "ã‚µãƒ¼ãƒå®šç¾©ãƒ­ãƒ¼ãƒ‰", loadDirErrorMsg);
         }
         if (openingMsg != null && !openingMsg.isEmpty()) {
-            MessageDialog.openInformation(shell, "‚²—˜—p‚ ‚è‚ª‚Æ‚¤‚²‚´‚¢‚Ü‚·B", openingMsg);
+            MessageDialog.openInformation(shell, "ã”åˆ©ç”¨ã‚ã‚ŠãŒã¨ã†ã”ã–ã„ã¾ã™ã€‚", openingMsg);
         }
 
         // Target Group
         tabFolder = new ConnToolTabFolder(shell, this);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        // ==================== ‚±‚±‚ÅŠeŠÂ‹«‚Ìƒ^ƒu‚ğ¶¬‚µ‚Ä‚¢‚Ü‚· ==================== //
+        // ==================== ã“ã“ã§å„ç’°å¢ƒã®ã‚¿ãƒ–ã‚’ç”Ÿæˆã—ã¦ã„ã¾ã™ ==================== //
         this.tabItemMap = new HashMap<String, EnvTabItem>();
         if (this.toolDefine.getTabMap() != null) {
-            // ‘}“ü‡i³Šm‚É‚Í«‘‡j‚Æ‚È‚é‚æ‚¤‚É§Œä
+            // æŒ¿å…¥é †ï¼ˆæ­£ç¢ºã«ã¯è¾æ›¸é †ï¼‰ã¨ãªã‚‹ã‚ˆã†ã«åˆ¶å¾¡
             List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap().keySet());
             for (int i = keys.size() - 1; i >= 0; i--) {
                 Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
                 tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
             }
-            // ‚±‚ê‚Í•’Ê‚Ì‚â‚è‚©‚½
+            // ã“ã‚Œã¯æ™®é€šã®ã‚„ã‚Šã‹ãŸ
             // for (String key : toolDefine.getTabMap().keySet()) {
             // Tab tab = toolDefine.getTabMap().get(key);
             // tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
@@ -409,7 +409,7 @@ public class Main implements PropertyChangeListener, WindowProc {
         executeGrp.setLayoutData(executeGrpGrDt);
         // executeGrp.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
 
-        // ========== ŠÇ——pƒOƒ‹[ƒv ==========
+        // ========== ç®¡ç†ç”¨ã‚°ãƒ«ãƒ¼ãƒ— ==========
         Group adminGrp = new Group(executeGrp, SWT.NONE);
         GridLayout adminGrpLt = new GridLayout(1, false);
         // adminGrpLt.marginLeft = 5;
@@ -419,13 +419,13 @@ public class Main implements PropertyChangeListener, WindowProc {
         GridData adminGrpGrDt = new GridData(GridData.FILL_BOTH);
         adminGrpGrDt.horizontalSpan = 1;
         adminGrp.setLayoutData(adminGrpGrDt);
-        adminGrp.setText("ŠÇ—");
+        adminGrp.setText("ç®¡ç†");
 
-        // ========== İ’èƒ{ƒ^ƒ“ ==========
+        // ========== è¨­å®šãƒœã‚¿ãƒ³ ==========
         Button settingsBtn = new Button(adminGrp, SWT.PUSH);
         settingsBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        settingsBtn.setText("Šî–{İ’è");
-        settingsBtn.setToolTipText("“®ì‚É•K—v‚Èİ’è‚ğs‚¢‚Ü‚·B");
+        settingsBtn.setText("åŸºæœ¬è¨­å®š");
+        settingsBtn.setToolTipText("å‹•ä½œã«å¿…è¦ãªè¨­å®šã‚’è¡Œã„ã¾ã™ã€‚");
         settingsBtn.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -458,12 +458,12 @@ public class Main implements PropertyChangeListener, WindowProc {
             }
         });
 
-        // ========== TTL‚Ì‚İì¬ƒ`ƒFƒbƒNƒ{ƒbƒNƒX ==========
+        // ========== TTLã®ã¿ä½œæˆãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹ ==========
         onlyTtlGenChkBox = new Button(adminGrp, SWT.CHECK);
-        onlyTtlGenChkBox.setText("TTL‚Ì‚İ¶¬");
-        onlyTtlGenChkBox.setToolTipText("TTLƒ}ƒNƒ‚ÌÀs‚Ü‚Å‚Ís‚í‚¸ATTLƒtƒ@ƒCƒ‹‚Ì¶¬‚Ì‚İs‚¢‚Ü‚·B\n–‘O‚Éˆ—“à—e‚ğŠm”F‚µ‚½‚¢ê‡‚Éƒ`ƒFƒbƒN‚ğ“ü‚ê‚ÄÀs‚µ‚Ä‚­‚¾‚³‚¢B");
+        onlyTtlGenChkBox.setText("TTLã®ã¿ç”Ÿæˆ");
+        onlyTtlGenChkBox.setToolTipText("TTLãƒã‚¯ãƒ­ã®å®Ÿè¡Œã¾ã§ã¯è¡Œã‚ãšã€TTLãƒ•ã‚¡ã‚¤ãƒ«ã®ç”Ÿæˆã®ã¿è¡Œã„ã¾ã™ã€‚\näº‹å‰ã«å‡¦ç†å†…å®¹ã‚’ç¢ºèªã—ãŸã„å ´åˆã«ãƒã‚§ãƒƒã‚¯ã‚’å…¥ã‚Œã¦å®Ÿè¡Œã—ã¦ãã ã•ã„ã€‚");
 
-        // ========== ˆêŠ‡ƒOƒ‹[ƒv ==========
+        // ========== ä¸€æ‹¬ã‚°ãƒ«ãƒ¼ãƒ— ==========
         Composite bulkGrp = new Composite(executeGrp, SWT.NULL);
         bulkGrp.setLayout(new GridLayout(1, false));
         GridData bulkGrpGrDt = new GridData(GridData.FILL_BOTH);
@@ -472,11 +472,11 @@ public class Main implements PropertyChangeListener, WindowProc {
         bulkGrp.setLayoutData(bulkGrpGrDt);
         // bulkGrp.setBackground(display.getSystemColor(SWT.COLOR_RED));
 
-        // ========== ˆêŠ‡‹N“®ƒ{ƒ^ƒ“ ==========
+        // ========== ä¸€æ‹¬èµ·å‹•ãƒœã‚¿ãƒ³ ==========
         bulkExecuteBtn = new Button(bulkGrp, SWT.PUSH);
         bulkExecuteBtn.setLayoutData(new GridData(GridData.FILL_BOTH));
-        bulkExecuteBtn.setText("ˆêŠ‡Ú‘±");
-        bulkExecuteBtn.setToolTipText("‘ÎÛƒT[ƒo‚·‚×‚Ä‚ÉˆêŠ‡Ú‘±‚ğ‚µ‚Ü‚·B");
+        bulkExecuteBtn.setText("ä¸€æ‹¬æ¥ç¶š");
+        bulkExecuteBtn.setToolTipText("å¯¾è±¡ã‚µãƒ¼ãƒã™ã¹ã¦ã«ä¸€æ‹¬æ¥ç¶šã‚’ã—ã¾ã™ã€‚");
         bulkExecuteBtn.setEnabled(false);
         bulkExecuteBtn.addSelectionListener(new SelectionListener() {
             @Override
@@ -532,9 +532,9 @@ public class Main implements PropertyChangeListener, WindowProc {
     }
 
     /**
-     * Œ»İ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒ^ƒu‚ğ•Ô‚µ‚Ü‚·B<br>
+     * ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¿ãƒ–ã‚’è¿”ã—ã¾ã™ã€‚<br>
      * 
-     * @return EnvTabItem Œ»İ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒ^ƒu
+     * @return EnvTabItem ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¿ãƒ–
      */
     public EnvTabItem getCurrentTabItem() {
         return (EnvTabItem) tabFolder.getItem(tabFolder.getSelectionIndex());

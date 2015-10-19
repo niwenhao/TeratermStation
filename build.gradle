@@ -1,8 +1,16 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
+
 version = '1.0'
+
+def defaultEncoding = 'UTF-8'
+    tasks.withType(AbstractCompile) each { it.options.encoding = defaultEncoding }
+
+compileJava {
+    options.encoding = defaultEncoding
+}
 
 repositories {
     mavenCentral()
@@ -63,9 +71,3 @@ uploadArchives {
        }
     }
 }
-
-def defaultEncoding = 'UTF-8'
-compileJava {
-    options.encoding = defaultEncoding
-}
-

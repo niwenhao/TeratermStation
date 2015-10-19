@@ -58,7 +58,7 @@ public class ToolDefinition {
 
     public String getSystem() {
         if (system == null || system.isEmpty()) {
-            return "–¢İ’è";
+            return "æœªè¨­å®š";
         }
         return system;
     }
@@ -93,7 +93,7 @@ public class ToolDefinition {
 
     public void initialize() throws Exception {
         Set<FileVisitOption> options = EnumSet.allOf(FileVisitOption.class);
-        // TODO: walkFileTree‚Ì‘O‚Éƒvƒ‰ƒOƒCƒ“‚ğ“Ç‚İ‚Şˆ—‚ğ“ü‚ê‚éB
+        // TODO: walkFileTreeã®å‰ã«ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã‚’èª­ã¿è¾¼ã‚€å‡¦ç†ã‚’å…¥ã‚Œã‚‹ã€‚
         PluginFileVisitor pluginVisitor = new PluginFileVisitor(this.rootDirPath.getNameCount() - 1);
         try {
             Files.walkFileTree(this.rootDirPath, options, MAX_DEPTH, pluginVisitor);
@@ -103,7 +103,7 @@ public class ToolDefinition {
         }
         setNodePluginList(pluginVisitor.getNodePluginList());
 
-        // TODO: walkFileTree‚Ì’†‚Å‚Íplugins‚ÆAplugins‰º‚Ìƒtƒ@ƒCƒ‹‚Í–³‹‚·‚é‚æ‚¤‚É‚·‚éB
+        // TODO: walkFileTreeã®ä¸­ã§ã¯pluginsã¨ã€pluginsä¸‹ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯ç„¡è¦–ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
         MyFileVisitor myVisitor = new MyFileVisitor(this.rootDirPath.getNameCount() - 1);
         try {
             Files.walkFileTree(this.rootDirPath, options, MAX_DEPTH, myVisitor);

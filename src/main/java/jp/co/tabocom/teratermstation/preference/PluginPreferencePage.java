@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Control;
 public class PluginPreferencePage extends PreferencePage {
 
     public PluginPreferencePage() {
-        super("Šg’£‹@”\İ’è");
+        super("æ‹¡å¼µæ©Ÿèƒ½è¨­å®š");
     }
 
     @Override

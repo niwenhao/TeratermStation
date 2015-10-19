@@ -19,7 +19,7 @@ public class BasePreferencePage extends PreferencePage {
     private Text dirTxt;
 
     public BasePreferencePage() {
-        super("Šî–{İ’è");
+        super("åŸºæœ¬è¨­å®š");
     }
 
     @Override
@@ -28,20 +28,20 @@ public class BasePreferencePage extends PreferencePage {
         composite.setLayout(new GridLayout(3, false));
         IPreferenceStore preferenceStore = getPreferenceStore();
 
-        // ========== ’è‹`ƒfƒBƒŒƒNƒgƒŠ‚ÌêŠ ========== //
-        new Label(composite, SWT.LEFT).setText("’è‹`Šî“_ƒfƒBƒŒƒNƒgƒŠF");
+        // ========== å®šç¾©ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´æ‰€ ========== //
+        new Label(composite, SWT.LEFT).setText("å®šç¾©åŸºç‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼š");
         dirTxt = new Text(composite, SWT.BORDER);
         dirTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         dirTxt.setText(preferenceStore.getString(PreferenceConstants.TARGET_DIR));
         Button dirBtn = new Button(composite, SWT.NULL);
-        dirBtn.setText("QÆ");
+        dirBtn.setText("å‚ç…§");
         dirBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
 
             public void widgetSelected(SelectionEvent e) {
                 DirectoryDialog dialog = new DirectoryDialog(getShell());
-                dialog.setText("’è‹`Šî“_ƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B");
+                dialog.setText("å®šç¾©åŸºç‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚");
                 String currentPath = dirTxt.getText();
                 dialog.setFilterPath(currentPath.isEmpty() ? "C:\\" : currentPath);
                 String dir = dialog.open();
