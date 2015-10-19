@@ -1,0 +1,71 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.7
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'commons-logging', name: 'commons-logging', version: '1.2'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    compile group: 'net.java.dev.jna', name: 'jna', version: '4.2.0'
+    compile group: 'net.java.dev.jna', name: 'jna-platform', version: '4.2.0'
+
+    compile group: 'org.eclipse.core', name: 'commands', version: '3.3.0-I20070605-0010', transitive: false
+    compile group: 'org.eclipse.equinox', name: 'common', version: '3.3.0-v20070426', transitive: false
+    compile group: 'org.eclipse.ui', name: 'ide', version: '3.3.0-I20070620', transitive: false
+    compile group: 'org.eclipse.ui', name: 'workbench', version: '3.3.0-I20070608-1100', transitive: false
+    compile group: 'org.eclipse', name: 'jface', version: '3.3.0-I20070606-0010', transitive: false
+
+    compile group: 'org.eclipse.swt', name: 'org.eclipse.swt.win32.win32.x86_64', version: '4.3'
+    compile group: 'org.eclipse.swt', name: 'org.eclipse.swt.win32.win32.x86', version: '4.3'
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+task copyToLib(type: Copy) {
+    into "$buildDir/output/lib"
+    from configurations.runtime
+}
+
+jar {
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA' 
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                   'Implementation-Version': version
+        attributes 'Main-Class': 'jp.co.tabocom.teratermstation.Main'
+    }
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+ant.importBuild 'build.xml'
+task('myJar') <<
+{
+    tasks.clean.execute()
+    tasks.compileJava.execute()
+    tasks.processResources.execute()
+    tasks.copyToLib.execute()
+    tasks.create_run_jar_64.execute()
+    tasks.create_run_jar_32.execute()
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
+
+def defaultEncoding = 'UTF-8'
+compileJava {
+    options.encoding = defaultEncoding
+}
+
