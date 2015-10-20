@@ -91,6 +91,10 @@ public class ToolDefinition {
         this.initial = initial;
     }
 
+    public Path getRootDirPath() {
+        return rootDirPath;
+    }
+
     public void initialize() throws Exception {
         Set<FileVisitOption> options = EnumSet.allOf(FileVisitOption.class);
         // TODO: walkFileTreeの前にプラグインを読み込む処理を入れる。
