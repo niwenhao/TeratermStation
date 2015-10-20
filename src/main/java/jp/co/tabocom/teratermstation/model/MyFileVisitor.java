@@ -1,7 +1,9 @@
 package jp.co.tabocom.teratermstation.model;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileVisitResult;
@@ -25,6 +27,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     private int depthCnt;
     private Map<String, Tab> tabMap;
     private List<File> macroList;
+    private List<String> orderList;
     private String iniFile;
 
     public MyFileVisitor(int depthCnt) {
@@ -32,6 +35,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         this.depthCnt = depthCnt;
         this.tabMap = new HashMap<String, Tab>();
         this.macroList = new ArrayList<File>();
+        this.orderList = new ArrayList<String>();
     }
 
     @Override
@@ -116,6 +120,29 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     this.initial.setWorkDir(prop.getProperty("dir_work"));
                     this.initial.setLogDir(prop.getProperty("dir_log"));
                     this.initial.setIniFileDir(prop.getProperty("dir_ini"));
+                }
+                // ========== ORDER.INI ========== //
+                if (fileName.equals("order.ini")) {
+                    System.out.println("並び順設定");
+                    FileReader fr = null;
+                    BufferedReader br = null;
+                    try {
+                        fr = new FileReader(file);
+                        br = new BufferedReader(fr);
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            orderList.add(line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            br.close();
+                            fr.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 // ========== *.MACRO ========== //
                 if (fileName.endsWith(".macro")) {
