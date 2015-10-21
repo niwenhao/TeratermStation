@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
+
+import jp.co.tabocom.teratermstation.CommandGenException;
+import jp.co.tabocom.teratermstation.Main;
+import jp.co.tabocom.teratermstation.model.Category;
+import jp.co.tabocom.teratermstation.model.Tab;
+import jp.co.tabocom.teratermstation.model.TargetNode;
+import jp.co.tabocom.teratermstation.model.UseMacroType;
+import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
+import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -87,15 +97,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.actions.ActionContext;
-
-import jp.co.tabocom.teratermstation.CommandGenException;
-import jp.co.tabocom.teratermstation.Main;
-import jp.co.tabocom.teratermstation.model.Category;
-import jp.co.tabocom.teratermstation.model.Tab;
-import jp.co.tabocom.teratermstation.model.TargetNode;
-import jp.co.tabocom.teratermstation.model.UseMacroType;
-import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
-import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
 public class EnvTabItem extends TabItem {
 
@@ -632,8 +633,18 @@ public class EnvTabItem extends TabItem {
 
         File outputFile = new File(ttlFile.toString());
         try {
+            String ttlCharCode = ps.getString(PreferenceConstants.TTL_CHARCODE);
             FileOutputStream fos = new FileOutputStream(outputFile);
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            OutputStreamWriter osw = null;
+            if (ttlCharCode != null && !ttlCharCode.isEmpty()) {
+                try {
+                    osw = new OutputStreamWriter(fos, ttlCharCode);
+                } catch (UnsupportedEncodingException uee) {
+                    osw = new OutputStreamWriter(fos, "Shift_JIS");
+                }
+            } else {
+                osw = new OutputStreamWriter(fos, "Shift_JIS");
+            }
             PrintWriter pw = new PrintWriter(osw);
             try {
                 // ++++++++++++++++++++ 接続、認証文字列の取得 ++++++++++++++++++++ //
