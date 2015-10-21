@@ -18,20 +18,20 @@ public class Tab implements Serializable {
     private String loginPwd;
     private String iniFile;
     private UseMacroType useMacroType;
-    private List<Category> targetList;
+    private List<Category> categoryList;
     private List<File> macroList;
 
     public Tab() {
-        this.targetList = new ArrayList<Category>();
+        this.categoryList = new ArrayList<Category>();
         this.macroList = new ArrayList<File>();
     }
 
     public void addCategory(Category category) {
-        this.targetList.add(category);
+        this.categoryList.add(category);
     }
 
     public Category getCategory(String name) {
-        for (Category category : this.targetList) {
+        for (Category category : this.categoryList) {
             if (category.getName().equals(name)) {
                 return category;
             }
@@ -125,12 +125,12 @@ public class Tab implements Serializable {
         this.useMacroType = UseMacroType.getType(useMacroType);
     }
 
-    public List<Category> getTargetList() {
-        return targetList;
+    public List<Category> getCategoryList() {
+        return categoryList;
     }
 
-    public void setTargetList(List<Category> targetList) {
-        this.targetList = targetList;
+    public void setCategoryList(List<Category> categoryList) {
+        this.categoryList = categoryList;
     }
 
     public void addMacro(File file) {
