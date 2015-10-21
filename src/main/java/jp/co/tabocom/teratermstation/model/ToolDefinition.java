@@ -23,6 +23,7 @@ public class ToolDefinition {
     private int height;
 
     private Map<String, Tab> tabMap;
+    private List<String> orderList;
 
     private List<TeraTermStationPlugin> nodePluginList;
 
@@ -46,6 +47,14 @@ public class ToolDefinition {
 
     public void setTabMap(Map<String, Tab> tabMap) {
         this.tabMap = tabMap;
+    }
+
+    public List<String> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<String> orderList) {
+        this.orderList = orderList;
     }
 
     public List<TeraTermStationPlugin> getNodePluginList() {
@@ -131,5 +140,6 @@ public class ToolDefinition {
         setHeight(myVisitor.getHeight());
         setInitial(myVisitor.getInitial());
         setTabMap(myVisitor.getTabMap());
+        setOrderList(myVisitor.getOrderList());
     }
 }

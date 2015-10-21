@@ -33,6 +33,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String keyValue;
     private UseMacroType useMacroType;
     private List<File> macroList;
+    private List<String> orderList;
 
     // ========== 実データここまで ========== //
 

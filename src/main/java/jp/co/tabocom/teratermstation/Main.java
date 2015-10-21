@@ -8,7 +8,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -360,19 +362,47 @@ public class Main implements PropertyChangeListener, WindowProc {
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         // ==================== ここで各環境のタブを生成しています ==================== //
-        this.tabItemMap = new HashMap<String, EnvTabItem>();
+        this.tabItemMap = new LinkedHashMap<String, EnvTabItem>();
         if (this.toolDefine.getTabMap() != null) {
-            // 挿入順（正確には辞書順）となるように制御
-            List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap().keySet());
-            for (int i = keys.size() - 1; i >= 0; i--) {
-                Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
-                tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
+            List<String> orderList = this.toolDefine.getOrderList();
+            if (orderList != null && !orderList.isEmpty()) {
+                List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap().keySet());
+                Map<String, String> sortMap = new HashMap<String, String>();
+                for (String key : keys) {
+                    int idx = orderList.indexOf(key);
+                    if (idx > -1) {
+                        sortMap.put(String.valueOf(idx), key);
+                    } else {
+                        sortMap.put(key, key);
+                    }
+                }
+                List<String> idxList = new ArrayList<String>(sortMap.keySet());
+                Collections.sort(idxList);
+                for (String idx : idxList) {
+                    String key = sortMap.get(idx);
+                    Tab tab = this.toolDefine.getTabMap().get(key);
+                    tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
+                }
+            } else {
+                // 挿入順（正確には辞書順）となるように制御
+                List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap().keySet());
+                Collections.sort(keys);
+                for (int i = 0; i < keys.size(); i++) {
+                    Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
+                    tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
+                }
+                // 下は逆順とする場合
+                // for (int i = keys.size() - 1; i >= 0; i--) {
+                // Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
+                // tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
+                // }
+
+                // これは普通のやりかた
+                // for (String key : toolDefine.getTabMap().keySet()) {
+                // Tab tab = toolDefine.getTabMap().get(key);
+                // tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
+                // }
             }
-            // これは普通のやりかた
-            // for (String key : toolDefine.getTabMap().keySet()) {
-            // Tab tab = toolDefine.getTabMap().get(key);
-            // tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
-            // }
             for (EnvTabItem item : tabItemMap.values()) {
                 item.addPropertyChangeListener(this);
             }

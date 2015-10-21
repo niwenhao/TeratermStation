@@ -131,7 +131,9 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                         br = new BufferedReader(fr);
                         String line;
                         while ((line = br.readLine()) != null) {
-                            orderList.add(line);
+                            if (line.length() > 0) {
+                                orderList.add(line);
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -293,5 +295,9 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
     public List<File> getMacroList() {
         return macroList;
+    }
+
+    public List<String> getOrderList() {
+        return orderList;
     }
 }
