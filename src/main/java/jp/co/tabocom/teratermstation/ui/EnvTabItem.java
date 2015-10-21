@@ -334,18 +334,22 @@ public class EnvTabItem extends TabItem {
         });
 
         // ==================== サーバ選択グループ ====================
+        List<String> orderList = ((ConnToolTabFolder) getParent()).getMain().getToolDefine().getOrderList();
         this.treeMap = new HashMap<String, CheckboxTreeViewer>();
-        for (Category target : this.categoryMap.values()) {
+        for (Category category : this.categoryMap.values()) {
             Group targetSubGrp = new Group(composite, SWT.NONE);
             GridLayout targetSubGrpLt = new GridLayout(1, false);
             targetSubGrp.setLayout(targetSubGrpLt);
             targetSubGrp.setLayoutData(new GridData(GridData.FILL_BOTH));
-            targetSubGrp.setText(target.getName());
+            targetSubGrp.setText(category.getName());
             final CheckboxTreeViewer chkTree = new CheckboxTreeViewer(targetSubGrp, SWT.BORDER | SWT.VIRTUAL);
             chkTree.setContentProvider(new TreeContentProvider());
             ColumnViewerToolTipSupport.enableFor(chkTree, ToolTip.NO_RECREATE);
             chkTree.setLabelProvider(new TreeLabelProvider());
-            chkTree.setInput(target.getTargetNode());
+            if (orderList != null && !orderList.isEmpty()) {
+            	category.sortTargetNode(orderList);
+            }
+            chkTree.setInput(category.getTargetNode());
             final Tree tree = chkTree.getTree();
             tree.setLayoutData(new GridData(GridData.FILL_BOTH));
             tree.setToolTipText("対象のサーバにチェックを入れてください。");
@@ -422,7 +426,7 @@ public class EnvTabItem extends TabItem {
             });
 
             // あとでTreeViewerに対して一括でなんだかんだやるので、Mapに格納しておく。
-            this.treeMap.put(target.getName(), chkTree);
+            this.treeMap.put(category.getName(), chkTree);
 
             // ここからサーバツリーの右クリックメニューの設定
             MenuManager manager = new MenuManager();

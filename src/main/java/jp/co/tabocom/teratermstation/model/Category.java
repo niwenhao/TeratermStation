@@ -3,7 +3,10 @@ package jp.co.tabocom.teratermstation.model;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Category implements Serializable {
     private static final long serialVersionUID = -4090217249921939133L;
@@ -116,4 +119,30 @@ public class Category implements Serializable {
         return this.name;
     }
 
+    public void sortTargetNode(List<String> orderList) {
+    	TargetNode sortedNode = new TargetNode();
+
+    	List<String> keys = new ArrayList<String>();
+    	for (TargetNode child : this.targetNode.getChildren()) {
+    		keys.add(child.getName());
+    	}
+        Map<String, String> sortMap = new HashMap<String, String>();
+        for (String key : keys) {
+            int idx = orderList.indexOf(key);
+            if (idx > -1) {
+                sortMap.put(String.valueOf(idx), key);
+            } else {
+                sortMap.put(key, key);
+            }
+        }
+        List<String> idxList = new ArrayList<String>(sortMap.keySet());
+        Collections.sort(idxList);
+        for (String idx : idxList) {
+            String key = sortMap.get(idx);
+            TargetNode child = this.getChild(key);
+            child.sortChildren(orderList);
+            sortedNode.addChild(child);
+        }
+        this.targetNode = sortedNode;
+    }
 }
