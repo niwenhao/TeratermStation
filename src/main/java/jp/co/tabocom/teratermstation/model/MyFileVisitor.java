@@ -48,48 +48,56 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         String dirName = dirPath.getFileName().toString();
         int depth = dirPath.getNameCount() - this.depthCnt;
 
-        switch (depth) {
-        // ========== BASE ========== //
-            case 1: {
-                System.out.format("基点: %s\n", dirName);
-                this.system = dirName;
-                break;
-            }
-            // ========== TAB ========== //
-            case 2: { // タブ
-                if (dirName.equals("plugins")) {
+        try {
+            switch (depth) {
+            // ========== BASE ========== //
+                case 1: {
+                    System.out.format("基点: %s\n", dirName);
+                    this.system = dirName;
                     break;
                 }
-                System.out.format("タブ: %s\n", dirName);
-                Tab tab = new Tab();
-                tab.setName(dirName);
-                tab.setDirPath(dirPath.toString());
-                this.tabMap.put(dirName, tab);
-                break;
+                // ========== TAB ========== //
+                case 2: { // タブ
+                    if (dirName.startsWith(".")) {
+                        throw new NullPointerException();
+                    }
+                    if (dirName.equals("plugins")) {
+                        break;
+                    }
+                    System.out.format("タブ: %s\n", dirName);
+                    Tab tab = new Tab();
+                    tab.setName(dirName);
+                    tab.setDirPath(dirPath.toString());
+                    this.tabMap.put(dirName, tab);
+                    break;
+                }
+                // ========== GROUP ========== //
+                case 3: { // グループ
+                    System.out.format("カテゴリ: %s\n", dirName);
+                    Category category = new Category();
+                    category.setName(dirName);
+                    Tab tab = this.tabMap.get(dirPath.getName(1 + this.depthCnt).toString());
+                    category.setTab(tab);
+                    tab.addCategory(category);
+                    break;
+                }
+                // ========== GROUP ========== //
+                case 4: { // グループ
+                    System.out.format("グループ: %s\n", dirName);
+                    TargetNode node = new TargetNode();
+                    node.setFile(dirPath.toFile());
+                    node.setName(dirName);
+                    Tab tab = this.tabMap.get(dirPath.getName(1 + this.depthCnt).toString());
+                    Category category = tab.getCategory(dirPath.getName(2 + this.depthCnt).toString());
+                    node.setCategory(category);
+                    category.addChild(node);
+                    break;
+                }
+                default:
             }
-            // ========== GROUP ========== //
-            case 3: { // グループ
-                System.out.format("カテゴリ: %s\n", dirName);
-                Category category = new Category();
-                category.setName(dirName);
-                Tab tab = this.tabMap.get(dirPath.getName(1 + this.depthCnt).toString());
-                category.setTab(tab);
-                tab.addCategory(category);
-                break;
-            }
-            // ========== GROUP ========== //
-            case 4: { // グループ
-                System.out.format("グループ: %s\n", dirName);
-                TargetNode node = new TargetNode();
-                node.setFile(dirPath.toFile());
-                node.setName(dirName);
-                Tab tab = this.tabMap.get(dirPath.getName(1 + this.depthCnt).toString());
-                Category category = tab.getCategory(dirPath.getName(2 + this.depthCnt).toString());
-                node.setCategory(category);
-                category.addChild(node);
-                break;
-            }
-            default:
+        } catch (NullPointerException npe) {
+            // NullPointerが発生するのはだいたいは隠しフォルダ絡みだったりするので一旦ここは無視としておく。
+            System.out.format("隠しフォルダまたはその配下なので無視しました -> %s\n", dirPath);
         }
         return super.preVisitDirectory(dirPath, attr);
     }
