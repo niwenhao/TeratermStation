@@ -3,9 +3,9 @@ package jp.co.tabocom.teratermstation.model;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
@@ -124,11 +124,9 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 // ========== ORDER.INI ========== //
                 if (fileName.equals("order.ini")) {
                     System.out.println("並び順設定");
-                    FileReader fr = null;
                     BufferedReader br = null;
                     try {
-                        fr = new FileReader(file);
-                        br = new BufferedReader(fr);
+                        br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
                         String line;
                         while ((line = br.readLine()) != null) {
                             if (line.length() > 0) {
@@ -140,7 +138,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     } finally {
                         try {
                             br.close();
-                            fr.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
