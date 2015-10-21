@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TargetNode implements Comparable<TargetNode>, PropertyChangeListener, Serializable {
     private static final long serialVersionUID = 6795171432373000432L;
@@ -60,6 +62,15 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         i_children.add(child);
         child.i_parent = this;
         return this;
+    }
+
+    public TargetNode getChild(String name) {
+        for (TargetNode child : this.getChildren()) {
+            if (child.getName().equals(name)) {
+                return child;
+            }
+        }
+        return null;
     }
 
     public TargetNode addChildren(List<TargetNode> children) {
@@ -224,5 +235,33 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     public void setKeyValue(String keyValue) {
         this.keyValue = keyValue;
+    }
+    
+    public void sortChildren(List<String> orderList) {
+    	List<String> keys = new ArrayList<String>();
+    	for (TargetNode child : this.getChildren()) {
+    		keys.add(child.getName());
+    	}
+        Map<String, String> sortMap = new HashMap<String, String>();
+        for (String key : keys) {
+            int idx = orderList.indexOf(key);
+            if (idx > -1) {
+                sortMap.put(String.valueOf(idx), key);
+            } else {
+                sortMap.put(key, key);
+            }
+        }
+        List<String> idxList = new ArrayList<String>(sortMap.keySet());
+        Collections.sort(idxList);
+        List<TargetNode> sortedList = new ArrayList<TargetNode>();
+        for (String idx : idxList) {
+            String key = sortMap.get(idx);
+            TargetNode child = this.getChild(key);
+            sortedList.add(child);
+        }
+        this.i_children.clear();
+        for (TargetNode child : sortedList) {
+        	this.addChild(child);
+        }
     }
 }

@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -104,8 +105,8 @@ public class EnvTabItem extends TabItem {
     private static final int FILE_INTERVAL = 300;
 
     private Map<String, CheckboxTreeViewer> treeMap;
-    private Map<String, Category> targetMap;
-    private Map<String, Category> defaultTargetMap;
+    private Map<String, Category> categoryMap;
+    private Map<String, Category> defaultCategoryMap;
     private Text usrTxt;
     private Text pwdTxt;
     private Button idPwdMemoryBtn;
@@ -131,17 +132,39 @@ public class EnvTabItem extends TabItem {
      *            タブの名前
      * @param parent
      *            TabFolder 要するに親玉
-     * @param targetList
-     *            表示するサーバツリーのオブジェクトリスト
      */
     public EnvTabItem(Tab tab, TabFolder parent) {
         super(parent, SWT.NONE);
         this.tab = tab;
-        this.defaultTargetMap = new LinkedHashMap<String, Category>();
-        for (Category target : tab.getTargetList()) {
-            this.defaultTargetMap.put(target.getName(), target);
+        this.defaultCategoryMap = new LinkedHashMap<String, Category>();
+        Main main = ((ConnToolTabFolder)parent).getMain();
+        List<String> orderList = main.getToolDefine().getOrderList();
+        if (orderList != null && !orderList.isEmpty()) {
+        	List<String> keys = new ArrayList<String>();
+        	for (Category category : tab.getCategoryList()) {
+        		keys.add(category.getName());
+        	}
+            Map<String, String> sortMap = new HashMap<String, String>();
+            for (String key : keys) {
+                int idx = orderList.indexOf(key);
+                if (idx > -1) {
+                    sortMap.put(String.valueOf(idx), key);
+                } else {
+                    sortMap.put(key, key);
+                }
+            }
+            List<String> idxList = new ArrayList<String>(sortMap.keySet());
+            Collections.sort(idxList);
+            for (String idx : idxList) {
+                String key = sortMap.get(idx);
+                this.defaultCategoryMap.put(key, tab.getCategory(key));
+            }
+        } else {
+            for (Category category : tab.getCategoryList()) {
+                this.defaultCategoryMap.put(category.getName(), category);
+            }
         }
-        this.targetMap = targetMapCopy(this.defaultTargetMap);
+        this.categoryMap = targetMapCopy(this.defaultCategoryMap);
         if (this.tab.getGateway() != null) {
             this.authFlg = this.tab.getGateway().isAuth();
             this.memoryPwdFlg = this.tab.getGateway().isMemoryPwd();
@@ -163,7 +186,7 @@ public class EnvTabItem extends TabItem {
     private void createItemArea() {
         // 親Compositeの準備（これがUI部品の親分）
         final Composite composite = new Composite(getParent(), SWT.NULL);
-        composite.setLayout(new GridLayout(this.targetMap.size(), true));
+        composite.setLayout(new GridLayout(this.categoryMap.size(), true));
 
         // 設定の取得
         final PreferenceStore ps = ((ConnToolTabFolder) getParent()).getMain().getPreferenceStore();
@@ -175,7 +198,7 @@ public class EnvTabItem extends TabItem {
         authGrpLt.horizontalSpacing = 10;
         authGrp.setLayout(authGrpLt);
         GridData authGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        authGrpGrDt.horizontalSpan = this.targetMap.size();
+        authGrpGrDt.horizontalSpan = this.categoryMap.size();
         authGrp.setLayoutData(authGrpGrDt);
         authGrp.setText("認証情報");
         authGrp.setEnabled(this.authFlg);
@@ -270,7 +293,7 @@ public class EnvTabItem extends TabItem {
         // ---------- サーバフィルタリング ----------
         filterTxt = new Text(composite, SWT.BORDER);
         GridData filterTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        filterTxtGrDt.horizontalSpan = this.targetMap.size() - 1;
+        filterTxtGrDt.horizontalSpan = this.categoryMap.size() - 1;
         filterTxt.setLayoutData(filterTxtGrDt);
         filterTxt.setMessage("サーバをフィルタリングすることができます。例：WebAP, EXEなど");
         filterTxt.addModifyListener(new ModifyListener() {
@@ -311,18 +334,22 @@ public class EnvTabItem extends TabItem {
         });
 
         // ==================== サーバ選択グループ ====================
+        List<String> orderList = ((ConnToolTabFolder) getParent()).getMain().getToolDefine().getOrderList();
         this.treeMap = new HashMap<String, CheckboxTreeViewer>();
-        for (Category target : this.targetMap.values()) {
+        for (Category category : this.categoryMap.values()) {
             Group targetSubGrp = new Group(composite, SWT.NONE);
             GridLayout targetSubGrpLt = new GridLayout(1, false);
             targetSubGrp.setLayout(targetSubGrpLt);
             targetSubGrp.setLayoutData(new GridData(GridData.FILL_BOTH));
-            targetSubGrp.setText(target.getName());
+            targetSubGrp.setText(category.getName());
             final CheckboxTreeViewer chkTree = new CheckboxTreeViewer(targetSubGrp, SWT.BORDER | SWT.VIRTUAL);
             chkTree.setContentProvider(new TreeContentProvider());
             ColumnViewerToolTipSupport.enableFor(chkTree, ToolTip.NO_RECREATE);
             chkTree.setLabelProvider(new TreeLabelProvider());
-            chkTree.setInput(target.getTargetNode());
+            if (orderList != null && !orderList.isEmpty()) {
+            	category.sortTargetNode(orderList);
+            }
+            chkTree.setInput(category.getTargetNode());
             final Tree tree = chkTree.getTree();
             tree.setLayoutData(new GridData(GridData.FILL_BOTH));
             tree.setToolTipText("対象のサーバにチェックを入れてください。");
@@ -399,7 +426,7 @@ public class EnvTabItem extends TabItem {
             });
 
             // あとでTreeViewerに対して一括でなんだかんだやるので、Mapに格納しておく。
-            this.treeMap.put(target.getName(), chkTree);
+            this.treeMap.put(category.getName(), chkTree);
 
             // ここからサーバツリーの右クリックメニューの設定
             MenuManager manager = new MenuManager();
@@ -420,7 +447,7 @@ public class EnvTabItem extends TabItem {
         Composite bottomGrp = new Composite(composite, SWT.NONE);
         bottomGrp.setLayout(new GridLayout(2, true));
         GridData bottomGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        bottomGrpGrDt.horizontalSpan = this.targetMap.size();
+        bottomGrpGrDt.horizontalSpan = this.categoryMap.size();
         bottomGrp.setLayoutData(bottomGrpGrDt);
 
         // ==================== サーバ選択状態 保存、読込グループ ====================
@@ -476,7 +503,7 @@ public class EnvTabItem extends TabItem {
     }
 
     public Map<String, Category> getTargetMap() {
-        return targetMap;
+        return categoryMap;
     }
 
     public void propertyChangeUpdate() {
@@ -484,8 +511,8 @@ public class EnvTabItem extends TabItem {
     }
 
     private void defaultTreeData() {
-        this.targetMap = targetMapCopy(this.defaultTargetMap);
-        for (Category target : this.targetMap.values()) {
+        this.categoryMap = targetMapCopy(this.defaultCategoryMap);
+        for (Category target : this.categoryMap.values()) {
             CheckboxTreeViewer treeViewer = this.treeMap.get(target.getName());
             treeViewer.setInput(target.getTargetNode());
             treeViewer.refresh();
