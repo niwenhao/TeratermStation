@@ -36,7 +36,7 @@ public class TreeViewActionGroup extends ActionGroup {
         for (TeraTermStationPlugin plugin : main.getToolDefine().getNodePluginList()) {
             menu.add(new Separator());
             for (TeraTermStationAction action : plugin.getActions(node, shell, selectionProvider)) {
-                if (action.isValid(node)) {
+                if (action.isValid()) {
                     addToMenu(menu, action);
                 }
             }

@@ -24,7 +24,7 @@ public abstract class TeraTermStationAction extends SelectionListenerAction {
         }
     }
 
-    public abstract boolean isValid(TargetNode node);
+    public abstract boolean isValid();
 
     public abstract void run();
 }
