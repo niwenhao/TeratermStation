@@ -6,12 +6,12 @@ import org.eclipse.swt.widgets.Shell;
 
 import jp.co.tabocom.teratermstation.model.TargetNode;
 
-public abstract class TeraTermStationBulkAction {
+public abstract class TeratermStationBulkAction {
 
 	protected Shell shell;
 	protected List<TargetNode> nodeList;
 
-	protected TeraTermStationBulkAction(List<TargetNode> nodeList, Shell shell) {
+	protected TeratermStationBulkAction(List<TargetNode> nodeList, Shell shell) {
 		this.shell = shell;
 		this.nodeList = nodeList;
 	}

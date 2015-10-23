@@ -8,12 +8,12 @@ import org.eclipse.ui.actions.SelectionListenerAction;
 
 import jp.co.tabocom.teratermstation.model.TargetNode;
 
-public abstract class TeraTermStationAction extends SelectionListenerAction {
+public abstract class TeratermStationAction extends SelectionListenerAction {
 
     protected Shell shell;
     protected TargetNode node;
 
-    protected TeraTermStationAction(String text, String icon, TargetNode node, Shell shell, ISelectionProvider selectionProvider) {
+    protected TeratermStationAction(String text, String icon, TargetNode node, Shell shell, ISelectionProvider selectionProvider) {
         super(text);
         this.shell = shell;
         this.node = node;

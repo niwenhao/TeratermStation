@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.co.tabocom.teratermstation.plugin.TeraTermStationPlugin;
+import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 public class ToolDefinition {
 
@@ -25,7 +25,7 @@ public class ToolDefinition {
     private Map<String, Tab> tabMap;
     private List<String> orderList;
 
-    private List<TeraTermStationPlugin> nodePluginList;
+    private List<TeratermStationPlugin> nodePluginList;
 
     private Initial initial;
 
@@ -57,11 +57,11 @@ public class ToolDefinition {
         this.orderList = orderList;
     }
 
-    public List<TeraTermStationPlugin> getNodePluginList() {
+    public List<TeratermStationPlugin> getNodePluginList() {
         return nodePluginList;
     }
 
-    public void setNodePluginList(List<TeraTermStationPlugin> nodePluginList) {
+    public void setNodePluginList(List<TeratermStationPlugin> nodePluginList) {
         this.nodePluginList = nodePluginList;
     }
 

@@ -14,16 +14,16 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import jp.co.tabocom.teratermstation.plugin.TeraTermStationPlugin;
+import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 public class PluginFileVisitor extends SimpleFileVisitor<Path> {
 
     private int depthCnt;
-    private List<TeraTermStationPlugin> nodePluginList;
+    private List<TeratermStationPlugin> nodePluginList;
 
     public PluginFileVisitor(int depthCnt) {
         this.depthCnt = depthCnt;
-        this.nodePluginList = new ArrayList<TeraTermStationPlugin>();
+        this.nodePluginList = new ArrayList<TeratermStationPlugin>();
     }
 
     @Override
@@ -56,9 +56,9 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
                         Class<?> cobj = loader.loadClass(cname);
                         Class[] ifnames = cobj.getInterfaces();
                         for (int j = 0; j < ifnames.length; j++) {
-                            if (ifnames[j] == TeraTermStationPlugin.class) {
+                            if (ifnames[j] == TeratermStationPlugin.class) {
                                 System.out.println("load..... " + cname);
-                                TeraTermStationPlugin plugin = (TeraTermStationPlugin) cobj.newInstance();
+                                TeratermStationPlugin plugin = (TeratermStationPlugin) cobj.newInstance();
                                 nodePluginList.add(plugin);
                                 break;
                             }
@@ -81,7 +81,7 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
         return super.visitFileFailed(arg0, arg1);
     }
 
-    public List<TeraTermStationPlugin> getNodePluginList() {
+    public List<TeratermStationPlugin> getNodePluginList() {
         return nodePluginList;
     }
 }

@@ -17,7 +17,7 @@ import java.util.Map;
 import jp.co.tabocom.teratermstation.model.Initial;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.ToolDefinition;
-import jp.co.tabocom.teratermstation.plugin.TeraTermStationPlugin;
+import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.BasePreferencePage;
 import jp.co.tabocom.teratermstation.preference.PathPreferencePage;
 import jp.co.tabocom.teratermstation.preference.PluginPreferencePage;
@@ -467,7 +467,7 @@ public class Main implements PropertyChangeListener, WindowProc {
 
                 PreferenceNode pluginsNode = new PreferenceNode("plugins", new PluginPreferencePage());
                 mgr.addToRoot(pluginsNode);
-                for (TeraTermStationPlugin plugin : toolDefine.getNodePluginList()) {
+                for (TeratermStationPlugin plugin : toolDefine.getNodePluginList()) {
                     if (plugin.getPreferencePage() != null) {
                         PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
                         mgr.addTo(pluginsNode.getId(), pluginNode);

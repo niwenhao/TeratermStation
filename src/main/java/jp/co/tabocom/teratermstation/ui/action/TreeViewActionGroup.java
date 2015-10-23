@@ -10,7 +10,7 @@ import org.eclipse.ui.actions.SelectionListenerAction;
 
 import jp.co.tabocom.teratermstation.Main;
 import jp.co.tabocom.teratermstation.model.TargetNode;
-import jp.co.tabocom.teratermstation.plugin.TeraTermStationPlugin;
+import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 public class TreeViewActionGroup extends ActionGroup {
 
@@ -33,9 +33,9 @@ public class TreeViewActionGroup extends ActionGroup {
         TargetNode node = (TargetNode) selection.getFirstElement();
         Main main = (Main) this.shell.getData("main");
 
-        for (TeraTermStationPlugin plugin : main.getToolDefine().getNodePluginList()) {
+        for (TeratermStationPlugin plugin : main.getToolDefine().getNodePluginList()) {
             menu.add(new Separator());
-            for (TeraTermStationAction action : plugin.getActions(node, shell, selectionProvider)) {
+            for (TeratermStationAction action : plugin.getActions(node, shell, selectionProvider)) {
                 if (action.isValid()) {
                     addToMenu(menu, action);
                 }
