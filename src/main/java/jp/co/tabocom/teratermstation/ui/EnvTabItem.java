@@ -148,7 +148,7 @@ public class EnvTabItem extends TabItem {
             for (String key : keys) {
                 int idx = orderList.indexOf(key);
                 if (idx > -1) {
-                    sortMap.put(String.valueOf(idx), key);
+                    sortMap.put(String.format("%04d", idx), key);
                 } else {
                     sortMap.put(key, key);
                 }

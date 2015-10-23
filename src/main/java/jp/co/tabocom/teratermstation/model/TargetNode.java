@@ -236,17 +236,17 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     public void setKeyValue(String keyValue) {
         this.keyValue = keyValue;
     }
-    
+
     public void sortChildren(List<String> orderList) {
-    	List<String> keys = new ArrayList<String>();
-    	for (TargetNode child : this.getChildren()) {
-    		keys.add(child.getName());
-    	}
+        List<String> keys = new ArrayList<String>();
+        for (TargetNode child : this.getChildren()) {
+            keys.add(child.getName());
+        }
         Map<String, String> sortMap = new HashMap<String, String>();
         for (String key : keys) {
             int idx = orderList.indexOf(key);
             if (idx > -1) {
-                sortMap.put(String.valueOf(idx), key);
+                sortMap.put(String.format("%04d", idx), key);
             } else {
                 sortMap.put(key, key);
             }
@@ -261,7 +261,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         }
         this.i_children.clear();
         for (TargetNode child : sortedList) {
-        	this.addChild(child);
+            this.addChild(child);
         }
     }
 }

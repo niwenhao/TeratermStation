@@ -120,17 +120,17 @@ public class Category implements Serializable {
     }
 
     public void sortTargetNode(List<String> orderList) {
-    	TargetNode sortedNode = new TargetNode();
+        TargetNode sortedNode = new TargetNode();
 
-    	List<String> keys = new ArrayList<String>();
-    	for (TargetNode child : this.targetNode.getChildren()) {
-    		keys.add(child.getName());
-    	}
+        List<String> keys = new ArrayList<String>();
+        for (TargetNode child : this.targetNode.getChildren()) {
+            keys.add(child.getName());
+        }
         Map<String, String> sortMap = new HashMap<String, String>();
         for (String key : keys) {
             int idx = orderList.indexOf(key);
             if (idx > -1) {
-                sortMap.put(String.valueOf(idx), key);
+                sortMap.put(String.format("%04d", idx), key);
             } else {
                 sortMap.put(key, key);
             }
