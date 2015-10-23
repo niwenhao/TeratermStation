@@ -33,8 +33,9 @@ import jp.co.tabocom.teratermstation.Main;
 import jp.co.tabocom.teratermstation.model.Category;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
-import jp.co.tabocom.teratermstation.model.UseMacroType;
+import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +44,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -88,7 +90,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -137,13 +138,13 @@ public class EnvTabItem extends TabItem {
         super(parent, SWT.NONE);
         this.tab = tab;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
-        Main main = ((ConnToolTabFolder)parent).getMain();
+        Main main = ((ConnToolTabFolder) parent).getMain();
         List<String> orderList = main.getToolDefine().getOrderList();
         if (orderList != null && !orderList.isEmpty()) {
-        	List<String> keys = new ArrayList<String>();
-        	for (Category category : tab.getCategoryList()) {
-        		keys.add(category.getName());
-        	}
+            List<String> keys = new ArrayList<String>();
+            for (Category category : tab.getCategoryList()) {
+                keys.add(category.getName());
+            }
             Map<String, String> sortMap = new HashMap<String, String>();
             for (String key : keys) {
                 int idx = orderList.indexOf(key);
@@ -347,7 +348,7 @@ public class EnvTabItem extends TabItem {
             ColumnViewerToolTipSupport.enableFor(chkTree, ToolTip.NO_RECREATE);
             chkTree.setLabelProvider(new TreeLabelProvider());
             if (orderList != null && !orderList.isEmpty()) {
-            	category.sortTargetNode(orderList);
+                category.sortTargetNode(orderList);
             }
             chkTree.setInput(category.getTargetNode());
             final Tree tree = chkTree.getTree();
@@ -577,35 +578,39 @@ public class EnvTabItem extends TabItem {
         String templateCmd = null;
         String dialogMsg = "一括で接続します。よろしいですか？";
         String[] buttonArray;
-        // 本番端末室ではテンプレート機能を使えなくしてます。
-        if (this.tab.getUseMacroType() != UseMacroType.UNUSED) {
-            dialogMsg += "\r\n（テンプレートを選択することもできます）";
-            buttonArray = new String[] { "OK", "Cancel", "テンプレート選択..." };
-        } else {
+
+        List<TeratermStationBulkAction> bulkActionList = new ArrayList<TeratermStationBulkAction>();
+        for (TeratermStationPlugin plugin : main.getToolDefine().getNodePluginList()) {
+            List<TeratermStationBulkAction> actionList = plugin.getBulkActions(checkedTreeList, getParent().getShell());
+            if (actionList != null) { // 一括接続での拡張機能の無いプラグインはnullを返すので.
+                for (TeratermStationBulkAction action : actionList) {
+                    if (action.isValid()) {
+                        bulkActionList.add(action);
+                    }
+                }
+            }
+        }
+
+        if (bulkActionList.isEmpty()) {
             buttonArray = new String[] { "OK", "Cancel" };
+        } else {
+            dialogMsg += "\r\n（拡張機能を利用することもできます）";
+            buttonArray = new String[] { "OK", "Cancel", "拡張機能選択..." };
         }
         MessageDialog dialog = new MessageDialog(getParent().getShell(), "一括起動", null, dialogMsg, MessageDialog.QUESTION, buttonArray, 0);
         int result = dialog.open();
         switch (result) {
             case 0: // OK
                 break;
-            case 2: // Template
-                FileDialog fileDialog = new FileDialog(getParent().getShell());
-                fileDialog.setText("テンプレートファイルを選択してください。");
-                fileDialog.setFilterPath(tab.getDirPath());
-                fileDialog.setFilterExtensions(new String[] { "*.macro" });
-                String file = fileDialog.open();
-                if (file == null) {
+            case 2: // 拡張機能の利用
+                PluginSelectDialog pluginDialog = new PluginSelectDialog(getParent().getShell(), bulkActionList);
+                int pluginResult = pluginDialog.open();
+                if (IDialogConstants.OK_ID != pluginResult) {
                     return;
                 }
-                File templateFile = new File(file);
-                try {
-                    templateCmd = genTemplateCmd(templateFile);
-                } catch (Exception e) {
-                    MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
-                    return;
-                }
-                break;
+                TeratermStationBulkAction selectedAction = pluginDialog.getSelectedAction();
+                selectedAction.run();
+                return;
             default: // Cancel or Other
                 return;
         }
