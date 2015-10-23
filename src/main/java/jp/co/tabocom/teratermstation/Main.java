@@ -306,7 +306,7 @@ public class Main implements PropertyChangeListener, WindowProc {
         if (toolDefine.getWidth() > 0 && toolDefine.getHeight() > 0) {
             shell.setSize(toolDefine.getWidth(), toolDefine.getHeight());
         } else {
-            shell.setSize(500, 500);
+            shell.setSize(600, 500);
         }
         // アイコンセットアップ
         Image[] imageArray = new Image[5];
@@ -467,10 +467,12 @@ public class Main implements PropertyChangeListener, WindowProc {
 
                 PreferenceNode pluginsNode = new PreferenceNode("plugins", new PluginPreferencePage());
                 mgr.addToRoot(pluginsNode);
-                for (TeratermStationPlugin plugin : toolDefine.getNodePluginList()) {
-                    if (plugin.getPreferencePage() != null) {
-                        PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
-                        mgr.addTo(pluginsNode.getId(), pluginNode);
+                if (toolDefine.getNodePluginList() != null) {
+                    for (TeratermStationPlugin plugin : toolDefine.getNodePluginList()) {
+                        if (plugin.getPreferencePage() != null) {
+                            PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
+                            mgr.addTo(pluginsNode.getId(), pluginNode);
+                        }
                     }
                 }
                 PreferenceDialog dialog = new PreferenceDialog(shell, mgr);
