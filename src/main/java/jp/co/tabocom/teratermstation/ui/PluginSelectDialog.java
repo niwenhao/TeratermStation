@@ -35,7 +35,7 @@ public class PluginSelectDialog extends Dialog {
         composite.setLayout(new GridLayout(1, false));
         pluginCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
         pluginCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        pluginCombo.setToolTipText("ƒŠƒŠ[ƒX‚·‚é–Ê‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢");
+        pluginCombo.setToolTipText("ãƒªãƒªãƒ¼ã‚¹ã™ã‚‹é¢ã‚’é¸æŠã—ã¦ãã ã•ã„");
         for (TeratermStationBulkAction action : actionList) {
             pluginCombo.add(action.getDisplayName());
         }
@@ -81,6 +81,6 @@ public class PluginSelectDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Šg’£‹@”\‘I‘ğ");
+        newShell.setText("æ‹¡å¼µæ©Ÿèƒ½é¸æŠ");
     }
 }
