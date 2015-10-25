@@ -10,6 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * グループ（サーバグループ）またはサーバの情報を保持するクラスです。<br>
+ * グループの場合はツリーの親、サーバの場合はツリーの子に相当します。
+ * 
+ * @author turbou
+ *
+ */
 public class TargetNode implements Comparable<TargetNode>, PropertyChangeListener, Serializable {
     private static final long serialVersionUID = 6795171432373000432L;
 
@@ -35,7 +42,6 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String keyValue;
     private UseMacroType useMacroType;
     private List<File> macroList;
-    private List<String> orderList;
 
     // ========== 実データここまで ========== //
 

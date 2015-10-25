@@ -5,6 +5,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * タブの情報を保持するクラスです。<br>
+ * TeratermStationの画面の中のまさにタブに相当するクラスです。
+ * 
+ * @author turbou
+ *
+ */
 public class Tab implements Serializable {
     private static final long serialVersionUID = -2959784033887335152L;
 

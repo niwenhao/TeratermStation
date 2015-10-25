@@ -8,6 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * カテゴリの情報を保持するクラスです。<br>
+ * タブの中の各枠に相当するクラスです。
+ * 
+ * @author turbou
+ *
+ */
 public class Category implements Serializable {
     private static final long serialVersionUID = -4090217249921939133L;
 
