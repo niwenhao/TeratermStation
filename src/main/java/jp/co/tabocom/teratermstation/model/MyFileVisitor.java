@@ -24,6 +24,12 @@ import jp.co.tabocom.teratermstation.model.yaml.GroupIni;
 import jp.co.tabocom.teratermstation.model.yaml.SettingsIni;
 import jp.co.tabocom.teratermstation.model.yaml.TabIni;
 
+/**
+ * サーバ接続定義を読み込むクラスです。
+ * 
+ * @author turbou
+ *
+ */
 public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
     private String system;
@@ -36,6 +42,11 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     private List<String> orderList;
     private String iniFile;
 
+    /**
+     * デフォルトコンストラクタ
+     * 
+     * @param depthCnt
+     */
     public MyFileVisitor(int depthCnt) {
         this.initial = new Initial();
         this.depthCnt = depthCnt;
@@ -56,14 +67,14 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
         try {
             switch (depth) {
-            // ========== BASE ========== //
                 case 1: {
+                    // ========== BASE ========== //
                     System.out.format("基点: %s\n", dirName);
                     this.system = dirName;
                     break;
                 }
-                // ========== TAB ========== //
-                case 2: { // タブ
+                case 2: {
+                    // ========== TAB ========== //
                     if (dirName.startsWith(".")) {
                         throw new NullPointerException();
                     }
@@ -77,8 +88,8 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     this.tabMap.put(dirName, tab);
                     break;
                 }
-                // ========== GROUP ========== //
-                case 3: { // グループ
+                case 3: {
+                    // ========== CATEGORY ========== //
                     System.out.format("カテゴリ: %s\n", dirName);
                     Category category = new Category();
                     category.setName(dirName);
@@ -87,8 +98,8 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     tab.addCategory(category);
                     break;
                 }
-                // ========== GROUP ========== //
-                case 4: { // グループ
+                case 4: {
+                    // ========== GROUP ========== //
                     System.out.format("グループ: %s\n", dirName);
                     TargetNode node = new TargetNode();
                     node.setFile(dirPath.toFile());
