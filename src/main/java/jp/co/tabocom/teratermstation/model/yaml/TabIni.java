@@ -2,13 +2,76 @@ package jp.co.tabocom.teratermstation.model.yaml;
 
 import java.util.Map;
 
+/**
+ * 
+ * tab.yamlを読み込むためのクラスです。<br>
+ * <br>
+ * tab.yamlの内容は下な感じ<br>
+ * 
+ * <pre>
+ * --------------------------------------------------------------------------------
+ * gateway:
+ *   ipaddress: 192.177.237.111
+ *   errptn: authentication failed
+ *   auth: true
+ *   password_memory: true
+ *   password_autoclear: false
+ *   password_group: dev
+ * 
+ * connect: connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
+ * 
+ * negotiation: |
+ *   wait 'Host name:'
+ *   sendln '${ipaddress}'
+ *   wait 'Username:'
+ *   sendln '${authuser}'
+ *   wait 'Password:'
+ *   sendln ${authpassword}
+ *   wait 'login:'
+ *   sendln '${loginuser}'
+ *   waitregex 'Password.*:'
+ *   sendln '${loginpassword}'
+ * 
+ * loginuser: aplusr
+ * loginpassword: aplpwd
+ * usemacro: true
+ * inifile: DEV.INI
+ * --------------------------------------------------------------------------------
+ * </pre>
+ * 
+ * @author turbou
+ *
+ */
 public class TabIni {
+
+    /**
+     * プロキシを経由する際に必要な情報を保持します。（任意）
+     */
     private Map<String, Object> gateway;
+    /**
+     * Tera Termのconnect文（必須）
+     */
     private String connect;
+    /**
+     * プロキシ認証のやり取りなど、connect後の手続き（任意）
+     */
     private String negotiation;
+    /**
+     * マクロ機能を使用するか否か（任意）<br>
+     * 省略時は上の階層の条件に従う。上に設定がない場合はfalse
+     */
     private String usemacro;
+    /**
+     * タブ全体に適用されるTera TermのINIファイル（任意）
+     */
     private String inifile;
+    /**
+     * タブ全体に適用されるサーバログインユーザー（任意）
+     */
     private String loginuser;
+    /**
+     * タブ全体に適用されるサーバログインパスワード（任意）
+     */
     private String loginpassword;
 
     public Map<String, Object> getGateway() {

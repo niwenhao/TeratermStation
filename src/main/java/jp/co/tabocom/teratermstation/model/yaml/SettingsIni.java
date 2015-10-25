@@ -2,10 +2,49 @@ package jp.co.tabocom.teratermstation.model.yaml;
 
 import java.util.Map;
 
+/**
+ * 
+ * settings.yamlを読み込むためのクラスです。<br>
+ * <br>
+ * settings.yamlの内容は下な感じ<br>
+ * 
+ * <pre>
+ * --------------------------------------------------------------------------------
+ * width: 600
+ * height: 600
+ *  
+ * initial:
+ *   ttpmacroexe: C:\Program Files (x86)\teraterm\ttpmacro.exe
+ *   dir_work: C:\library\work
+ *   dir_log: C:\library\log
+ *   dir_ini: C:\library\ini
+ * 
+ * inifile: DEV.INI
+ * --------------------------------------------------------------------------------
+ * </pre>
+ * 
+ * @author turbou
+ *
+ */
 public class SettingsIni {
+
+    /**
+     * ツール本体の横サイズ（任意）<br>
+     * デフォルト値は600
+     */
     private int width;
+    /**
+     * ツール本体の縦サイズ（任意）<br>
+     * デフォルト値は500
+     */
     private int height;
+    /**
+     * ツール全体に適用されるTera TermのINIファイル（任意）
+     */
     private String inifile;
+    /**
+     * ツール設定（conntool.properties）が存在しない場合などに初期値と持たせたい情報を保持します。（任意）
+     */
     private Map<String, Object> initial;
 
     public int getWidth() {
