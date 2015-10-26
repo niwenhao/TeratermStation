@@ -124,7 +124,7 @@ public class ToolDefinition {
         }
         for (Tab tab : myVisitor.getTabMap().values()) {
             // inifile
-            if (tab.getIniFile() == null) {
+            if (tab.getIniFile() == null || tab.getIniFile().isEmpty()) {
                 tab.setIniFile(myVisitor.getIniFile());
             }
         }

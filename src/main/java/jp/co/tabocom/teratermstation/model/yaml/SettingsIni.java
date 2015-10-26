@@ -104,6 +104,7 @@ public class SettingsIni {
         builder.append(String.format("initial_dir_work    : %s\n", getInitialDirWork()));
         builder.append(String.format("initial_dir_log     : %s\n", getInitialDirLog()));
         builder.append(String.format("initial_dir_ini     : %s\n", getInitialDirIni()));
+        builder.append(String.format("inifile             : %s\n", this.inifile));
         return builder.toString();
     }
 }
