@@ -1,10 +1,8 @@
 package jp.co.tabocom.teratermstation.model;
 
-import java.io.File;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -125,11 +123,6 @@ public class ToolDefinition {
             throw e;
         }
         for (Tab tab : myVisitor.getTabMap().values()) {
-            // macro
-            List<File> list = new ArrayList<File>();
-            list.addAll(myVisitor.getMacroList());
-            list.addAll(tab.getMacroList());
-            tab.setMacroList(list);
             // inifile
             if (tab.getIniFile() == null) {
                 tab.setIniFile(myVisitor.getIniFile());

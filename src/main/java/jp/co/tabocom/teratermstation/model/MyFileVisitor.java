@@ -38,7 +38,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     private Initial initial;
     private int depthCnt;
     private Map<String, Tab> tabMap;
-    private List<File> macroList;
     private List<String> orderList;
     private String iniFile;
 
@@ -51,7 +50,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         this.initial = new Initial();
         this.depthCnt = depthCnt;
         this.tabMap = new HashMap<String, Tab>();
-        this.macroList = new ArrayList<File>();
         this.orderList = new ArrayList<String>();
     }
 
@@ -184,10 +182,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                         }
                     }
                 }
-                // ========== *.MACRO ========== //
-                if (fileName.endsWith(".macro")) {
-                    this.macroList.add(file);
-                }
                 break;
             }
             case 3: {
@@ -209,7 +203,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     tab.setLoginUsr(prop.getProperty("loginuser", null));
                     tab.setLoginPwd(prop.getProperty("loginpassword", null));
                     tab.setIniFile(prop.getProperty("inifile"));
-                    tab.setUseMacroType(prop.getProperty("usemacro", "none"));
                 }
                 // ========== TAB.YAML ========== //
                 if (fileName.equals("tab.yaml")) {
@@ -234,18 +227,12 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     tab.setLoginUsr(tabIni.getLoginuser());
                     tab.setLoginPwd(tabIni.getLoginpassword());
                     tab.setIniFile(tabIni.getInifile());
-                    tab.setUseMacroType(tabIni.getUsemacro());
                 }
                 // ========== ICON.PNG ========== //
                 if (fileName.equals("icon.png")) {
                     System.out.println("タブアイコン");
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     tab.setIconPath(filePath.toString());
-                }
-                // ========== *.MACRO ========== //
-                if (fileName.endsWith(".macro")) {
-                    Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
-                    tab.addMacro(file);
                 }
                 break;
             }
@@ -258,7 +245,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     category.setLoginUsr(prop.getProperty("loginuser", null));
                     category.setLoginPwd(prop.getProperty("loginpassword", null));
                     category.setIniFile(prop.getProperty("inifile"));
-                    category.setUseMacroType(prop.getProperty("usemacro", "none"));
                 }
                 // ========== CATEGORY.YAML ========== //
                 if (fileName.equals("category.yaml")) {
@@ -273,7 +259,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     category.setLoginUsr(categoryIni.getLoginuser());
                     category.setLoginPwd(categoryIni.getLoginpassword());
                     category.setIniFile(categoryIni.getInifile());
-                    category.setUseMacroType(categoryIni.getUsemacro());
                 }
                 // ========== SERVER.TXT ========== //
                 if (fileName.endsWith(".txt")) {
@@ -285,17 +270,10 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));
                     node.setLoginPwd(prop.getProperty("loginpassword"));
-                    node.setUseMacroType(prop.getProperty("usemacro", "none"));
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     node.setCategory(category);
                     category.addChild(node);
-                }
-                // ========== *.MACRO ========== //
-                if (fileName.endsWith(".macro")) {
-                    Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
-                    Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
-                    category.addMacro(file);
                 }
                 break;
             }
@@ -309,7 +287,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     group.setLoginUsr(prop.getProperty("loginuser", null));
                     group.setLoginPwd(prop.getProperty("loginpassword", null));
                     group.setIniFile(prop.getProperty("inifile"));
-                    group.setUseMacroType(prop.getProperty("usemacro", "none"));
                 }
                 // ========== GROUP.YAML ========== //
                 if (fileName.equals("group.yaml")) {
@@ -325,7 +302,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     group.setLoginUsr(groupIni.getLoginuser());
                     group.setLoginPwd(groupIni.getLoginpassword());
                     group.setIniFile(groupIni.getInifile());
-                    group.setUseMacroType(groupIni.getUsemacro());
                 }
                 // ========== SERVER.TXT ========== //
                 if (fileName.endsWith(".txt")) {
@@ -337,18 +313,10 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));
                     node.setLoginPwd(prop.getProperty("loginpassword"));
-                    node.setUseMacroType(prop.getProperty("usemacro", "none"));
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());
                     group.addChild(node);
-                }
-                // ========== *.MACRO ========== //
-                if (fileName.endsWith(".macro")) {
-                    Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
-                    Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
-                    TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());
-                    group.addMacro(file);
                 }
                 break;
             }
@@ -385,10 +353,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
     public Map<String, Tab> getTabMap() {
         return tabMap;
-    }
-
-    public List<File> getMacroList() {
-        return macroList;
     }
 
     public List<String> getOrderList() {

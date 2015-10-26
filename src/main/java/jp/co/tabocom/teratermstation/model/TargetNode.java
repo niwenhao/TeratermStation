@@ -40,8 +40,6 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String loginUsr;
     private String loginPwd;
     private String keyValue;
-    private UseMacroType useMacroType;
-    private List<File> macroList;
 
     // ========== 実データここまで ========== //
 
@@ -49,7 +47,6 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     public TargetNode() {
-        this.macroList = new ArrayList<File>();
     }
 
     public String getName() {
@@ -199,36 +196,6 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-    }
-
-    public UseMacroType getUseMacroType() {
-        if (useMacroType != UseMacroType.FOLLOW) {
-            return useMacroType;
-        }
-        if (this.category != null) {
-            return this.category.getUseMacroType();
-        }
-        return getParent().getUseMacroType();
-    }
-
-    public void setUseMacroType(String useMacroType) {
-        this.useMacroType = UseMacroType.getType(useMacroType);
-    }
-
-    public void addMacro(File file) {
-        this.macroList.add(file);
-    }
-
-    public List<File> getMacroList() {
-        List<File> list = new ArrayList<File>();
-        if (this.category != null) {
-            list.addAll(this.category.getMacroList());
-        }
-        if (getParent() != null) {
-            list.addAll(getParent().getMacroList());
-        }
-        list.addAll(this.macroList);
-        return list;
     }
 
     public void setCategory(Category category) {

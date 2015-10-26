@@ -10,7 +10,6 @@ package jp.co.tabocom.teratermstation.model.yaml;
  * --------------------------------------------------------------------------------
  * loginuser: kibanusr
  * loginpassword: kibanpwd
- * usemacro: false
  * inifile: AWS.INI
  * --------------------------------------------------------------------------------
  * </pre>
@@ -19,11 +18,6 @@ package jp.co.tabocom.teratermstation.model.yaml;
  *
  */
 public class GroupIni {
-    /**
-     * マクロ機能を使用するか否か（任意）<br>
-     * 省略時は上の階層の条件に従う。上に設定がない場合はfalse
-     */
-    private String usemacro;
     /**
      * サーバグループ全体に適用されるTera TermのINIファイル（任意）
      */
@@ -36,14 +30,6 @@ public class GroupIni {
      * サーバグループ全体に適用されるサーバログインパスワード（任意）
      */
     private String loginpassword;
-
-    public String getUsemacro() {
-        return usemacro;
-    }
-
-    public void setUsemacro(String usemacro) {
-        this.usemacro = usemacro;
-    }
 
     public String getInifile() {
         return inifile;
@@ -72,7 +58,6 @@ public class GroupIni {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("usemacro      : %s\n", this.usemacro));
         builder.append(String.format("inifile       : %s\n", this.inifile));
         builder.append(String.format("loginuser     : %s\n", this.loginuser));
         builder.append(String.format("loginpassword : %s\n", this.loginpassword));

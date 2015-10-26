@@ -34,7 +34,6 @@ import java.util.Map;
  * 
  * loginuser: aplusr
  * loginpassword: aplpwd
- * usemacro: true
  * inifile: DEV.INI
  * --------------------------------------------------------------------------------
  * </pre>
@@ -56,11 +55,6 @@ public class TabIni {
      * プロキシ認証のやり取りなど、connect後の手続き（任意）
      */
     private String negotiation;
-    /**
-     * マクロ機能を使用するか否か（任意）<br>
-     * 省略時は上の階層の条件に従う。上に設定がない場合はfalse
-     */
-    private String usemacro;
     /**
      * タブ全体に適用されるTera TermのINIファイル（任意）
      */
@@ -96,14 +90,6 @@ public class TabIni {
 
     public void setNegotiation(String negotiation) {
         this.negotiation = negotiation;
-    }
-
-    public String getUsemacro() {
-        return usemacro;
-    }
-
-    public void setUsemacro(String usemacro) {
-        this.usemacro = usemacro;
     }
 
     public String getInifile() {
@@ -159,7 +145,6 @@ public class TabIni {
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("connect                    : %s\n", this.connect));
         builder.append(String.format("negotiation                : %s\n", this.negotiation));
-        builder.append(String.format("usemacro                   : %s\n", this.usemacro));
         builder.append(String.format("inifile                    : %s\n", this.inifile));
         builder.append(String.format("loginuser                  : %s\n", this.loginuser));
         builder.append(String.format("loginpassword              : %s\n", this.loginpassword));

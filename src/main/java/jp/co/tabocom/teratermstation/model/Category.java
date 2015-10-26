@@ -1,6 +1,5 @@
 package jp.co.tabocom.teratermstation.model;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,13 +22,10 @@ public class Category implements Serializable {
     private String loginUsr;
     private String loginPwd;
     private String iniFile;
-    private UseMacroType useMacroType;
-    private List<File> macroList;
     private Tab tab;
 
     public Category() {
         this.targetNode = new TargetNode();
-        this.macroList = new ArrayList<File>();
     }
 
     public TargetNode addChild(TargetNode child) {
@@ -93,28 +89,6 @@ public class Category implements Serializable {
 
     public void setIniFile(String iniFile) {
         this.iniFile = iniFile;
-    }
-
-    public UseMacroType getUseMacroType() {
-        if (useMacroType != UseMacroType.FOLLOW) {
-            return useMacroType;
-        }
-        return this.tab.getUseMacroType();
-    }
-
-    public void setUseMacroType(String useMacroType) {
-        this.useMacroType = UseMacroType.getType(useMacroType);
-    }
-
-    public void addMacro(File file) {
-        this.macroList.add(file);
-    }
-
-    public List<File> getMacroList() {
-        List<File> list = new ArrayList<File>();
-        list.addAll(this.tab.getMacroList());
-        list.addAll(this.macroList);
-        return list;
     }
 
     public void setTab(Tab tab) {
