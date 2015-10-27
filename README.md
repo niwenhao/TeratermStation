@@ -28,78 +28,97 @@
  
  
 `～定義ディレクトリ`  
-`  │  settings.ini`  
+`  │  settings.yaml`  
 `  │  マクロ（ツール）.macro`  
 `  │`  
 `  ├─開発環境`  
 `  │  │  icon.png`  
-`  │  │  tab.ini`  
+`  │  │  tab.yaml`  
 `  │  │  マクロ（タブ）.macro`  
 `  │  │`  
 `  │  ├─ｘｘチーム利用環境`  
-`  │  ｜  │  category.ini`  
+`  │  ｜  │  category.yaml`  
 `  │  ｜  │  マクロ（カテゴリ）.macro`  
 `  │  ｜  │`  
 `  │  ｜  ├─A面`  
 `  │  ｜  │      DBサーバ.txt`  
 `  │  ｜  │      Webサーバ.txt`  
-`  │  ｜  │      group.ini`  
+`  │  ｜  │      group.yaml`  
 `  │  ｜  │      マクロ（A面専用）.macro`  
 `  │  ｜  │`  
 `  │  ｜  └─B面`  
 `  │  ｜          DBサーバ.txt`  
 `  │  ｜          APサーバ.txt`  
-`  │  ｜          group.ini`  
+`  │  ｜          group.yaml`  
 `  │  ｜          マクロ（B面専用）.macro`  
 `  │  ｜`  
 `  │  └─ｘｘチーム利用環境`  
-`  │      │  category.ini`  
+`  │      │  category.yaml`  
 `  │      │  マクロ（カテゴリ）.macro`  
 `  │      │`  
 `  │      ├─C面`  
 `  │      │      DBサーバ.txt`  
-`  │      │      group.ini`  
+`  │      │      group.yaml`  
 `  │      │      マクロ（C面専用）.macro`  
 `  │      │`  
 `  │      └─D面`  
 `  │              DBサーバ.txt`  
-`  │              group.ini`  
+`  │              group.yaml`  
 `  │              マクロ（D面専用）.macro`  
 `  │`  
 `  └─plugins`  
 
 
 ## ファイルサンプル
+### settings.yamlなど
+    width: 600  
+    height: 600  
 
-### tab.iniなど
+    initial:
+      ttpmacroexe: C:\Program Files (x86)\teraterm\ttpmacro.exe
+      dir_work: C:\library\work
+      dir_log: C:\library\log
+      dir_ini: C:\library\ini
+      
+    inifile: DEV.INI
 
-`gateway_ipaddress = xxx.xxx.xxx.xxx`  
-`gateway_errptn = authentication failed`  
-`gateway_auth = true`  
-`gateway_password_memory = true`  
-`gateway_password_autoclear = false`  
-`gateway_password_group = aws`  
-`connect = connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'`  
-`negotiation = \`  
-`wait 'Host name:'\r\n\`  
-`sendln '${ipaddress}'\r\n\`  
-`wait 'Username:'\r\n\`  
-`sendln '${authuser}'\r\n\`  
-`wait 'Password:'\r\n\`  
-`sendln ${authpassword}\r\n\`  
-`wait 'login:'\r\n\`  
-`sendln '${loginuser}'\r\n\`  
-`waitregex 'Password.*:'\r\n\`  
-`sendln '${loginpassword}'\`  
-`usemacro = true`  
-`inifile = AWS.INI`  
+### tab.yamlなど
+    gateway:
+      ipaddress: xxx.xxx.xxx.xxx
+      errptn: authentication failed
+      auth: true
+      password_memory: true
+      password_autoclear: false
+      password_group: dev
+    
+    connect: connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
+    
+    negotiation: |
+      wait 'Host name:'
+      sendln '${ipaddress}'
+      wait 'Username:'
+      sendln '${authuser}'
+      wait 'Password:'
+      sendln ${authpassword}
+      wait 'login:'
+      sendln '${loginuser}'
+      waitregex 'Password.*:'
+      sendln '${loginpassword}'
+    
+    loginuser: aplusr
+    loginpassword: aplpwd
+    inifile: AWS.INI
+
+### category.yaml, group.yamlなど
+    loginuser: aplusr
+    loginpassword: aplpwd
+    inifile: AWS.INI
 
 ### サーバ別接続情報
-
-`ipaddress = xxx.xxx.xxx.xxx`  
-`hostname = 接続先サーバ名（メモ）`  
-`loginuser = loginUser`  
-`loginpassword = loginPassword`  
+    ipaddress = xxx.xxx.xxx.xxx
+    hostname = 接続先サーバ名（メモ）
+    loginuser = kibanusr
+    loginpassword = kibanpwd
 
 
  
