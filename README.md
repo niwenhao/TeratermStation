@@ -75,6 +75,7 @@
 
     width: 600  # ツールの横サイズ
     height: 600 # ツールの縦サイズ
+    
     # 初期値
     initial:
       ttpmacroexe: C:\Program Files (x86)\teraterm\ttpmacro.exe
