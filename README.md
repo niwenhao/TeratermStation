@@ -71,28 +71,35 @@
 
 ## ファイルサンプル
 ### settings.yamlなど
-    width: 600  
-    height: 600  
+ツール全体に適用される設定です。  
 
+    width: 600  # ツールの横サイズ
+    height: 600 # ツールの縦サイズ
+    # 初期値
     initial:
       ttpmacroexe: C:\Program Files (x86)\teraterm\ttpmacro.exe
       dir_work: C:\library\work
       dir_log: C:\library\log
       dir_ini: C:\library\ini
       
-    inifile: DEV.INI
+    inifile: DEV.INI # すべての接続に適用されるTeratermのINIファイル
 
 ### tab.yamlなど
+タブ配下の接続に適用される設定です。
+
+    # プロキシ経由の場合など
     gateway:
-      ipaddress: xxx.xxx.xxx.xxx
-      errptn: authentication failed
-      auth: true
-      password_memory: true
-      password_autoclear: false
-      password_group: dev
+      ipaddress: xxx.xxx.xxx.xxx    # IPアドレス
+      errptn: authentication failed # 認証失敗の場合のエラー文言
+      auth: true                    # 認証が必要な場合
+      password_memory: true         # 認証パスワードの記憶可否
+      password_autoclear: false     # PCログオフ時の認証パスワードクリア
+      password_group: dev           # 認証パスワードグループ(タブで認証情報を共有したい場合)
     
+    # Teratermでの接続コマンド
     connect: connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
     
+    # 接続後のやりとりを定義
     negotiation: |
       wait 'Host name:'
       sendln '${ipaddress}'
@@ -105,21 +112,23 @@
       waitregex 'Password.*:'
       sendln '${loginpassword}'
     
-    loginuser: aplusr
-    loginpassword: aplpwd
-    inifile: AWS.INI
+    loginuser: aplusr     # タブ配下の接続に適用されるログインユーザー
+    loginpassword: aplpwd # タブ配下の接続に適用されるログインパスワード
+    inifile: AWS.INI      # タブ配下の接続に適用されるTeratermのINIファイル
 
-### category.yaml, group.yamlなど
-    loginuser: aplusr
-    loginpassword: aplpwd
-    inifile: AWS.INI
+### category.yamlなど
+    loginuser: aplusr     # カテゴリ配下の接続に適用されるログインユーザー
+    loginpassword: aplpwd # カテゴリ配下の接続に適用されるログインパスワード
+    inifile: AWS.INI      # カテゴリ配下の接続に適用されるTeratermのINIファイル
 
-### サーバ別接続情報
-    ipaddress = xxx.xxx.xxx.xxx
-    hostname = websvr001
-    loginuser = kibanusr
-    loginpassword = kibanpwd
-    inifile = SVR.INI
+### group.yamlなど
+    loginuser: aplusr     # グループ配下の接続に適用されるログインユーザー
+    loginpassword: aplpwd # グループ配下の接続に適用されるログインパスワード
+    inifile: AWS.INI      # グループ配下の接続に適用されるTeratermのINIファイル
 
-
- 
+### サーバ別接続情報(*.txt)
+    ipaddress = xxx.xxx.xxx.xxx # IPアドレス
+    hostname = websvr001        # ホスト名
+    loginuser = kibanusr        # ログインユーザー
+    loginpassword = kibanpwd    # ログインパスワード
+    inifile = SVR.INI           # TeratermのINIファイル
