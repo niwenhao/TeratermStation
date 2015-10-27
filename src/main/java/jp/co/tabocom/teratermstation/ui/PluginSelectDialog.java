@@ -35,7 +35,6 @@ public class PluginSelectDialog extends Dialog {
         composite.setLayout(new GridLayout(1, false));
         pluginCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
         pluginCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        pluginCombo.setToolTipText("リリースする面を選択してください");
         for (TeratermStationBulkAction action : actionList) {
             pluginCombo.add(action.getDisplayName());
         }
