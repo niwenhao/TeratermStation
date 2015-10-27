@@ -116,9 +116,10 @@
 
 ### サーバ別接続情報
     ipaddress = xxx.xxx.xxx.xxx
-    hostname = 接続先サーバ名（メモ）
+    hostname = websvr001
     loginuser = kibanusr
     loginpassword = kibanpwd
+    inifile = SVR.INI
 
 
  
