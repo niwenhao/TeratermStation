@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import jp.co.tabocom.teratermstation.CommandGenException;
 import jp.co.tabocom.teratermstation.Main;
 import jp.co.tabocom.teratermstation.model.Category;
 import jp.co.tabocom.teratermstation.model.Tab;
@@ -676,8 +675,8 @@ public class EnvTabItem extends TabItem {
             try {
                 // ++++++++++++++++++++ 接続、認証文字列の取得 ++++++++++++++++++++ //
                 pw.println(genConnText(target, idx, templateCmd));
-            } catch (CommandGenException cge) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + cge.getMessage());
+            } catch (Exception e) {
+                MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
                 return;
             } finally {
                 pw.close();
@@ -707,7 +706,7 @@ public class EnvTabItem extends TabItem {
      *            対象サーバ情報
      * @return 接続用のネゴシエーション文字列
      */
-    private String genConnText(TargetNode node, int idx, String templateCmd) throws CommandGenException {
+    private String genConnText(TargetNode node, int idx, String templateCmd) throws Exception {
         StringBuilder word = new StringBuilder();
         try {
             // 設定クラスを取得
@@ -768,7 +767,7 @@ public class EnvTabItem extends TabItem {
             word.append(genTemplateCmd(node, templateCmd));
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CommandGenException(e);
+            throw e;
         }
         return word.toString();
     }
