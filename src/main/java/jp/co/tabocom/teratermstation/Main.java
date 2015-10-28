@@ -22,7 +22,6 @@ import jp.co.tabocom.teratermstation.preference.BasePreferencePage;
 import jp.co.tabocom.teratermstation.preference.PathPreferencePage;
 import jp.co.tabocom.teratermstation.preference.PluginPreferencePage;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
-import jp.co.tabocom.teratermstation.ui.ConnToolTabFolder;
 import jp.co.tabocom.teratermstation.ui.EnvTabItem;
 
 import org.apache.log4j.Logger;
@@ -75,7 +74,7 @@ public class Main implements PropertyChangeListener, WindowProc {
     private Map<String, EnvTabItem> tabItemMap;
 
     // タブフォルダ
-    private ConnToolTabFolder tabFolder;
+    private TabFolder tabFolder;
 
     // TTL生成のみチェックボックス
     private Button onlyTtlGenChkBox;
@@ -358,7 +357,7 @@ public class Main implements PropertyChangeListener, WindowProc {
         }
 
         // Target Group
-        tabFolder = new ConnToolTabFolder(shell, this);
+        tabFolder = new TabFolder(shell, SWT.NONE);
         tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         // ==================== ここで各環境のタブを生成しています ==================== //
