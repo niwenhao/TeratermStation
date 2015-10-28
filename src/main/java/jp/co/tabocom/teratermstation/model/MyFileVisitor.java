@@ -270,6 +270,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));
                     node.setLoginPwd(prop.getProperty("loginpassword"));
+                    node.setIniFile(prop.getProperty("inifile"));
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     node.setCategory(category);
@@ -313,6 +314,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));
                     node.setLoginPwd(prop.getProperty("loginpassword"));
+                    node.setIniFile(prop.getProperty("inifile"));
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());
