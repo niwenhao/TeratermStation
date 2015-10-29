@@ -109,7 +109,6 @@ public class Main implements PropertyChangeListener, WindowProc {
     }
 
     private void win32EventOn() {
-        // define new window class
         windowClass = new WString("MyWindowClass");
         hInst = Kernel32.INSTANCE.GetModuleHandle("");
 
@@ -118,40 +117,26 @@ public class Main implements PropertyChangeListener, WindowProc {
         wClass.lpfnWndProc = Main.this;
         wClass.lpszClassName = windowClass;
 
-        // register window class
         User32.INSTANCE.RegisterClassEx(wClass);
         getLastError();
 
-        // create new window
-        hWnd = User32.INSTANCE.CreateWindowEx(User32.WS_EX_TOPMOST, windowClass, "My hidden helper window, used only to catch the windows events", 0,
-                0, 0, 0, 0, null, // WM_DEVICECHANGE
-                                  // contradicts
-                                  // parent=WinUser.HWND_MESSAGE
-                null, hInst, null);
+        hWnd = User32.INSTANCE.CreateWindowEx(User32.WS_EX_TOPMOST, windowClass, "TeratermStation", 0, 0, 0, 0, 0, null, null, hInst, null);
 
         getLastError();
-        System.out.println("window sucessfully created! window hwnd: " + hWnd.getPointer().toString());
+        // System.out.println("window created. window hWnd: " + hWnd.getPointer().toString());
 
         Wtsapi32.INSTANCE.WTSRegisterSessionNotification(hWnd, Wtsapi32.NOTIFY_FOR_THIS_SESSION);
 
-        /* this filters for all device classes */
-        // DEV_BROADCAST_HDR notificationFilter = new DEV_BROADCAST_HDR();
-        // notificationFilter.dbch_devicetype = DBT.DBT_DEVTYP_DEVICEINTERFACE;
-
-        /* this filters for all usb device classes */
         DEV_BROADCAST_DEVICEINTERFACE notificationFilter = new DEV_BROADCAST_DEVICEINTERFACE();
         notificationFilter.dbcc_size = notificationFilter.size();
         notificationFilter.dbcc_devicetype = DBT.DBT_DEVTYP_DEVICEINTERFACE;
         notificationFilter.dbcc_classguid = DBT.GUID_DEVINTERFACE_USB_DEVICE;
 
-        /*
-         * use User32.DEVICE_NOTIFY_ALL_INTERFACE_CLASSES instead of DEVICE_NOTIFY_WINDOW_HANDLE to ignore the dbcc_classguid value
-         */
         hDevNotify = User32.INSTANCE.RegisterDeviceNotification(hWnd, notificationFilter, User32.DEVICE_NOTIFY_WINDOW_HANDLE);
 
         getLastError();
         if (hDevNotify != null) {
-            System.out.println("RegisterDeviceNotification was sucessfully!");
+            // System.out.println("RegisterDeviceNotification was sucess.");
         }
     }
 
@@ -161,12 +146,11 @@ public class Main implements PropertyChangeListener, WindowProc {
      * @return the last error
      */
     public int getLastError() {
-        int rc = Kernel32.INSTANCE.GetLastError();
-
-        if (rc != 0)
-            System.out.println("error: " + rc);
-
-        return rc;
+        int rtn = Kernel32.INSTANCE.GetLastError();
+        if (rtn != 0) {
+            System.out.println("error: " + rtn);
+        }
+        return rtn;
     }
 
     private void win32EventOff() {

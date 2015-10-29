@@ -131,7 +131,7 @@ public class EnvTabItem extends TabItem {
         super(parent, SWT.NONE);
         this.tab = tab;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
-        Main main = (Main)parent.getShell().getData("main");
+        Main main = (Main) parent.getShell().getData("main");
         List<String> orderList = main.getToolDefine().getOrderList();
         if (orderList != null && !orderList.isEmpty()) {
             List<String> keys = new ArrayList<String>();
@@ -183,7 +183,7 @@ public class EnvTabItem extends TabItem {
         composite.setLayout(new GridLayout(this.categoryMap.size(), true));
 
         // 設定の取得
-        Main main = (Main)getParent().getShell().getData("main");
+        Main main = (Main) getParent().getShell().getData("main");
         final PreferenceStore ps = main.getPreferenceStore();
 
         // ==================== 認証設定グループ ====================
@@ -565,7 +565,7 @@ public class EnvTabItem extends TabItem {
             MessageDialog.openError(getParent().getShell(), "一括起動", "対象サーバが選択されていません。");
             return;
         }
-        Main main = (Main)getParent().getShell().getData("main");
+        Main main = (Main) getParent().getShell().getData("main");
 
         // 念のため確認ダイアログを出す。
         String templateCmd = null;
@@ -635,7 +635,7 @@ public class EnvTabItem extends TabItem {
      */
     public void makeAndExecuteTTL(TargetNode target, int idx, String templateCmd) {
         // 設定クラスを取得
-        Main main = (Main)getParent().getShell().getData("main");
+        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
         // まずはTTLファイルを作成するディレクトリを取得
         String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
@@ -710,7 +710,7 @@ public class EnvTabItem extends TabItem {
         StringBuilder word = new StringBuilder();
         try {
             // 設定クラスを取得
-            Main main = (Main)getParent().getShell().getData("main");
+            Main main = (Main) getParent().getShell().getData("main");
             IPreferenceStore ps = main.getPreferenceStore();
 
             // ---------- もろもろ情報を取得 ここから ----------
@@ -774,7 +774,7 @@ public class EnvTabItem extends TabItem {
 
     private String genLogOpen(TargetNode node) {
         // 設定クラスを取得
-        Main main = (Main)getParent().getShell().getData("main");
+        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
         String logDir = ps.getString(PreferenceConstants.LOG_DIR);
 
@@ -1064,8 +1064,10 @@ public class EnvTabItem extends TabItem {
 
     public void setAuthUsrPwdText(String usrGrp, String usr, String pwdGrp, String pwd) {
         if (usrGrp != null && usr != null) {
-            if (usrGrp.equals(this.tab.getGateway().getPwdGroup())) {
-                this.usrTxt.setText(usr);
+            if (this.tab.getGateway() != null) {
+                if (usrGrp.equals(this.tab.getGateway().getPwdGroup())) {
+                    this.usrTxt.setText(usr);
+                }
             }
         }
         if (pwdGrp != null && pwd != null) {
