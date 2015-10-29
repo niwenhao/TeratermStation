@@ -13,6 +13,7 @@ import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 public class ToolDefinition {
 
+    // これは固定。タブ、カテゴリ、グループ、サーバで4階層ということ
     private static final int MAX_DEPTH = 4;
 
     private Path rootDirPath;
@@ -104,7 +105,8 @@ public class ToolDefinition {
 
     public void initialize() throws Exception {
         Set<FileVisitOption> options = EnumSet.allOf(FileVisitOption.class);
-        // TODO: walkFileTreeの前にプラグインを読み込む処理を入れる。
+
+        // まず先にプラグインJarをロード
         PluginFileVisitor pluginVisitor = new PluginFileVisitor(this.rootDirPath.getNameCount() - 1);
         try {
             Files.walkFileTree(this.rootDirPath, options, MAX_DEPTH, pluginVisitor);
@@ -114,7 +116,7 @@ public class ToolDefinition {
         }
         setNodePluginList(pluginVisitor.getNodePluginList());
 
-        // TODO: walkFileTreeの中ではpluginsと、plugins下のファイルは無視するようにする。
+        // 次にサーバツリー定義をロード
         MyFileVisitor myVisitor = new MyFileVisitor(this.rootDirPath.getNameCount() - 1);
         try {
             Files.walkFileTree(this.rootDirPath, options, MAX_DEPTH, myVisitor);
