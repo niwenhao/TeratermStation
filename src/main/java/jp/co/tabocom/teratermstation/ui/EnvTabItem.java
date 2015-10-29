@@ -1069,8 +1069,10 @@ public class EnvTabItem extends TabItem {
             }
         }
         if (pwdGrp != null && pwd != null) {
-            if (pwdGrp.equals(this.tab.getGateway().getPwdGroup())) {
-                this.pwdTxt.setText(pwd);
+            if (this.tab.getGateway() != null) {
+                if (pwdGrp.equals(this.tab.getGateway().getPwdGroup())) {
+                    this.pwdTxt.setText(pwd);
+                }
             }
         }
     }
