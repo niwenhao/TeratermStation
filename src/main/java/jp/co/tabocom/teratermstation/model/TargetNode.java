@@ -15,7 +15,7 @@ import java.util.Map;
  * グループの場合はツリーの親、サーバの場合はツリーの子に相当します。
  * 
  * @author turbou
- *
+ * 
  */
 public class TargetNode implements Comparable<TargetNode>, PropertyChangeListener, Serializable {
     private static final long serialVersionUID = 6795171432373000432L;
@@ -40,6 +40,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String loginUsr;
     private String loginPwd;
     private String keyValue;
+    private String procedure;
 
     // ========== 実データここまで ========== //
 
@@ -208,6 +209,20 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     public void setKeyValue(String keyValue) {
         this.keyValue = keyValue;
+    }
+
+    public String getProcedure() {
+        if (this.procedure != null && !this.procedure.isEmpty()) {
+            return this.procedure;
+        }
+        if (this.category != null) {
+            return this.category.getProcedure();
+        }
+        return getParent().getProcedure();
+    }
+
+    public void setProcedure(String procedure) {
+        this.procedure = procedure;
     }
 
     public void sortChildren(List<String> orderList) {

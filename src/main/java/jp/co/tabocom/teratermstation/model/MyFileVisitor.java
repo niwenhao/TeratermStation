@@ -259,6 +259,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     category.setLoginUsr(categoryIni.getLoginuser());
                     category.setLoginPwd(categoryIni.getLoginpassword());
                     category.setIniFile(categoryIni.getInifile());
+                    category.setProcedure(categoryIni.getProcedure());
                 }
                 // ========== SERVER.TXT ========== //
                 if (fileName.endsWith(".txt")) {
@@ -303,6 +304,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     group.setLoginUsr(groupIni.getLoginuser());
                     group.setLoginPwd(groupIni.getLoginpassword());
                     group.setIniFile(groupIni.getInifile());
+                    group.setProcedure(groupIni.getProcedure());
                 }
                 // ========== SERVER.TXT ========== //
                 if (fileName.endsWith(".txt")) {

@@ -758,6 +758,9 @@ public class EnvTabItem extends TabItem {
                 }
             }
             // ここまで
+            if (node.getProcedure() != null) {
+                word.append(node.getProcedure());
+            }
 
             // テンプレート対応
             word.append(genTemplateCmd(node, templateCmd));

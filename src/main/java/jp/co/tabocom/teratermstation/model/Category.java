@@ -12,7 +12,7 @@ import java.util.Map;
  * タブの中の各枠に相当するクラスです。
  * 
  * @author turbou
- *
+ * 
  */
 public class Category implements Serializable {
     private static final long serialVersionUID = -4090217249921939133L;
@@ -22,6 +22,7 @@ public class Category implements Serializable {
     private String loginUsr;
     private String loginPwd;
     private String iniFile;
+    private String procedure;
     private Tab tab;
 
     public Category() {
@@ -89,6 +90,14 @@ public class Category implements Serializable {
 
     public void setIniFile(String iniFile) {
         this.iniFile = iniFile;
+    }
+
+    public String getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(String procedure) {
+        this.procedure = procedure;
     }
 
     public void setTab(Tab tab) {

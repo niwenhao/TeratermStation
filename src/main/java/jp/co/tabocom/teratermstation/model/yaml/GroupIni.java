@@ -11,11 +11,14 @@ package jp.co.tabocom.teratermstation.model.yaml;
  * loginuser: kibanusr
  * loginpassword: kibanpwd
  * inifile: AWS.INI
+ * procedure: |
+ *   wait ']$'
+ *   sendln 'date'
  * --------------------------------------------------------------------------------
  * </pre>
  * 
  * @author turbou
- *
+ * 
  */
 public class GroupIni {
     /**
@@ -30,6 +33,10 @@ public class GroupIni {
      * サーバグループ全体に適用されるサーバログインパスワード（任意）
      */
     private String loginpassword;
+    /**
+     * ログイン後の手続き（任意）
+     */
+    private String procedure;
 
     public String getInifile() {
         return inifile;
@@ -55,12 +62,21 @@ public class GroupIni {
         this.loginpassword = loginpassword;
     }
 
+    public String getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(String procedure) {
+        this.procedure = procedure;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("inifile       : %s\n", this.inifile));
         builder.append(String.format("loginuser     : %s\n", this.loginuser));
         builder.append(String.format("loginpassword : %s\n", this.loginpassword));
+        builder.append(String.format("procedure     : %s\n", this.procedure));
         return builder.toString();
     }
 
