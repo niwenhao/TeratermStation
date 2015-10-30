@@ -133,20 +133,9 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
         switch (depth) {
             case 2: {
-                // ========== SETTINGS.INI ========== //
-                if (fileName.equals("settings.ini")) {
-                    System.out.println("基本設定(INI)");
-                    this.width = Integer.parseInt(prop.getProperty("width"));
-                    this.height = Integer.parseInt(prop.getProperty("height"));
-                    this.iniFile = prop.getProperty("inifile");
-                    this.initial.setTtpMacroExe(prop.getProperty("ttpmacroexe"));
-                    this.initial.setWorkDir(prop.getProperty("dir_work"));
-                    this.initial.setLogDir(prop.getProperty("dir_log"));
-                    this.initial.setIniFileDir(prop.getProperty("dir_ini"));
-                }
                 // ========== SETTINGS.YAML ========== //
                 if (fileName.equals("settings.yaml")) {
-                    System.out.println("基本設定(YAML)");
+                    System.out.println("基本設定");
                     Yaml yaml = new Yaml();
                     InputStream is = new FileInputStream(file);
                     SettingsIni settingsIni = yaml.loadAs(is, SettingsIni.class);
@@ -185,28 +174,9 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 break;
             }
             case 3: {
-                // ========== TAB.INI ========== //
-                if (fileName.equals("tab.ini")) {
-                    System.out.println("タブ設定(INI)");
-                    Gateway gw = new Gateway();
-                    gw.setGwIpAddr(prop.getProperty("gateway_ipaddress"));
-                    gw.setErrPtn(prop.getProperty("gateway_errptn"));
-                    gw.setAuth(Boolean.valueOf(prop.getProperty("gateway_auth", "false")));
-                    gw.setMemoryPwd(Boolean.valueOf(prop.getProperty("gateway_password_memory", "false")));
-                    gw.setPwdAutoClear(Boolean.valueOf(prop.getProperty("gateway_password_autoclear", "false")));
-                    gw.setPwdGroup(prop.getProperty("gateway_password_group", "default"));
-
-                    Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
-                    tab.setConnect(prop.getProperty("connect"));
-                    tab.setGateway(gw);
-                    tab.setNegotiation(prop.getProperty("negotiation"));
-                    tab.setLoginUsr(prop.getProperty("loginuser", null));
-                    tab.setLoginPwd(prop.getProperty("loginpassword", null));
-                    tab.setIniFile(prop.getProperty("inifile"));
-                }
                 // ========== TAB.YAML ========== //
                 if (fileName.equals("tab.yaml")) {
-                    System.out.println("タブ設定(YAML)");
+                    System.out.println("タブ設定");
                     Yaml yaml = new Yaml();
                     InputStream is = new FileInputStream(file);
                     TabIni tabIni = yaml.loadAs(is, TabIni.class);
@@ -237,18 +207,9 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 break;
             }
             case 4: {
-                // ========== CATEGORY.INI ========== //
-                if (fileName.equals("category.ini")) {
-                    System.out.println("カテゴリ設定(INI)");
-                    Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
-                    Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
-                    category.setLoginUsr(prop.getProperty("loginuser", null));
-                    category.setLoginPwd(prop.getProperty("loginpassword", null));
-                    category.setIniFile(prop.getProperty("inifile"));
-                }
                 // ========== CATEGORY.YAML ========== //
                 if (fileName.equals("category.yaml")) {
-                    System.out.println("カテゴリ設定(YAML)");
+                    System.out.println("カテゴリ設定");
                     Yaml yaml = new Yaml();
                     InputStream is = new FileInputStream(file);
                     CategoryIni categoryIni = yaml.loadAs(is, CategoryIni.class);
@@ -280,16 +241,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                 break;
             }
             case 5: {
-                // ========== GROUP.INI ========== //
-                if (fileName.equals("group.ini")) {
-                    System.out.println("グループ設定(INI)");
-                    Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
-                    Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
-                    TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());
-                    group.setLoginUsr(prop.getProperty("loginuser", null));
-                    group.setLoginPwd(prop.getProperty("loginpassword", null));
-                    group.setIniFile(prop.getProperty("inifile"));
-                }
                 // ========== GROUP.YAML ========== //
                 if (fileName.equals("group.yaml")) {
                     System.out.println("グループ設定(YAML)");
