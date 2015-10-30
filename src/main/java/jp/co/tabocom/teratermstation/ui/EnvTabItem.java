@@ -497,10 +497,6 @@ public class EnvTabItem extends TabItem {
         return true;
     }
 
-    public Map<String, Category> getTargetMap() {
-        return categoryMap;
-    }
-
     public void propertyChangeUpdate() {
         authInputChange();
     }
@@ -1093,10 +1089,6 @@ public class EnvTabItem extends TabItem {
             return true;
         }
         return false;
-    }
-
-    public Tab getTab() {
-        return this.tab;
     }
 
     public boolean isPwdAutoClearFlg() {

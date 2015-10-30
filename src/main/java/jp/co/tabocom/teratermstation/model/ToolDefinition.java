@@ -4,7 +4,6 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,16 +27,8 @@ public class ToolDefinition {
 
     private Initial initial;
 
-    public ToolDefinition() {
-        this.tabMap = new LinkedHashMap<String, Tab>();
-    }
-
     public ToolDefinition(Path path) {
         this.rootDirPath = path;
-    }
-
-    public void addTab(Tab tab) {
-        this.tabMap.put(tab.getName(), tab);
     }
 
     public Map<String, Tab> getTabMap() {
