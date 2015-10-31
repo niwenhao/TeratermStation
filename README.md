@@ -107,7 +107,7 @@
       wait 'Username:'
       sendln '${authuser}'
       wait 'Password:'
-      sendln ${authpassword}
+      sendln '${authpassword}'
       wait 'login:'
       sendln '${loginuser}'
       waitregex 'Password.*:'
