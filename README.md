@@ -121,11 +121,19 @@
     loginuser: aplusr     # カテゴリ配下の接続に適用されるログインユーザー
     loginpassword: aplpwd # カテゴリ配下の接続に適用されるログインパスワード
     inifile: AWS.INI      # カテゴリ配下の接続に適用されるTeratermのINIファイル
+    # ログイン後の処理を書けます
+    procedure: |
+      wait ']$ '
+      sendln 'pwd'
 
 ### group.yamlなど
     loginuser: aplusr     # グループ配下の接続に適用されるログインユーザー
     loginpassword: aplpwd # グループ配下の接続に適用されるログインパスワード
     inifile: AWS.INI      # グループ配下の接続に適用されるTeratermのINIファイル
+    # ログイン後の処理を書けます
+    procedure: |
+      wait ']$ '
+      sendln 'hostname'
 
 ### サーバ別接続情報(*.txt)
     ipaddress = xxx.xxx.xxx.xxx # IPアドレス
