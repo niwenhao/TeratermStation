@@ -22,6 +22,7 @@ import jp.co.tabocom.teratermstation.preference.BasePreferencePage;
 import jp.co.tabocom.teratermstation.preference.PathPreferencePage;
 import jp.co.tabocom.teratermstation.preference.PluginPreferencePage;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
+import jp.co.tabocom.teratermstation.preference.TtlPreferencePage;
 import jp.co.tabocom.teratermstation.ui.EnvTabItem;
 
 import org.apache.log4j.Logger;
@@ -443,10 +444,12 @@ public class Main implements PropertyChangeListener, WindowProc {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 PreferenceManager mgr = new PreferenceManager();
-                PreferenceNode toolNode = new PreferenceNode("base", new BasePreferencePage());
-                PreferenceNode baseNode = new PreferenceNode("path", new PathPreferencePage());
-                mgr.addToRoot(toolNode);
-                mgr.addTo(toolNode.getId(), baseNode);
+                PreferenceNode baseNode = new PreferenceNode("base", new BasePreferencePage());
+                PreferenceNode pathNode = new PreferenceNode("path", new PathPreferencePage());
+                PreferenceNode ttlNode = new PreferenceNode("ttl", new TtlPreferencePage());
+                mgr.addToRoot(baseNode);
+                mgr.addTo(baseNode.getId(), pathNode);
+                mgr.addTo(baseNode.getId(), ttlNode);
 
                 PreferenceNode pluginsNode = new PreferenceNode("plugins", new PluginPreferencePage());
                 mgr.addToRoot(pluginsNode);

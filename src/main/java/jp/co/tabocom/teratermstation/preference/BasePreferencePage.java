@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Text;
 public class BasePreferencePage extends PreferencePage {
 
     private Text dirTxt;
-    private Text ttlCharCodeTxt;
 
     public BasePreferencePage() {
         super("基本設定");
@@ -52,19 +51,6 @@ public class BasePreferencePage extends PreferencePage {
             }
         });
 
-        // ========== 定義ディレクトリの場所 ========== //
-        new Label(composite, SWT.LEFT).setText("TTLファイルの文字コード：");
-        ttlCharCodeTxt = new Text(composite, SWT.BORDER);
-        GridData ttlCharCodeTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        ttlCharCodeTxtGrDt.horizontalSpan = 2;
-        ttlCharCodeTxt.setLayoutData(ttlCharCodeTxtGrDt);
-        ttlCharCodeTxt.setText(preferenceStore.getString(PreferenceConstants.TTL_CHARCODE));
-        new Label(composite, SWT.LEFT).setText("");
-        Label ttlCharCodeDescLbl = new Label(composite, SWT.LEFT);
-        GridData ttlCharCodeDescLblGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        ttlCharCodeDescLblGrDt.horizontalSpan = 2;
-        ttlCharCodeDescLbl.setText("例) Shift-JIS, UTF-8など。省略や不正な場合はShift-JISになります。");
-
         noDefaultAndApplyButton();
         return composite;
     }
@@ -77,9 +63,6 @@ public class BasePreferencePage extends PreferencePage {
         }
         if (this.dirTxt != null) {
             ps.setValue(PreferenceConstants.TARGET_DIR, this.dirTxt.getText());
-        }
-        if (this.ttlCharCodeTxt != null) {
-            ps.setValue(PreferenceConstants.TTL_CHARCODE, this.ttlCharCodeTxt.getText());
         }
         return true;
     }

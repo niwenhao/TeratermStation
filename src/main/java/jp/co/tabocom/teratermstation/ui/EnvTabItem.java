@@ -738,16 +738,20 @@ public class EnvTabItem extends TabItem {
 
             String NEW_LINE = System.getProperty("line.separator");
             if (this.tab.getNegotiation() != null && this.authFlg) {
-                if (this.tab.getNegotiation().contains("PASSWORD")) {
-                    word.append("PASSWORD=param2" + NEW_LINE); // 認証パスワードはセキュリティのためマクロ実行引数で渡します。
-                    word.append("strlen PASSWORD" + NEW_LINE);
+                String magicPwd = ps.getString(PreferenceConstants.TTL_AUTH_PWD_HIDE);
+                if (magicPwd == null || magicPwd.isEmpty()) {
+                    magicPwd = "PASSWORD";
+                }
+                if (this.tab.getNegotiation().contains(magicPwd)) {
+                    word.append(magicPwd + "=param2" + NEW_LINE); // 認証パスワードはセキュリティのためマクロ実行引数で渡します。
+                    word.append("strlen " + magicPwd + NEW_LINE);
                     word.append("if result = 0 then" + NEW_LINE);
                     word.append("    passwordbox 'パスワードを入力してください。[" + authUsr + "]' '認証'" + NEW_LINE);
                     word.append("    strlen inputstr" + NEW_LINE);
                     word.append("    if result = 0 then" + NEW_LINE);
                     word.append("        exit" + NEW_LINE);
                     word.append("    else" + NEW_LINE);
-                    word.append("        PASSWORD=inputstr" + NEW_LINE);
+                    word.append("        " + magicPwd + "=inputstr" + NEW_LINE);
                     word.append("    endif" + NEW_LINE);
                     word.append("endif" + NEW_LINE);
                 }
