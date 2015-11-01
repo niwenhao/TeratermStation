@@ -2,14 +2,38 @@ package jp.co.tabocom.teratermstation.model;
 
 import java.io.Serializable;
 
+/**
+ * プロキシ認証などに関する情報を保持するクラスです。<br>
+ * 
+ * @author turbou
+ *
+ */
 public class Gateway implements Serializable {
-    private static final long serialVersionUID = -2266986365671637916L;
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * プロキシ認証などゲートウェイのIPアドレス
+     */
     private String gwIpAddr;
+    /**
+     * 認証の必要なゲートウェイで認証に失敗した場合にゲートウェイから返される文言
+     */
     private String errPtn;
+    /**
+     * 認証の必要なゲートウェイか否か
+     */
     private boolean auth;
+    /**
+     * 認証パスワードの記録を可能とするか否か
+     */
     private boolean memoryPwd;
+    /**
+     *　PCがロックされた場合に認証パスワードを自動でクリアするか否か
+     */
     private boolean pwdAutoClear;
+    /**
+     * 他のタブと認証パスワードを共有する場合の共有識別子
+     */
     private String pwdGroup;
 
     public String getGwIpAddr() {

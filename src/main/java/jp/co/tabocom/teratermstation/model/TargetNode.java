@@ -18,7 +18,7 @@ import java.util.Map;
  * 
  */
 public class TargetNode implements Comparable<TargetNode>, PropertyChangeListener, Serializable {
-    private static final long serialVersionUID = 6795171432373000432L;
+    private static final long serialVersionUID = 1L;
 
     private String name;
 
