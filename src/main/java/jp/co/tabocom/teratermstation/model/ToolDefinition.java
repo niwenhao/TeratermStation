@@ -24,6 +24,7 @@ public class ToolDefinition {
     private List<String> orderList;
 
     private List<TeratermStationPlugin> nodePluginList;
+    private List<Exception> loadExceptionList;
 
     private Initial initial;
 
@@ -53,6 +54,14 @@ public class ToolDefinition {
 
     public void setNodePluginList(List<TeratermStationPlugin> nodePluginList) {
         this.nodePluginList = nodePluginList;
+    }
+
+    public List<Exception> getLoadExceptionList() {
+        return loadExceptionList;
+    }
+
+    public void setLoadExceptionList(List<Exception> loadExceptionList) {
+        this.loadExceptionList = loadExceptionList;
     }
 
     public String getSystem() {
@@ -106,6 +115,7 @@ public class ToolDefinition {
             throw e;
         }
         setNodePluginList(pluginVisitor.getNodePluginList());
+        setLoadExceptionList(pluginVisitor.getLoadExceptionList());
 
         // 次にサーバツリー定義をロード
         MyFileVisitor myVisitor = new MyFileVisitor(this.rootDirPath.getNameCount() - 1);

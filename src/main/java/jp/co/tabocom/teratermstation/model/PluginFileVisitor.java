@@ -20,10 +20,12 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
 
     private int depthCnt;
     private List<TeratermStationPlugin> nodePluginList;
+    private List<Exception> loadExceptionList;
 
     public PluginFileVisitor(int depthCnt) {
         this.depthCnt = depthCnt;
         this.nodePluginList = new ArrayList<TeratermStationPlugin>();
+        this.loadExceptionList = new ArrayList<Exception>();
     }
 
     @Override
@@ -65,8 +67,10 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        loadExceptionList.add(new Exception(String.format("%s のロードに失敗しました。", file.getName())));
+                    } finally {
+                        jar.close();
                     }
-                    jar.close();
                 }
                 break;
             }
@@ -83,5 +87,9 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
 
     public List<TeratermStationPlugin> getNodePluginList() {
         return nodePluginList;
+    }
+
+    public List<Exception> getLoadExceptionList() {
+        return loadExceptionList;
     }
 }

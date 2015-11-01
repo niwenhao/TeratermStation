@@ -247,6 +247,13 @@ public class Main implements PropertyChangeListener, WindowProc {
             toolDefine = new ToolDefinition(Paths.get(rootDir));
             try {
                 toolDefine.initialize();
+                if (!toolDefine.getLoadExceptionList().isEmpty()) {
+                    StringBuilder builder = new StringBuilder();
+                    for (Exception e : toolDefine.getLoadExceptionList()) {
+                        builder.append(e.getMessage() + "\r\n");
+                    }
+                    loadDirErrorMsg = builder.toString();
+                }
             } catch (Exception e) {
                 loadDirErrorMsg = "サーバ定義の読み込みに失敗したため、サンプル定義(sample)でツールを起動します。\r\nご指定のサーバ定義に問題がないか、ご確認ください。";
                 toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
