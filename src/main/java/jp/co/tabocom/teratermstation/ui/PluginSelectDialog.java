@@ -44,6 +44,7 @@ public class PluginSelectDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 int idx = pluginCombo.getSelectionIndex();
                 selectedAction = actionList.get(idx);
+                widget.setText(selectedAction.getDescription());
             }
 
             @Override
