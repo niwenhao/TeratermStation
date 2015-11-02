@@ -716,7 +716,13 @@ public class EnvTabItem extends TabItem {
             String targetSvr = node.getName();
             String svrType = node.getParent().getName();
             String loginUsr = node.getLoginUsr();
+            if (loginUsr == null || loginUsr.isEmpty()) {
+                loginUsr = "";
+            }
             String loginPwd = node.getLoginPwd();
+            if (loginPwd == null || loginPwd.isEmpty()) {
+                loginPwd = "";
+            }
             // INIファイル
             String iniFile = ps.getString(PreferenceConstants.INIFILE_DIR) + "\\" + node.getIniFile();
             String seqNo = String.format("%03d. ", idx);
