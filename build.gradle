@@ -55,17 +55,6 @@ jar {
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
-ant.importBuild 'build.xml'
-task('myJar') <<
-{
-    tasks.clean.execute()
-    tasks.compileJava.execute()
-    tasks.processResources.execute()
-    tasks.copyToLib.execute()
-    tasks.create_run_jar_64.execute()
-    tasks.create_run_jar_32.execute()
-}
-
 uploadArchives {
     repositories {
        flatDir {
