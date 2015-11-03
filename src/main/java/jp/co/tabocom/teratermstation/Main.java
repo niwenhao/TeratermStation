@@ -18,6 +18,7 @@ import jp.co.tabocom.teratermstation.model.Initial;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.ToolDefinition;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
+import jp.co.tabocom.teratermstation.preference.AboutPage;
 import jp.co.tabocom.teratermstation.preference.BasePreferencePage;
 import jp.co.tabocom.teratermstation.preference.PathPreferencePage;
 import jp.co.tabocom.teratermstation.preference.PluginPreferencePage;
@@ -468,6 +469,8 @@ public class Main implements PropertyChangeListener, WindowProc {
                         }
                     }
                 }
+                PreferenceNode aboutNode = new PreferenceNode("about", new AboutPage());
+                mgr.addToRoot(aboutNode);
                 PreferenceDialog dialog = new PreferenceDialog(shell, mgr);
                 dialog.setPreferenceStore(preferenceStore);
                 dialog.open();
