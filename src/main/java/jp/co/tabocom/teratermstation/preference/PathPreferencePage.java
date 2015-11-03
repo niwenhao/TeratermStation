@@ -40,7 +40,7 @@ public class PathPreferencePage extends PreferencePage {
         IPreferenceStore preferenceStore = getPreferenceStore();
 
         // ========== TeraTermマクロの場所 ========== //
-        new Label(composite, SWT.LEFT).setText("TeraTermマクロ：");
+        new Label(composite, SWT.LEFT).setText("ttpmacro.exeのパス：");
         ttmacroTxt = new Text(composite, SWT.BORDER);
         ttmacroTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         ttmacroTxt.setText(preferenceStore.getString(PreferenceConstants.TTPMACRO_EXE));
@@ -61,6 +61,12 @@ public class PathPreferencePage extends PreferencePage {
                 }
             }
         });
+        new Label(composite, SWT.LEFT).setText("");
+        Label ttmacroDesc = new Label(composite, SWT.LEFT);
+        GridData ttmacroDescGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        ttmacroDescGrDt.horizontalSpan = 2;
+        ttmacroDesc.setLayoutData(ttmacroDescGrDt);
+        ttmacroDesc.setText("- Tera Term 4.58以上をサポートします。\r\n- ttermpro.exe　ではなく ttpmacro.exe を指定してください。");
 
         Group dirGrp = new Group(composite, SWT.NONE);
         dirGrp.setLayout(new GridLayout(3, false));
