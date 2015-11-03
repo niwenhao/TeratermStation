@@ -1,0 +1,1 @@
+﻿connect: connect '${ipaddress} /nossh /T=1 /f="${inifile}"'

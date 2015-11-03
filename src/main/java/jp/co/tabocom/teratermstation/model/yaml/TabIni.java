@@ -117,27 +117,63 @@ public class TabIni {
     }
 
     public String getGatewayIpaddress() {
-        return this.gateway.get("ipaddress").toString();
+        if (this.gateway == null) {
+            return "";
+        }
+        if (this.gateway.containsKey("ipaddress")) {
+            return this.gateway.get("ipaddress").toString();
+        }
+        return "";
     }
 
     public String getGatewayErrptn() {
-        return this.gateway.get("errptn").toString();
+        if (this.gateway == null) {
+            return "";
+        }
+        if (this.gateway.containsKey("errptn")) {
+            return this.gateway.get("errptn").toString();
+        }
+        return "";
     }
 
     public boolean isGatewayAuth() {
-        return Boolean.valueOf(this.gateway.get("auth").toString());
+        if (this.gateway == null) {
+            return false;
+        }
+        if (this.gateway.containsKey("auth")) {
+            return Boolean.valueOf(this.gateway.get("auth").toString());
+        }
+        return false;
     }
 
     public boolean isGatewayPasswordMemory() {
-        return Boolean.valueOf(this.gateway.get("password_memory").toString());
+        if (this.gateway == null) {
+            return false;
+        }
+        if (this.gateway.containsKey("password_memory")) {
+            return Boolean.valueOf(this.gateway.get("password_memory").toString());
+        }
+        return false;
     }
 
     public boolean isGatewayPasswordAutoclear() {
-        return Boolean.valueOf(this.gateway.get("password_autoclear").toString());
+        if (this.gateway == null) {
+            return false;
+        }
+        if (this.gateway.containsKey("password_autoclear")) {
+            return Boolean.valueOf(this.gateway.get("password_autoclear").toString());
+        }
+        return false;
     }
 
     public String getGatewayPasswordGroup() {
-        return this.gateway.get("password_group").toString();
+        if (this.gateway == null) {
+            return "";
+        }
+        if (this.gateway.containsKey("password_group")) {
+            return this.gateway.get("password_group").toString();
+        }
+        return "";
     }
 
     @Override

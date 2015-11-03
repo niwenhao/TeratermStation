@@ -1,0 +1,1 @@
+﻿connect: connect '${ipaddress} /ssh /2 /auth=publickey /user=${loginuser}  /keyfile="C:\Users\oyoyo\buhihi.pem"'
