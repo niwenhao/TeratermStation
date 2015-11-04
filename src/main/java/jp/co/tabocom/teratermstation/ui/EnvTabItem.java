@@ -1118,6 +1118,10 @@ public class EnvTabItem extends TabItem {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChangeSupport.removePropertyChangeListener(listener);
     }
+    
+    public Tab getTab() {
+        return tab;
+    }
 
     @Override
     protected void checkSubclass() {
