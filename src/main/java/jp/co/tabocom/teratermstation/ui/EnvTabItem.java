@@ -684,8 +684,6 @@ public class EnvTabItem extends TabItem {
                 String pwdArg = this.pwdTxt.getText();
                 String ttpmacroexe = ps.getString(PreferenceConstants.TTPMACRO_EXE);
                 runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
-            } else {
-                MessageDialog.openInformation(getParent().getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
             }
         } catch (FileNotFoundException fnfe) {
             MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
