@@ -368,6 +368,10 @@ public class EnvTabItem extends TabItem {
                         if (node.getIpAddr() != null) {
                             if (!authFlg || authInputStatus) {
                                 makeAndExecuteTTL(node, 1, null);
+                                Main main = (Main) getParent().getShell().getData("main");
+                                if (main.isTtlOnly()) {
+                                    MessageDialog.openInformation(getParent().getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
+                                }
                             } else {
                                 MessageDialog.openError(getParent().getShell(), "サーバ接続", "認証情報が入力されていません。");
                             }
@@ -1116,7 +1120,7 @@ public class EnvTabItem extends TabItem {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChangeSupport.removePropertyChangeListener(listener);
     }
-    
+
     public Tab getTab() {
         return tab;
     }
