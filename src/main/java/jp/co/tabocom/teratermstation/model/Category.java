@@ -104,6 +104,10 @@ public class Category implements Serializable {
         this.tab = tab;
     }
 
+    public Tab getTab() {
+        return tab;
+    }
+
     @Override
     public String toString() {
         return this.name;

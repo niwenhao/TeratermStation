@@ -203,6 +203,10 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         this.category = category;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
     public String getKeyValue() {
         return keyValue;
     }

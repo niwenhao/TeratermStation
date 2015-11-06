@@ -651,7 +651,11 @@ public class EnvTabItem extends TabItem {
         // 例） C:\library\work\4面-新WebAP_con_t-shiozaki.ttl
         StringBuilder ttlFile = new StringBuilder(ttlDir);
         ttlFile.append("\\");
-        ttlFile.append(target.getParent().getName());
+        if (target.getParent().getName() != null) {
+            ttlFile.append(target.getParent().getName());
+        } else {
+            ttlFile.append(target.getCategory().getName());
+        }
         ttlFile.append("-");
         ttlFile.append(target.getName());
         ttlFile.append("_");
