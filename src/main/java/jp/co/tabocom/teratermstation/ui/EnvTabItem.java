@@ -613,7 +613,9 @@ public class EnvTabItem extends TabItem {
             for (TargetNode target : checkedTreeList) {
                 makeAndExecuteTTL(target, idx, templateCmd);
                 idx++;
-                Thread.sleep(BULK_INTERVAL); // スリープしなくても問題はないけど、あまりにも連続でターミナルが開くのもあれなので。
+                if (!main.isTtlOnly()) {
+                    Thread.sleep(BULK_INTERVAL); // スリープしなくても問題はないけど、あまりにも連続でターミナルが開くのもあれなので。
+                }
             }
             if (main.isTtlOnly()) {
                 // TTLファイルの作成のみだったら、ファイル作成後、ダイアログを出す。
