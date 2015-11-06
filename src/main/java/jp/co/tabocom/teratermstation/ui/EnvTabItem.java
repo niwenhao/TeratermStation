@@ -723,6 +723,9 @@ public class EnvTabItem extends TabItem {
             String ipAddr = node.getIpAddr();
             String targetSvr = node.getName();
             String svrType = node.getParent().getName();
+            if (svrType == null) {
+                svrType = node.getCategory().getName();
+            }
             String loginUsr = node.getLoginUsr();
             if (loginUsr == null || loginUsr.isEmpty()) {
                 loginUsr = "";
