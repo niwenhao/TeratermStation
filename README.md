@@ -95,7 +95,6 @@ Tera Termは4.58以上をサポートします。
     # プロキシ経由の場合など
     gateway:
       ipaddress: xxx.xxx.xxx.xxx    # IPアドレス
-      errptn: authentication failed # 認証失敗の場合のエラー文言
       auth: true                    # 認証が必要な場合
       password_memory: true         # 認証パスワードの記憶可否
       password_autoclear: false     # PCログオフ時の認証パスワードクリア

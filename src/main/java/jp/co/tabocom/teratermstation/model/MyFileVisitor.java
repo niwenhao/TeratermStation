@@ -184,7 +184,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     System.out.println(tabIni);
                     Gateway gw = new Gateway();
                     gw.setGwIpAddr(tabIni.getGatewayIpaddress());
-                    gw.setErrPtn(tabIni.getGatewayErrptn());
                     gw.setAuth(tabIni.isGatewayAuth());
                     gw.setMemoryPwd(tabIni.isGatewayPasswordMemory());
                     gw.setPwdAutoClear(tabIni.isGatewayPasswordAutoclear());

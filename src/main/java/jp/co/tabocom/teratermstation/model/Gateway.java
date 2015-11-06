@@ -16,10 +16,6 @@ public class Gateway implements Serializable {
      */
     private String gwIpAddr;
     /**
-     * 認証の必要なゲートウェイで認証に失敗した場合にゲートウェイから返される文言
-     */
-    private String errPtn;
-    /**
      * 認証の必要なゲートウェイか否か
      */
     private boolean auth;
@@ -42,14 +38,6 @@ public class Gateway implements Serializable {
 
     public void setGwIpAddr(String gwIpAddr) {
         this.gwIpAddr = gwIpAddr;
-    }
-
-    public String getErrPtn() {
-        return errPtn;
-    }
-
-    public void setErrPtn(String errPtn) {
-        this.errPtn = errPtn;
     }
 
     public boolean isAuth() {

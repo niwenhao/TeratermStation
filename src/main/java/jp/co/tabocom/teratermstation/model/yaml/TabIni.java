@@ -12,7 +12,6 @@ import java.util.Map;
  * --------------------------------------------------------------------------------
  * gateway:
  *   ipaddress: 192.177.237.111
- *   errptn: authentication failed
  *   auth: true
  *   password_memory: true
  *   password_autoclear: false
@@ -126,16 +125,6 @@ public class TabIni {
         return "";
     }
 
-    public String getGatewayErrptn() {
-        if (this.gateway == null) {
-            return "";
-        }
-        if (this.gateway.containsKey("errptn")) {
-            return this.gateway.get("errptn").toString();
-        }
-        return "";
-    }
-
     public boolean isGatewayAuth() {
         if (this.gateway == null) {
             return false;
@@ -185,7 +174,6 @@ public class TabIni {
         builder.append(String.format("loginuser                  : %s\n", this.loginuser));
         builder.append(String.format("loginpassword              : %s\n", this.loginpassword));
         builder.append(String.format("gateway_ipaddress          : %s\n", getGatewayIpaddress()));
-        builder.append(String.format("gateway_errptn             : %s\n", getGatewayErrptn()));
         builder.append(String.format("gateway_auth               : %s\n", isGatewayAuth()));
         builder.append(String.format("gateway_password_memory    : %s\n", isGatewayPasswordMemory()));
         builder.append(String.format("gateway_password_autoclear : %s\n", isGatewayPasswordAutoclear()));
