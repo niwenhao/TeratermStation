@@ -7,6 +7,7 @@ import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Shell;
 
@@ -17,9 +18,21 @@ import org.eclipse.swt.widgets.Shell;
  * Plugin-Class: jp.co.xxx.plugin.oyoyo.OyoyoPlugin
  * 
  * @author turbou
- *
+ * 
  */
 public interface TeratermStationPlugin {
+
+    /**
+     * Pluginロード後の初期処理です。
+     */
+    public void initialize();
+
+    /**
+     * TeratermStation終了時の処理です。
+     * 
+     * @param preferenceStore
+     */
+    public void teminate(PreferenceStore preferenceStore);
 
     /**
      * TeratermStationでサーバグループやサーバの右クリックメニューに追加するアクションの配列を返します。<br>

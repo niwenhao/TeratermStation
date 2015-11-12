@@ -573,7 +573,7 @@ public class EnvTabItem extends TabItem {
         String[] buttonArray;
 
         List<TeratermStationBulkAction> bulkActionList = new ArrayList<TeratermStationBulkAction>();
-        for (TeratermStationPlugin plugin : main.getToolDefine().getNodePluginList()) {
+        for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
             List<TeratermStationBulkAction> actionList = plugin.getBulkActions(checkedTreeList, getParent().getShell());
             if (actionList != null) { // 一括接続での拡張機能の無いプラグインはnullを返すので.
                 for (TeratermStationBulkAction action : actionList) {

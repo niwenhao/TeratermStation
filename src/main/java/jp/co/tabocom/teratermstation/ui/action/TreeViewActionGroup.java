@@ -33,7 +33,7 @@ public class TreeViewActionGroup extends ActionGroup {
         TargetNode node = (TargetNode) selection.getFirstElement();
         Main main = (Main) this.shell.getData("main");
 
-        for (TeratermStationPlugin plugin : main.getToolDefine().getNodePluginList()) {
+        for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
             menu.add(new Separator());
             for (TeratermStationAction action : plugin.getActions(node, shell, selectionProvider)) {
                 if (action.isValid()) {

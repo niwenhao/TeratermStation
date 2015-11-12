@@ -323,6 +323,11 @@ public class Main implements PropertyChangeListener, WindowProc {
 
             @Override
             public void shellClosed(ShellEvent event) {
+                if (toolDefine.getPluginList() != null) {
+                    for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
+                        plugin.teminate(preferenceStore);
+                    }
+                }
                 int idx = tabFolder.getSelectionIndex();
                 // 開いていたタブを記憶しておく。
                 preferenceStore.setValue(PreferenceConstants.OPENED_TAB_IDX, idx);
@@ -461,8 +466,8 @@ public class Main implements PropertyChangeListener, WindowProc {
 
                 PreferenceNode pluginsNode = new PreferenceNode("plugins", new PluginPreferencePage());
                 mgr.addToRoot(pluginsNode);
-                if (toolDefine.getNodePluginList() != null) {
-                    for (TeratermStationPlugin plugin : toolDefine.getNodePluginList()) {
+                if (toolDefine.getPluginList() != null) {
+                    for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
                         if (plugin.getPreferencePage() != null) {
                             PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
                             mgr.addTo(pluginsNode.getId(), pluginNode);

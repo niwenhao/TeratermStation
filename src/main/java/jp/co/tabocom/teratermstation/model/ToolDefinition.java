@@ -23,7 +23,7 @@ public class ToolDefinition {
     private Map<String, Tab> tabMap;
     private List<String> orderList;
 
-    private List<TeratermStationPlugin> nodePluginList;
+    private List<TeratermStationPlugin> pluginList;
     private List<Exception> loadExceptionList;
 
     private Initial initial;
@@ -48,12 +48,12 @@ public class ToolDefinition {
         this.orderList = orderList;
     }
 
-    public List<TeratermStationPlugin> getNodePluginList() {
-        return nodePluginList;
+    public List<TeratermStationPlugin> getPluginList() {
+        return pluginList;
     }
 
-    public void setNodePluginList(List<TeratermStationPlugin> nodePluginList) {
-        this.nodePluginList = nodePluginList;
+    public void setPluginList(List<TeratermStationPlugin> pluginList) {
+        this.pluginList = pluginList;
     }
 
     public List<Exception> getLoadExceptionList() {
@@ -114,7 +114,7 @@ public class ToolDefinition {
             e.printStackTrace();
             throw e;
         }
-        setNodePluginList(pluginVisitor.getNodePluginList());
+        setPluginList(pluginVisitor.getNodePluginList());
         setLoadExceptionList(pluginVisitor.getLoadExceptionList());
 
         // 次にサーバツリー定義をロード
