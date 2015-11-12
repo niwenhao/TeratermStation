@@ -432,7 +432,6 @@ public class Main implements PropertyChangeListener, WindowProc {
         executeGrpLt.verticalSpacing = 5;
         executeGrp.setLayout(executeGrpLt);
         GridData executeGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        executeGrpGrDt.heightHint = 80;
         executeGrp.setLayoutData(executeGrpGrDt);
         // executeGrp.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
 
