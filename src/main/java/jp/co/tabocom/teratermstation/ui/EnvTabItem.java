@@ -735,6 +735,9 @@ public class EnvTabItem extends TabItem {
                 loginPwd = "";
             }
             // INIファイル
+            String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
+            String logDir = ps.getString(PreferenceConstants.LOG_DIR);
+            String workDir = ps.getString(PreferenceConstants.WORK_DIR);
             String iniFile = ps.getString(PreferenceConstants.INIFILE_DIR) + "\\" + node.getIniFile();
             String seqNo = String.format("%03d. ", idx);
             // ---------- もろもろ情報を取得 ここまで ----------
@@ -747,7 +750,10 @@ public class EnvTabItem extends TabItem {
             if (this.tab.getGateway() != null) {
                 valuesMap.put("gateway_ipaddress", this.tab.getGateway().getGwIpAddr());
             }
+            valuesMap.put("inidir", iniDir);
             valuesMap.put("inifile", iniFile);
+            valuesMap.put("logdir", logDir);
+            valuesMap.put("workdir", workDir);
 
             StrSubstitutor sub = new StrSubstitutor(valuesMap);
 
@@ -783,7 +789,8 @@ public class EnvTabItem extends TabItem {
             }
             // ここまで
             if (node.getProcedure() != null) {
-                word.append(node.getProcedure());
+                String procedure = sub.replace(node.getProcedure());
+                word.append(procedure);
             }
 
             // テンプレート対応
