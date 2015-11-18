@@ -37,7 +37,7 @@ public class TreeViewActionGroup extends ActionGroup {
 
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
             List<TeratermStationAction> actionList = plugin.getActions(node, shell, selectionProvider);
-            if (actionList != null) { // 拡張機能の無いプラグインはnullを返すので.
+            if (actionList != null) { // 諡｡蠑ｵ讖溯�ｽ縺ｮ辟｡縺�繝励Λ繧ｰ繧､繝ｳ縺ｯnull繧定ｿ斐☆縺ｮ縺ｧ.
                 menu.add(new Separator());
                 for (TeratermStationAction action : actionList) {
                     if (action.isValid()) {
