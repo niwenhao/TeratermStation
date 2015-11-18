@@ -325,7 +325,11 @@ public class Main implements PropertyChangeListener, WindowProc {
             public void shellClosed(ShellEvent event) {
                 if (toolDefine.getPluginList() != null) {
                     for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
-                        plugin.teminate(preferenceStore);
+                        try {
+                            plugin.teminate(preferenceStore);
+                        } catch (Exception e) {
+                            MessageDialog.openError(shell, "終了時処理", e.getMessage());
+                        }
                     }
                 }
                 int idx = tabFolder.getSelectionIndex();

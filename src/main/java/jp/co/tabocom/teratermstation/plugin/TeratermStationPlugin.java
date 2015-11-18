@@ -25,14 +25,14 @@ public interface TeratermStationPlugin {
     /**
      * Pluginロード後の初期処理です。
      */
-    public void initialize();
+    public void initialize() throws Exception;
 
     /**
      * TeratermStation終了時の処理です。
      * 
      * @param preferenceStore
      */
-    public void teminate(PreferenceStore preferenceStore);
+    public void teminate(PreferenceStore preferenceStore) throws Exception;
 
     /**
      * TeratermStationでサーバグループやサーバの右クリックメニューに追加するアクションの配列を返します。<br>
