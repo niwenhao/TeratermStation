@@ -144,3 +144,26 @@ Tera Termは4.58以上をサポートします。
     loginuser = kibanusr        # ログインユーザー
     loginpassword = kibanpwd    # ログインパスワード
     inifile = SVR.INI           # TeratermのINIファイル
+
+#### yaml内での変数の利用について
+connect、negotiation、procedureには以下の変数を使うことができます。
+- gateway_ipaddress  
+ゲートウェイIPアドレス
+- authuser  
+ゲートウェイ認証ユーザー
+- authpassword  
+ゲートウェイ認証パスワード
+- ipaddress  
+サーバIPアドレス
+- loginuser  
+サーバログインユーザー
+- loginpassword  
+サーバログインパスワード
+- inidir  
+INIファイル格納ディレクトリ（ツール本体基本設定の値）
+- inifile  
+INIファイルパス（inidir + ¥ + INIファイル名）
+- logdir  
+ログファイル出力ディレクトリ（ツール本体基本設定の値）
+- workdir  
+TTLファイル出力ディレクトリ（ツール本体基本設定の値）
