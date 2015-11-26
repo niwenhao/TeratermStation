@@ -833,6 +833,9 @@ public class EnvTabItem extends TabItem {
 
         // ログファイル
         String svrType = node.getParent().getName();
+        if (svrType == null) {
+            svrType = node.getCategory().getName();
+        }
         String targetSvr = node.getName();
         String logFile = dateDir + "\\" + timestamp + "_" + svrType + "_" + targetSvr + "_" + pcName + ".log";
 
