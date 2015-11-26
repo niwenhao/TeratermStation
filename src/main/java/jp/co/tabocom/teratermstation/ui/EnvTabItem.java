@@ -506,10 +506,15 @@ public class EnvTabItem extends TabItem {
     }
 
     private void defaultTreeData() {
+        Main main = (Main) getParent().getShell().getData("main");
+        List<String> orderList = main.getToolDefine().getOrderList();
         this.categoryMap = targetMapCopy(this.defaultCategoryMap);
-        for (Category target : this.categoryMap.values()) {
-            CheckboxTreeViewer treeViewer = this.treeMap.get(target.getName());
-            treeViewer.setInput(target.getTargetNode());
+        for (Category category : this.categoryMap.values()) {
+            CheckboxTreeViewer treeViewer = this.treeMap.get(category.getName());
+            if (orderList != null && !orderList.isEmpty()) {
+                category.sortTargetNode(orderList);
+            }
+            treeViewer.setInput(category.getTargetNode());
             treeViewer.refresh();
         }
         this.filterTxt.setText("");
