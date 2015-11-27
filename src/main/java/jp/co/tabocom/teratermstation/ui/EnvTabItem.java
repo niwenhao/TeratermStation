@@ -861,7 +861,11 @@ public class EnvTabItem extends TabItem {
             word.append("endif" + NEW_LINE);
         }
         // ログをOPEN
-        word.append("logopen '" + logFile + "' 0 0 0 0 1" + NEW_LINE); // ログのダイアログを出さないようにしてます。最後の１がそう。詳細はTeratermマクロのヘルプ見てください。
+        String logopenOption = ps.getString(PreferenceConstants.LOGOPEN_OPTION);
+        if (logopenOption == null || logopenOption.isEmpty()) {
+            logopenOption = "0 0 0 0 1";
+        }
+        word.append("logopen '" + logFile + "' " + logopenOption + NEW_LINE);
         return word.toString();
     }
 

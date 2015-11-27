@@ -20,6 +20,8 @@ public class PreferenceConstants {
     public static final String TTL_CHARCODE = new String("jp.co.tabocom.teratermstation.ttlCharCode");
     // 認証パスワード伏字文字列
     public static final String TTL_AUTH_PWD_HIDE = new String("jp.co.tabocom.teratermstation.ttlAuthPwdHide");
+    // Teratermのlogopenのオプションについて
+    public static final String LOGOPEN_OPTION = new String("jp.co.tabocom.teratermstation.logopenOption");
 
     // ========== その他 ========== //
     // 開いてるタブの位置の保存用（次にツールを起動した時に最後に開いてたタブが選択されるようにするため）
