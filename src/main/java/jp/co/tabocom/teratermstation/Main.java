@@ -43,7 +43,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -100,6 +102,8 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     private String loadDirErrorMsg;
     private String openingMsg;
+    
+    private int loginUserIdx = 1;
 
     /**
      * @param args
@@ -346,6 +350,20 @@ public class Main implements PropertyChangeListener, WindowProc {
             public void shellActivated(ShellEvent event) {
             }
         });
+
+        Listener listener = new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                if (event.stateMask == SWT.CTRL) {
+                    int num = Character.getNumericValue(event.character);
+                    if (num > -1) {
+                        loginUserIdx = num;
+                        tabItemRefresh();
+                    }
+                }
+            }
+        };
+        display.addFilter(SWT.KeyUp, listener);
 
         GridLayout baseLayout = new GridLayout(1, false);
         baseLayout.marginWidth = 10;
@@ -604,5 +622,9 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     public ToolDefinition getToolDefine() {
         return toolDefine;
+    }
+
+    public int getLoginUserIdx() {
+        return loginUserIdx;
     }
 }

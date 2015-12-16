@@ -992,7 +992,21 @@ public class EnvTabItem extends TabItem {
             StringBuilder builder = new StringBuilder();
             if (node.getChildren().isEmpty()) {
                 // 要は子供（サーバ号機）の場合
-                builder.append(node.getLoginUsr());
+                String userStr = node.getLoginUsr();
+                String[] userArray = userStr.split("　");
+                String user = "";
+                if (userArray.length > 1) {
+                    Main main = (Main) getParent().getShell().getData("main");
+                    int idx = main.getLoginUserIdx();
+                    try {
+                        user = userArray[idx - 1];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        user = userArray[0];
+                    }
+                } else {
+                    user = node.getLoginUsr();
+                }
+                builder.append(user);
                 builder.append("@");
                 builder.append(node.getIpAddr());
                 if (node.getHostName() != null) {
