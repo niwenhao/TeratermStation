@@ -731,13 +731,38 @@ public class EnvTabItem extends TabItem {
             if (svrType == null) {
                 svrType = node.getCategory().getName();
             }
-            String loginUsr = node.getLoginUsr();
-            if (loginUsr == null || loginUsr.isEmpty()) {
+            int usrIdx = main.getLoginUserIdx();
+            String userStr = node.getLoginUsr();
+            String loginUsr = null;
+            if (userStr == null || userStr.isEmpty()) {
                 loginUsr = "";
+            } else {
+                String[] userArray = userStr.split(" ");
+                if (userArray.length > 1) {
+                    try {
+                        loginUsr = userArray[usrIdx - 1];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        loginUsr = userArray[0];
+                    }
+                } else {
+                    loginUsr = node.getLoginUsr();
+                }
             }
-            String loginPwd = node.getLoginPwd();
-            if (loginPwd == null || loginPwd.isEmpty()) {
+            String passStr = node.getLoginPwd();
+            String loginPwd = null;
+            if (passStr == null || passStr.isEmpty()) {
                 loginPwd = "";
+            } else {
+                String[] passArray = passStr.split(" ");
+                if (passArray.length > 1) {
+                    try {
+                        loginPwd = passArray[usrIdx - 1];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        loginPwd = passArray[0];
+                    }
+                } else {
+                    loginPwd = node.getLoginPwd();
+                }
             }
             // INIファイル
             String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
@@ -993,13 +1018,13 @@ public class EnvTabItem extends TabItem {
             if (node.getChildren().isEmpty()) {
                 // 要は子供（サーバ号機）の場合
                 String userStr = node.getLoginUsr();
-                String[] userArray = userStr.split("　");
+                String[] userArray = userStr.split(" ");
                 String user = "";
                 if (userArray.length > 1) {
                     Main main = (Main) getParent().getShell().getData("main");
-                    int idx = main.getLoginUserIdx();
+                    int usrIdx = main.getLoginUserIdx();
                     try {
-                        user = userArray[idx - 1];
+                        user = userArray[usrIdx - 1];
                     } catch (ArrayIndexOutOfBoundsException e) {
                         user = userArray[0];
                     }
