@@ -69,6 +69,7 @@ import com.sun.jna.platform.win32.Wtsapi32;
 public class Main implements PropertyChangeListener, WindowProc {
 
     public static final String ROOT_DIR = "sample";
+    public static final String WINDOW_TITLE = "TeraTermStation - %s - %s";
 
     private Shell shell;
 
@@ -298,7 +299,7 @@ public class Main implements PropertyChangeListener, WindowProc {
         Display display = new Display();
         shell = new Shell(display, SWT.TITLE | SWT.MIN | SWT.CLOSE);
         shell.setData("main", this);
-        shell.setText(String.format("TeraTermStation - %s", toolDefine.getSystem()));
+        shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
         if (toolDefine.getWidth() > 0 && toolDefine.getHeight() > 0) {
             shell.setSize(toolDefine.getWidth(), toolDefine.getHeight());
         } else {
@@ -626,5 +627,9 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     public int getLoginUserIdx() {
         return loginUserIdx;
+    }
+    
+    public void setWindowTitle(String text) {
+        this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), text));
     }
 }

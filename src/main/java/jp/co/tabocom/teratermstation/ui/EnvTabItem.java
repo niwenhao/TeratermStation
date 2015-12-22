@@ -54,8 +54,10 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -183,7 +185,7 @@ public class EnvTabItem extends TabItem {
         composite.setLayout(new GridLayout(this.categoryMap.size(), true));
 
         // 設定の取得
-        Main main = (Main) getParent().getShell().getData("main");
+        final Main main = (Main) getParent().getShell().getData("main");
         final PreferenceStore ps = main.getPreferenceStore();
 
         // ==================== 認証設定グループ ====================
@@ -356,6 +358,18 @@ public class EnvTabItem extends TabItem {
                 }
             });
 
+            chkTree.addSelectionChangedListener(new ISelectionChangedListener() {
+                @Override
+                public void selectionChanged(SelectionChangedEvent event) {
+                    IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                    if (!selection.isEmpty()) {
+                        Object selectedObject = selection.getFirstElement();
+                        TargetNode node = (TargetNode) selectedObject;
+                        main.setWindowTitle(getToolTipText(node));
+                    }
+                }
+            });
+            
             chkTree.addDoubleClickListener(new IDoubleClickListener() {
                 @Override
                 public void doubleClick(DoubleClickEvent event) {
@@ -547,6 +561,13 @@ public class EnvTabItem extends TabItem {
     public void refreshTree() {
         for (CheckboxTreeViewer tree : treeMap.values()) {
             tree.refresh();
+            IStructuredSelection selection = (IStructuredSelection) tree.getSelection();
+            if (!selection.isEmpty()) {
+                Object selectedObject = selection.getFirstElement();
+                TargetNode node = (TargetNode) selectedObject;
+                Main main = (Main) getParent().getShell().getData("main");
+                main.setWindowTitle(getToolTipText(node));
+            }
         }
     }
 
@@ -1192,6 +1213,42 @@ public class EnvTabItem extends TabItem {
         return tab;
     }
 
+    private String getToolTipText(TargetNode node) {
+        StringBuilder builder = new StringBuilder();
+        if (node.getChildren().isEmpty()) {
+            // 要は子供（サーバ号機）の場合
+            String userStr = node.getLoginUsr();
+            String[] userArray = userStr.split(" ");
+            String user = "";
+            if (userArray.length > 1) {
+                Main main = (Main) getParent().getShell().getData("main");
+                int usrIdx = main.getLoginUserIdx();
+                try {
+                    user = userArray[usrIdx - 1];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    user = userArray[0];
+                }
+            } else {
+                user = node.getLoginUsr();
+            }
+            builder.append(user);
+            builder.append("@");
+            builder.append(node.getIpAddr());
+            if (node.getHostName() != null) {
+                builder.append(" [");
+                builder.append(node.getHostName());
+                builder.append("]");
+            }
+        } else {
+            // 要は親（サーバ種別）の場合
+            builder.append(node.getName());
+            builder.append("(");
+            builder.append(node.getChildren().size());
+            builder.append("台)");
+        }
+        return builder.toString();
+    }
+    
     @Override
     protected void checkSubclass() {
         // super.checkSubclass();
