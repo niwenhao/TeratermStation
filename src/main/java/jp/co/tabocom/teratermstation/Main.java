@@ -630,6 +630,10 @@ public class Main implements PropertyChangeListener, WindowProc {
     }
     
     public void setWindowTitle(String text) {
-        this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), text));
+        if (text == null || text.isEmpty()) {
+            this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
+        } else {
+            this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), text));
+        }
     }
 }

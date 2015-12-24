@@ -306,6 +306,7 @@ public class EnvTabItem extends TabItem {
                         tree.expandAll();
                     }
                 }
+                main.setWindowTitle(null);
             }
         });
 
@@ -532,6 +533,7 @@ public class EnvTabItem extends TabItem {
             treeViewer.refresh();
         }
         this.filterTxt.setText("");
+        main.setWindowTitle(null);
     }
 
     /**
