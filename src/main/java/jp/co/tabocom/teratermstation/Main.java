@@ -69,7 +69,7 @@ import com.sun.jna.platform.win32.Wtsapi32;
 public class Main implements PropertyChangeListener, WindowProc {
 
     public static final String ROOT_DIR = "sample";
-    public static final String WINDOW_TITLE = "TeraTermStation - %s - %s";
+    public static final String WINDOW_TITLE = "TeratermStation - %s - %s";
 
     private Shell shell;
 
