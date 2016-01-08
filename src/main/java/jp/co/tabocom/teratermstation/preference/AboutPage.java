@@ -38,7 +38,7 @@ public class AboutPage extends PreferencePage {
         Label versionValueLbl = new Label(composite, SWT.NONE);
         GridData versionValueLblGrDt = new GridData();
         versionValueLbl.setLayoutData(versionValueLblGrDt);
-        versionValueLbl.setText("1.0.6");
+        versionValueLbl.setText("1.0.7");
         
         noDefaultAndApplyButton();
         return composite;
