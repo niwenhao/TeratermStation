@@ -1041,18 +1041,20 @@ public class EnvTabItem extends TabItem {
             if (node.getChildren().isEmpty()) {
                 // 要は子供（サーバ号機）の場合
                 String userStr = node.getLoginUsr();
-                String[] userArray = userStr.split(" ");
                 String user = "";
-                if (userArray.length > 1) {
-                    Main main = (Main) getParent().getShell().getData("main");
-                    int usrIdx = main.getLoginUserIdx();
-                    try {
-                        user = userArray[usrIdx - 1];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        user = userArray[0];
+                if (userStr != null) {
+                    String[] userArray = userStr.split(" ");
+                    if (userArray.length > 1) {
+                        Main main = (Main) getParent().getShell().getData("main");
+                        int usrIdx = main.getLoginUserIdx();
+                        try {
+                            user = userArray[usrIdx - 1];
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            user = userArray[0];
+                        }
+                    } else {
+                        user = node.getLoginUsr();
                     }
-                } else {
-                    user = node.getLoginUsr();
                 }
                 builder.append(user);
                 builder.append("@");
@@ -1220,18 +1222,20 @@ public class EnvTabItem extends TabItem {
         if (node.getChildren().isEmpty()) {
             // 要は子供（サーバ号機）の場合
             String userStr = node.getLoginUsr();
-            String[] userArray = userStr.split(" ");
             String user = "";
-            if (userArray.length > 1) {
-                Main main = (Main) getParent().getShell().getData("main");
-                int usrIdx = main.getLoginUserIdx();
-                try {
-                    user = userArray[usrIdx - 1];
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    user = userArray[0];
+            if (userStr != null) {
+                String[] userArray = userStr.split(" ");
+                if (userArray.length > 1) {
+                    Main main = (Main) getParent().getShell().getData("main");
+                    int usrIdx = main.getLoginUserIdx();
+                    try {
+                        user = userArray[usrIdx - 1];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        user = userArray[0];
+                    }
+                } else {
+                    user = node.getLoginUsr();
                 }
-            } else {
-                user = node.getLoginUsr();
             }
             builder.append(user);
             builder.append("@");
