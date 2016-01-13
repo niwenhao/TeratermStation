@@ -172,7 +172,7 @@ public abstract class AbstractTelnetWorker extends SwingWorker<Boolean, String> 
             }
         });
 
-        // 通信用の入出力ストリームの生成
+        // 騾壻ｿ｡逕ｨ縺ｮ蜈･蜃ｺ蜉帙せ繝医Μ繝ｼ繝縺ｮ逕滓��
         InputStream istream = telnet.getInputStream();
         OutputStream ostream = telnet.getOutputStream();
         reader = new InputStreamReader(istream);
