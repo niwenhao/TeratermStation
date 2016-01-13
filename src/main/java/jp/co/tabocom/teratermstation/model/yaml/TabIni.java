@@ -16,6 +16,16 @@ import java.util.Map;
  *   password_memory: true
  *   password_autoclear: false
  *   password_group: dev
+ *   authcheck:
+ *     negotiation: |
+ *       wait 'Host name:'
+ *       sendln '192.177.238.100'
+ *       wait 'Username:'
+ *       sendln '${authuser}'
+ *       wait 'Password:'
+ *       sendln '${authpassword}'
+ *     ok: 'login:'
+ *     ng: 'Username:'
  * 
  * connect: connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
  * 
@@ -38,7 +48,7 @@ import java.util.Map;
  * </pre>
  * 
  * @author turbou
- *
+ * 
  */
 public class TabIni {
 
@@ -161,6 +171,54 @@ public class TabIni {
         }
         if (this.gateway.containsKey("password_group")) {
             return this.gateway.get("password_group").toString();
+        }
+        return "";
+    }
+
+    @SuppressWarnings("rawtypes")
+    public String getGatewayAuthCheckNegotiation() {
+        if (this.gateway == null) {
+            return "";
+        }
+        if (this.gateway.containsKey("authcheck")) {
+            Object obj = this.gateway.get("authcheck");
+            if (obj instanceof Map) {
+                if (((Map) obj).containsKey("negotiation")) {
+                    return ((Map) obj).get("negotiation").toString();
+                }
+            }
+        }
+        return "";
+    }
+
+    @SuppressWarnings("rawtypes")
+    public String getGatewayAuthCheckOkPtn() {
+        if (this.gateway == null) {
+            return "";
+        }
+        if (this.gateway.containsKey("authcheck")) {
+            Object obj = this.gateway.get("authcheck");
+            if (obj instanceof Map) {
+                if (((Map) obj).containsKey("ok")) {
+                    return ((Map) obj).get("ok").toString();
+                }
+            }
+        }
+        return "";
+    }
+
+    @SuppressWarnings("rawtypes")
+    public String getGatewayAuthCheckNgPtn() {
+        if (this.gateway == null) {
+            return "";
+        }
+        if (this.gateway.containsKey("authcheck")) {
+            Object obj = this.gateway.get("authcheck");
+            if (obj instanceof Map) {
+                if (((Map) obj).containsKey("ng")) {
+                    return ((Map) obj).get("ng").toString();
+                }
+            }
         }
         return "";
     }

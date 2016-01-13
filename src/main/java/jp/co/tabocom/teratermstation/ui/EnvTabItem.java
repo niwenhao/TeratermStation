@@ -27,10 +27,13 @@ import java.util.TreeMap;
 
 import jp.co.tabocom.teratermstation.Main;
 import jp.co.tabocom.teratermstation.model.Category;
+import jp.co.tabocom.teratermstation.model.Gateway;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
+import jp.co.tabocom.teratermstation.telnet.AuthCheckTelnetWorker;
+import jp.co.tabocom.teratermstation.telnet.SWPropertyChangeListener;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
@@ -106,6 +109,7 @@ public class EnvTabItem extends TabItem {
     private Text usrTxt;
     private Text pwdTxt;
     private Button idPwdMemoryBtn;
+    private Button authCheckBtn;
     private Text filterTxt;
     private Button allCheckBtn;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -190,7 +194,7 @@ public class EnvTabItem extends TabItem {
 
         // ==================== 認証設定グループ ====================
         Group authGrp = new Group(composite, SWT.NONE);
-        GridLayout authGrpLt = new GridLayout(4, false);
+        GridLayout authGrpLt = new GridLayout(5, false);
         authGrpLt.marginWidth = 10;
         authGrpLt.horizontalSpacing = 10;
         authGrp.setLayout(authGrpLt);
@@ -287,6 +291,22 @@ public class EnvTabItem extends TabItem {
             }
         });
 
+        // ---------- 認証チェックボタン ----------
+        authCheckBtn = new Button(authGrp, SWT.PUSH);
+        authCheckBtn.setImage(new Image(getDisplay(), Main.class.getClassLoader().getResourceAsStream("check_icon.png")));
+        authCheckBtn.setText("認証チェック");
+        authCheckBtn.setEnabled(false);
+        authCheckBtn.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                directCheck();
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) {
+            }
+        });
+
         // ---------- サーバフィルタリング ----------
         filterTxt = new Text(composite, SWT.BORDER);
         GridData filterTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
@@ -370,7 +390,7 @@ public class EnvTabItem extends TabItem {
                     }
                 }
             });
-            
+
             chkTree.addDoubleClickListener(new IDoubleClickListener() {
                 @Override
                 public void doubleClick(DoubleClickEvent event) {
@@ -544,6 +564,7 @@ public class EnvTabItem extends TabItem {
         if (this.usrTxt.getText().isEmpty() || this.pwdTxt.getText().isEmpty()) {
             this.authInputStatus = false;
             this.idPwdMemoryBtn.setEnabled(false);
+            this.authCheckBtn.setEnabled(false);
             if (this.authFlg) {
                 this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.FALSE);
             } else {
@@ -552,8 +573,26 @@ public class EnvTabItem extends TabItem {
         } else {
             this.authInputStatus = true;
             this.idPwdMemoryBtn.setEnabled(this.memoryPwdFlg);
+            this.authCheckBtn.setEnabled(this.isValidAuthCheck());
             this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.TRUE);
         }
+    }
+
+    private boolean isValidAuthCheck() {
+        Gateway gateway = this.tab.getGateway();
+        if (gateway == null) {
+            return false;
+        }
+        if (gateway.getAuthcheck() == null || gateway.getAuthcheck().isEmpty()) {
+            return false;
+        }
+        if (gateway.getAuthcheckOkPtn() == null || gateway.getAuthcheckOkPtn().isEmpty()) {
+            return false;
+        }
+        if (gateway.getAuthcheckNgPtn() == null || gateway.getAuthcheckNgPtn().isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -571,6 +610,47 @@ public class EnvTabItem extends TabItem {
                 main.setWindowTitle(getToolTipText(node));
             }
         }
+    }
+
+    /**
+     * directCheck<br>
+     * Teratermマクロを使わずにTelnetClientを使って直接サーバに接続をして認証チェックを行います。
+     * 
+     * @param target
+     */
+    private void directCheck() {
+        String authStr = null;
+        String okPtn = this.tab.getGateway().getAuthcheckOkPtn();
+        String ngPtn = this.tab.getGateway().getAuthcheckNgPtn();
+        try {
+            authStr = genAuthCheckText();
+        } catch (Exception e) {
+            MessageDialog.openError(getParent().getShell(), "認証チェック", "認証チェック前に問題が発生しました。");
+            return;
+        }
+        final AuthCheckTelnetWorker worker = new AuthCheckTelnetWorker(authStr, okPtn, ngPtn);
+        worker.addPropertyChangeListener(new SWPropertyChangeListener(getDisplay().getActiveShell()) {
+            @Override
+            public void started() throws Exception {
+                // これはworkerがexecuteされた時に呼び出されます。
+                authCheckBtn.setEnabled(false);
+                authCheckBtn.setText("確認中...");
+            }
+
+            @Override
+            public void done() throws Exception {
+                // これはworkerの処理が完了した時に呼び出されます。
+                authCheckBtn.setText("認証チェック");
+                authCheckBtn.setEnabled(true);
+                if (worker.get()) { // worker.get()で結果を確認することができます。（doInBackgroundの戻り値）
+                    MessageDialog.openInformation(getParent().getShell(), "認証チェック", "認証に成功しました。");
+                } else {
+                    MessageDialog.openError(getParent().getShell(), "認証チェック", "認証に失敗しました。");
+                }
+            }
+        });
+        // リスナーを登録してから実行
+        worker.execute();
     }
 
     /**
@@ -728,6 +808,36 @@ public class EnvTabItem extends TabItem {
         } catch (Exception e) {
             MessageDialog.openError(getParent().getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
         }
+    }
+
+    /**
+     * genAuthCheckText<br>
+     * 認証チェック用の文字列を生成して返します。
+     * 
+     * @return 認証チェック用の文字列
+     */
+    private String genAuthCheckText() throws Exception {
+        StringBuilder word = new StringBuilder();
+        try {
+            // ---------- もろもろ情報を取得 ここから ----------
+            String authUsr = this.usrTxt.getText();
+            String authPwd = this.pwdTxt.getText();
+            // ---------- もろもろ情報を取得 ここまで ----------
+            Map<String, String> valuesMap = new TreeMap<String, String>();
+            valuesMap.put("authuser", authUsr);
+            valuesMap.put("authpassword", authPwd);
+            StrSubstitutor sub = new StrSubstitutor(valuesMap);
+            word.append(this.tab.getGateway().getGwIpAddr() + "\n");
+            if (this.tab.getGateway().getAuthcheck() != null) {
+                for (String negoLine : sub.replace(this.tab.getGateway().getAuthcheck()).split("\n")) {
+                    word.append(negoLine.trim() + "\n");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return word.toString();
     }
 
     /**
@@ -1254,7 +1364,7 @@ public class EnvTabItem extends TabItem {
         }
         return builder.toString();
     }
-    
+
     @Override
     protected void checkSubclass() {
         // super.checkSubclass();

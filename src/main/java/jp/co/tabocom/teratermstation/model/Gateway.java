@@ -6,7 +6,7 @@ import java.io.Serializable;
  * プロキシ認証などに関する情報を保持するクラスです。<br>
  * 
  * @author turbou
- *
+ * 
  */
 public class Gateway implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -24,13 +24,27 @@ public class Gateway implements Serializable {
      */
     private boolean memoryPwd;
     /**
-     *　PCがロックされた場合に認証パスワードを自動でクリアするか否か
+     * PCがロックされた場合に認証パスワードを自動でクリアするか否か
      */
     private boolean pwdAutoClear;
     /**
      * 他のタブと認証パスワードを共有する場合の共有識別子
      */
     private String pwdGroup;
+    /**
+     * 認証チェックのためのやり取り（任意）
+     */
+    private String authcheck;
+
+    /**
+     * 認証チェックのためのやり取りのOKパターン（任意）
+     */
+    private String authcheckOkPtn;
+
+    /**
+     * 認証チェックのためのやり取りNGパターン（任意）
+     */
+    private String authcheckNgPtn;
 
     public String getGwIpAddr() {
         return gwIpAddr;
@@ -70,6 +84,30 @@ public class Gateway implements Serializable {
 
     public void setPwdGroup(String pwdGroup) {
         this.pwdGroup = pwdGroup;
+    }
+
+    public String getAuthcheck() {
+        return authcheck;
+    }
+
+    public void setAuthcheck(String authcheck) {
+        this.authcheck = authcheck;
+    }
+
+    public String getAuthcheckOkPtn() {
+        return authcheckOkPtn;
+    }
+
+    public void setAuthcheckOkPtn(String authcheckOkPtn) {
+        this.authcheckOkPtn = authcheckOkPtn;
+    }
+
+    public String getAuthcheckNgPtn() {
+        return authcheckNgPtn;
+    }
+
+    public void setAuthcheckNgPtn(String authcheckNgPtn) {
+        this.authcheckNgPtn = authcheckNgPtn;
     }
 
 }
