@@ -46,30 +46,30 @@ Tera Termは4.58以上をサポートします。
   │  ｜  │  マクロ（カテゴリ）.macro  
   │  ｜  │  
   │  ｜  ├─A面  
-  │  ｜  │      DBサーバ.txt  
-  │  ｜  │      Webサーバ.txt  
-  │  ｜  │      group.yaml  
-  │  ｜  │      マクロ（A面専用）.macro  
+  │  ｜  │  DBサーバ.txt  
+  │  ｜  │  Webサーバ.txt  
+  │  ｜  │  group.yaml  
+  │  ｜  │  マクロ（A面専用）.macro  
   │  ｜  │  
   │  ｜  └─B面  
-  │  ｜          DBサーバ.txt  
-  │  ｜          APサーバ.txt  
-  │  ｜          group.yaml  
-  │  ｜          マクロ（B面専用）.macro  
+  │  ｜     DBサーバ.txt  
+  │  ｜     APサーバ.txt  
+  │  ｜     group.yaml  
+  │  ｜     マクロ（B面専用）.macro  
   │  ｜  
   │  └─ｘｘチーム利用環境  
   │      │  category.yaml  
   │      │  マクロ（カテゴリ）.macro  
   │      │  
   │      ├─C面  
-  │      │      DBサーバ.txt  
-  │      │      group.yaml  
-  │      │      マクロ（C面専用）.macro  
+  │      │  DBサーバ.txt  
+  │      │  group.yaml  
+  │      │  マクロ（C面専用）.macro  
   │      │  
   │      └─D面  
-  │              DBサーバ.txt  
-  │              group.yaml  
-  │              マクロ（D面専用）.macro  
+  │         DBサーバ.txt  
+  │         group.yaml  
+  │         マクロ（D面専用）.macro  
   │  
   └─plugins  
       プラグインjarはここに置いてください。
