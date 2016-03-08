@@ -7,6 +7,7 @@ import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,8 +35,15 @@ public class TreeViewActionGroup extends ActionGroup {
         IStructuredSelection selection = getStructuredSelection();
         TargetNode node = (TargetNode) selection.getFirstElement();
         Main main = (Main) this.shell.getData("main");
-
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+            List<MenuManager> subMenuList = plugin.getSubmenus(node, shell, selectionProvider);
+            if (subMenuList != null) {
+                menu.add(new Separator());
+                for (MenuManager subMenu : subMenuList) {
+                    menu.add(subMenu);
+                }
+            }
+
             List<TeratermStationAction> actionList = plugin.getActions(node, shell, selectionProvider);
             if (actionList != null) { // 拡張機能の無いプラグインはnullを返すので.
                 menu.add(new Separator());

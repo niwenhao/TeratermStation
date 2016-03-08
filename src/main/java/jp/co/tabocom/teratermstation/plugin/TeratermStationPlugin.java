@@ -6,6 +6,7 @@ import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -33,6 +34,20 @@ public interface TeratermStationPlugin {
      * @param preferenceStore
      */
     public void teminate(PreferenceStore preferenceStore) throws Exception;
+
+    /**
+     * TeratermStationでサーバグループやサーバの右クリックメニューに追加するサブメニューの配列を返します。<br>
+     * 右クリックメニューに追加するサブメニューがない場合はnullを返します。
+     * 
+     * @param node
+     *            選択されているノード（サーバグループかサーバ）
+     * @param shell
+     *            画面作成で必要となるベースです。これを使用してウインドウやダイアログを生成できます。
+     * @param selectionProvider
+     * @return MenuManagerの配列<br>
+     * @see TeratermStationAction
+     */
+    public List<MenuManager> getSubmenus(TargetNode node, Shell shell, ISelectionProvider selectionProvider);
 
     /**
      * TeratermStationでサーバグループやサーバの右クリックメニューに追加するアクションの配列を返します。<br>
