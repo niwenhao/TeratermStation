@@ -1,5 +1,13 @@
 package jp.co.tabocom.teratermstation.preference;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+
+import jp.co.tabocom.teratermstation.Main;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -25,7 +33,7 @@ public class BasePreferencePage extends PreferencePage {
     @Override
     protected Control createContents(Composite parent) {
         final Composite composite = new Composite(parent, SWT.NONE);
-        composite.setLayout(new GridLayout(3, false));
+        composite.setLayout(new GridLayout(4, false));
         IPreferenceStore preferenceStore = getPreferenceStore();
 
         // ========== 定義ディレクトリの場所 ========== //
@@ -47,6 +55,42 @@ public class BasePreferencePage extends PreferencePage {
                 String dir = dialog.open();
                 if (dir != null) {
                     dirTxt.setText(dir);
+                }
+            }
+        });
+
+        Button restartBtn = new Button(composite, SWT.NULL);
+        restartBtn.setText("再起動");
+        restartBtn.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+
+            public void widgetSelected(SelectionEvent event) {
+                if (!performOk()) {
+                    return;
+                }
+                String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+                File currentExecuteFile;
+                try {
+                    currentExecuteFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                    if (currentExecuteFile.getName().endsWith(".jar")) {
+                        ArrayList<String> command = new ArrayList<String>();
+                        command.add(javaBin);
+                        command.add("-jar");
+                        command.add(currentExecuteFile.getPath());
+                        ProcessBuilder builder = new ProcessBuilder(command);
+                        builder.start();
+                        getShell().getParent().getShell().close();
+                    } else if (currentExecuteFile.getName().endsWith(".exe")) {
+                        Runtime runtime = Runtime.getRuntime();
+                        runtime.exec(new String[] { currentExecuteFile.toString() });
+                        getShell().getParent().getShell().close();
+                    } else {
+                        MessageDialog.openWarning(composite.getShell(), "再起動", "jarまたはexe形式から起動された時だけ、このボタンからの再起動が可能です。");
+                    }
+                } catch (URISyntaxException | IOException e) {
+                    e.printStackTrace();
+                    MessageDialog.openError(composite.getShell(), "再起動", "再起動に失敗しました。手で再起動してください。");
                 }
             }
         });
