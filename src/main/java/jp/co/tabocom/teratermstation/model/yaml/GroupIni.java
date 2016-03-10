@@ -8,6 +8,7 @@ package jp.co.tabocom.teratermstation.model.yaml;
  * 
  * <pre>
  * --------------------------------------------------------------------------------
+ * id: group01_01
  * loginuser: kibanusr
  * loginpassword: kibanpwd
  * inifile: AWS.INI
@@ -21,6 +22,10 @@ package jp.co.tabocom.teratermstation.model.yaml;
  * 
  */
 public class GroupIni {
+    /**
+     * サーバグループID（任意）
+     */
+    private String id;
     /**
      * サーバグループ全体に適用されるTera TermのINIファイル（任意）
      */
@@ -37,6 +42,14 @@ public class GroupIni {
      * ログイン後の手続き（任意）
      */
     private String procedure;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getInifile() {
         return inifile;

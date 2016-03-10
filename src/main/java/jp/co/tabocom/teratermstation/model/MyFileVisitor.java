@@ -230,6 +230,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     TargetNode node = new TargetNode();
                     node.setFile(file);
                     node.setName(FilenameUtils.getBaseName(file.getName())); // 拡張子txtを取り除く
+                    node.setId(prop.getProperty("id"));
                     node.setHostName(prop.getProperty("hostname"));
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));
@@ -254,6 +255,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());
+                    group.setId(groupIni.getId());
                     group.setLoginUsr(groupIni.getLoginuser());
                     group.setLoginPwd(groupIni.getLoginpassword());
                     group.setIniFile(groupIni.getInifile());
