@@ -149,7 +149,9 @@ Tera Termは4.58以上をサポートします。
     loginuser = kibanusr        # ログインユーザー(任意)
     loginpassword = kibanpwd    # ログインパスワード(任意)
     inifile = SVR.INI           # TeratermのINIファイル(任意)
-- ノードIDを設定することで、プラグインからノードの判別に利用することができます。
+- ID(ノードID)を設定することで、プラグインからノードの判別に利用することができます。  
+ID(ノードID)を指定しない場合はhostname(ホスト名)の値がIDとして代用されます。  
+サーバノード全体をホスト名だけで一意に保てない場合などにID(ノードID)を設定してください。
 
 #### yaml内での変数の利用について
 connect、negotiation、procedureには以下の変数を使うことができます。
