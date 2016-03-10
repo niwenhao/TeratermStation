@@ -139,6 +139,9 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     public String getId() {
+        if (this.id == null || this.id.isEmpty()) {
+            return this.hostName;
+        }
         return id;
     }
 
