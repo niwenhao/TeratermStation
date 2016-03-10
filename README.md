@@ -94,7 +94,7 @@ Tera Termは4.58以上をサポートします。
 ### tab.yamlなど
 タブ配下の接続に適用される設定です。
 
-    # プロキシ経由の場合など
+    # プロキシ経由の場合など(任意)
     gateway:
       ipaddress: xxx.xxx.xxx.xxx    # IPアドレス
       auth: true                    # 認証が必要な場合
@@ -105,7 +105,7 @@ Tera Termは4.58以上をサポートします。
     # Teratermでの接続コマンド
     connect: connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
     
-    # 接続後のやりとりを定義
+    # 接続後のやりとりを定義(任意)
     negotiation: |
       wait 'Host name:'
       sendln '${ipaddress}'
@@ -118,34 +118,38 @@ Tera Termは4.58以上をサポートします。
       waitregex 'Password.*:'
       sendln '${loginpassword}'
     
-    loginuser: aplusr     # タブ配下の接続に適用されるログインユーザー
-    loginpassword: aplpwd # タブ配下の接続に適用されるログインパスワード
-    inifile: AWS.INI      # タブ配下の接続に適用されるTeratermのINIファイル
+    loginuser: aplusr     # タブ配下の接続に適用されるログインユーザー(任意)
+    loginpassword: aplpwd # タブ配下の接続に適用されるログインパスワード(任意)
+    inifile: AWS.INI      # タブ配下の接続に適用されるTeratermのINIファイル(任意)
 
-### category.yamlなど
-    loginuser: aplusr     # カテゴリ配下の接続に適用されるログインユーザー
-    loginpassword: aplpwd # カテゴリ配下の接続に適用されるログインパスワード
-    inifile: AWS.INI      # カテゴリ配下の接続に適用されるTeratermのINIファイル
-    # ログイン後の処理を書けます
+### category.yamlなど(category.yamlの配置自体も任意です)
+    loginuser: aplusr     # カテゴリ配下の接続に適用されるログインユーザー(任意)
+    loginpassword: aplpwd # カテゴリ配下の接続に適用されるログインパスワード(任意)
+    inifile: AWS.INI      # カテゴリ配下の接続に適用されるTeratermのINIファイル(任意)
+    # ログイン後の処理を書けます(任意)
     procedure: |
       wait ']$ '
       sendln 'pwd'
 
-### group.yamlなど
-    loginuser: aplusr     # グループ配下の接続に適用されるログインユーザー
-    loginpassword: aplpwd # グループ配下の接続に適用されるログインパスワード
-    inifile: AWS.INI      # グループ配下の接続に適用されるTeratermのINIファイル
-    # ログイン後の処理を書けます
+### group.yamlなど(group.yamlの配置自体も任意です)
+    id: group01_01        # ノードID(任意)
+    loginuser: aplusr     # グループ配下の接続に適用されるログインユーザー(任意)
+    loginpassword: aplpwd # グループ配下の接続に適用されるログインパスワード(任意)
+    inifile: AWS.INI      # グループ配下の接続に適用されるTeratermのINIファイル(任意)
+    # ログイン後の処理を書けます(任意)
     procedure: |
       wait ']$ '
       sendln 'hostname'
+- ノードIDを設定することで、プラグインからノードの判別に利用することができます。
 
 ### サーバ別接続情報(*.txt)
-    ipaddress = xxx.xxx.xxx.xxx # IPアドレス
-    hostname = websvr001        # ホスト名
-    loginuser = kibanusr        # ログインユーザー
-    loginpassword = kibanpwd    # ログインパスワード
-    inifile = SVR.INI           # TeratermのINIファイル
+    id = kibanusr@websvr001     # ノードID(任意)
+    ipaddress = xxx.xxx.xxx.xxx # IPアドレス(必須)
+    hostname = websvr001        # ホスト名(必須)
+    loginuser = kibanusr        # ログインユーザー(任意)
+    loginpassword = kibanpwd    # ログインパスワード(任意)
+    inifile = SVR.INI           # TeratermのINIファイル(任意)
+- ノードIDを設定することで、プラグインからノードの判別に利用することができます。
 
 #### yaml内での変数の利用について
 connect、negotiation、procedureには以下の変数を使うことができます。
