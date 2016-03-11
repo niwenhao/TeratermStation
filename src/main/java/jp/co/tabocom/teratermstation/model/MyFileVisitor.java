@@ -267,6 +267,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     TargetNode node = new TargetNode();
                     node.setFile(file);
                     node.setName(FilenameUtils.getBaseName(file.getName())); // 拡張子txtを取り除く
+                    node.setId(prop.getProperty("id"));
                     node.setHostName(prop.getProperty("hostname"));
                     node.setIpAddr(prop.getProperty("ipaddress"));
                     node.setLoginUsr(prop.getProperty("loginuser"));
