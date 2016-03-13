@@ -12,12 +12,18 @@ TeratermStationの基本機能はteratermの接続を便利にする機能がメ
 拡張プラグインをサポートすることで、目的のサーバに対して、または目的のサーバから何かを  
 行うための任意の機能をTeratermStationに持たせることができます。  
 
+***
+
 #### スクリーンショット
 ![screenshot](https://github.com/turbou/TeratermStation/wiki/images/screenshot.png)
+
+***
 
 #### 動作条件
 - Tera Term 4.58以上がインストールされている。
 - JRE1.7以上がインストールされている。
+
+***
 
 #### 接続情報の設定
 TeratermStationではサーバへの接続情報をPC上の通常のフォルダツリーから  
