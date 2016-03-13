@@ -50,3 +50,5 @@ TeratermStationではこのようにツール本体とは独立して接続設�
 - 共有フォルダにアーカイブした接続定義フォルダを配置して取得させる。
 - 共有フォルダにそのまま接続定義フォルダを置いておく。
 のような方法で展開することもできます。
+
+TeratermStationの詳細については[Wiki](https://github.com/turbou/TeratermStation/wiki)を参照してください。
