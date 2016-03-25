@@ -2,11 +2,14 @@ package jp.co.tabocom.teratermstation.preference;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import jp.co.tabocom.teratermstation.Main;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -90,6 +93,12 @@ public class BasePreferencePage extends PreferencePage {
                     }
                 } catch (URISyntaxException | IOException e) {
                     e.printStackTrace();
+                    StringWriter stringWriter = new StringWriter();
+                    PrintWriter printWriter = new PrintWriter(stringWriter);
+                    e.printStackTrace(printWriter);
+                    Logger logger = Logger.getLogger("conntool");
+                    String trace = stringWriter.toString();
+                    logger.error(trace);
                     MessageDialog.openError(composite.getShell(), "再起動", "再起動に失敗しました。手で再起動してください。");
                 }
             }
