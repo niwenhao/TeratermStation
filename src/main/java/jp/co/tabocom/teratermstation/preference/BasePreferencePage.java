@@ -72,10 +72,12 @@ public class BasePreferencePage extends PreferencePage {
                 if (!performOk()) {
                     return;
                 }
+                Logger logger = Logger.getLogger("conntool");
                 String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
                 File currentExecuteFile;
                 try {
                     currentExecuteFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                    logger.info(String.format("Restart: %s", currentExecuteFile));
                     if (currentExecuteFile.getName().endsWith(".jar")) {
                         ArrayList<String> command = new ArrayList<String>();
                         command.add(javaBin);
@@ -96,7 +98,6 @@ public class BasePreferencePage extends PreferencePage {
                     StringWriter stringWriter = new StringWriter();
                     PrintWriter printWriter = new PrintWriter(stringWriter);
                     e.printStackTrace(printWriter);
-                    Logger logger = Logger.getLogger("conntool");
                     String trace = stringWriter.toString();
                     logger.error(trace);
                     MessageDialog.openError(composite.getShell(), "再起動", "再起動に失敗しました。手で再起動してください。");
