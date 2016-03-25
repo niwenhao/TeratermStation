@@ -1170,16 +1170,18 @@ public class EnvTabItem extends TabItem {
                 builder.append("@");
                 builder.append(node.getIpAddr());
                 if (node.getHostName() != null) {
-                    builder.append(" [");
-                    builder.append(node.getHostName());
-                    builder.append("]");
+                    builder.append(String.format("(%s)", node.getHostName()));
+                }
+                if (node.getId() != null && !node.getId().isEmpty() && !node.getHostName().equals(node.getId())) {
+                    builder.append(String.format("[%s]", node.getId()));
                 }
             } else {
                 // 要は親（サーバ種別）の場合
                 builder.append(node.getName());
-                builder.append("(");
-                builder.append(node.getChildren().size());
-                builder.append("台)");
+                builder.append(String.format("(%s台)", node.getChildren().size()));
+                if (node.getId() != null && !node.getId().isEmpty()) {
+                    builder.append(String.format("[%s]", node.getId()));
+                }
             }
             return builder.toString();
         }
