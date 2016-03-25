@@ -175,50 +175,12 @@ public class TabIni {
         return "";
     }
 
-    @SuppressWarnings("rawtypes")
-    public String getGatewayAuthCheckNegotiation() {
+    public String getGatewayAuthCheck() {
         if (this.gateway == null) {
             return "";
         }
         if (this.gateway.containsKey("authcheck")) {
-            Object obj = this.gateway.get("authcheck");
-            if (obj instanceof Map) {
-                if (((Map) obj).containsKey("negotiation")) {
-                    return ((Map) obj).get("negotiation").toString();
-                }
-            }
-        }
-        return "";
-    }
-
-    @SuppressWarnings("rawtypes")
-    public String getGatewayAuthCheckOkPtn() {
-        if (this.gateway == null) {
-            return "";
-        }
-        if (this.gateway.containsKey("authcheck")) {
-            Object obj = this.gateway.get("authcheck");
-            if (obj instanceof Map) {
-                if (((Map) obj).containsKey("ok")) {
-                    return ((Map) obj).get("ok").toString();
-                }
-            }
-        }
-        return "";
-    }
-
-    @SuppressWarnings("rawtypes")
-    public String getGatewayAuthCheckNgPtn() {
-        if (this.gateway == null) {
-            return "";
-        }
-        if (this.gateway.containsKey("authcheck")) {
-            Object obj = this.gateway.get("authcheck");
-            if (obj instanceof Map) {
-                if (((Map) obj).containsKey("ng")) {
-                    return ((Map) obj).get("ng").toString();
-                }
-            }
+            return this.gateway.get("authcheck").toString();
         }
         return "";
     }
@@ -235,7 +197,8 @@ public class TabIni {
         builder.append(String.format("gateway_auth               : %s\n", isGatewayAuth()));
         builder.append(String.format("gateway_password_memory    : %s\n", isGatewayPasswordMemory()));
         builder.append(String.format("gateway_password_autoclear : %s\n", isGatewayPasswordAutoclear()));
-        builder.append(String.format("gateway_password_group     : %s", getGatewayPasswordGroup()));
+        builder.append(String.format("gateway_password_group     : %s\n", getGatewayPasswordGroup()));
+        builder.append(String.format("gateway_authcheck          : %s", getGatewayAuthCheck()));
         return builder.toString();
     }
 

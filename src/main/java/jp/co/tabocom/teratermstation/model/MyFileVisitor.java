@@ -188,9 +188,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     gw.setMemoryPwd(tabIni.isGatewayPasswordMemory());
                     gw.setPwdAutoClear(tabIni.isGatewayPasswordAutoclear());
                     gw.setPwdGroup(tabIni.getGatewayPasswordGroup());
-                    gw.setAuthcheck(tabIni.getGatewayAuthCheckNegotiation());
-                    gw.setAuthcheckOkPtn(tabIni.getGatewayAuthCheckOkPtn());
-                    gw.setAuthcheckNgPtn(tabIni.getGatewayAuthCheckNgPtn());
+                    gw.setAuthcheck(tabIni.getGatewayAuthCheck());
 
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     tab.setConnect(tabIni.getConnect());

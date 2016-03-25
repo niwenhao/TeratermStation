@@ -32,8 +32,6 @@ import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
-import jp.co.tabocom.teratermstation.telnet.AuthCheckTelnetWorker;
-import jp.co.tabocom.teratermstation.telnet.SWPropertyChangeListener;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
@@ -586,12 +584,6 @@ public class EnvTabItem extends TabItem {
         if (gateway.getAuthcheck() == null || gateway.getAuthcheck().isEmpty()) {
             return false;
         }
-        if (gateway.getAuthcheckOkPtn() == null || gateway.getAuthcheckOkPtn().isEmpty()) {
-            return false;
-        }
-        if (gateway.getAuthcheckNgPtn() == null || gateway.getAuthcheckNgPtn().isEmpty()) {
-            return false;
-        }
         return true;
     }
 
@@ -619,38 +611,100 @@ public class EnvTabItem extends TabItem {
      * @param target
      */
     private void directCheck() {
-        String authStr = null;
-        String okPtn = this.tab.getGateway().getAuthcheckOkPtn();
-        String ngPtn = this.tab.getGateway().getAuthcheckNgPtn();
-        try {
-            authStr = genAuthCheckText();
-        } catch (Exception e) {
-            MessageDialog.openError(getParent().getShell(), "認証チェック", "認証チェック前に問題が発生しました。");
-            return;
+        // 設定クラスを取得
+        Main main = (Main) getParent().getShell().getData("main");
+        IPreferenceStore ps = main.getPreferenceStore();
+        // まずはTTLファイルを作成するディレクトリを取得
+        String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
+        if (this.authFlg) {
+            ttlDir = ttlDir + "\\" + this.usrTxt.getText();
+            if (!makeUserDirectory(ttlDir)) {
+                return;
+            }
         }
-        final AuthCheckTelnetWorker worker = new AuthCheckTelnetWorker(authStr, okPtn, ngPtn);
-        worker.addPropertyChangeListener(new SWPropertyChangeListener(getDisplay().getActiveShell()) {
-            @Override
-            public void started() throws Exception {
-                // これはworkerがexecuteされた時に呼び出されます。
-                authCheckBtn.setEnabled(false);
-                authCheckBtn.setText("確認中...");
-            }
-
-            @Override
-            public void done() throws Exception {
-                // これはworkerの処理が完了した時に呼び出されます。
-                authCheckBtn.setText("認証チェック");
-                authCheckBtn.setEnabled(true);
-                if (worker.get()) { // worker.get()で結果を確認することができます。（doInBackgroundの戻り値）
-                    MessageDialog.openInformation(getParent().getShell(), "認証チェック", "認証に成功しました。");
-                } else {
-                    MessageDialog.openError(getParent().getShell(), "認証チェック", "認証に失敗しました。");
+        // ========== ファイルパス生成 ここから ==========
+        // 例） C:\library\work\4面-新WebAP_con_t-shiozaki.ttl
+        StringBuilder ttlFile = new StringBuilder(ttlDir);
+        ttlFile.append("\\authcheck_");
+        ttlFile.append(this.usrTxt.getText());
+        ttlFile.append(".ttl");
+        // ========== ファイルパス生成 ここまで ==========
+        File outputFile = new File(ttlFile.toString());
+        try {
+            String ttlCharCode = ps.getString(PreferenceConstants.TTL_CHARCODE);
+            FileOutputStream fos = new FileOutputStream(outputFile);
+            OutputStreamWriter osw = null;
+            if (ttlCharCode != null && !ttlCharCode.isEmpty()) {
+                try {
+                    osw = new OutputStreamWriter(fos, ttlCharCode);
+                } catch (UnsupportedEncodingException uee) {
+                    osw = new OutputStreamWriter(fos, "Shift_JIS");
                 }
+            } else {
+                osw = new OutputStreamWriter(fos, "Shift_JIS");
             }
-        });
-        // リスナーを登録してから実行
-        worker.execute();
+            PrintWriter pw = new PrintWriter(osw);
+            try {
+                // ++++++++++++++++++++ 接続、認証文字列の取得 ++++++++++++++++++++ //
+                // ---------- もろもろ情報を取得 ここから ----------
+                String authUsr = this.usrTxt.getText();
+                String authPwd = this.pwdTxt.getText();
+                // INIファイル
+                String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
+                String logDir = ps.getString(PreferenceConstants.LOG_DIR);
+                String workDir = ps.getString(PreferenceConstants.WORK_DIR);
+                // ---------- もろもろ情報を取得 ここまで ----------
+                Map<String, String> valuesMap = new TreeMap<String, String>();
+                valuesMap.put("authuser", authUsr);
+                valuesMap.put("authpassword", authPwd);
+                if (this.tab.getGateway() != null) {
+                    valuesMap.put("gateway_ipaddress", this.tab.getGateway().getGwIpAddr());
+                }
+                valuesMap.put("inidir", iniDir);
+                valuesMap.put("logdir", logDir);
+                valuesMap.put("workdir", workDir);
+
+                StrSubstitutor sub = new StrSubstitutor(valuesMap);
+                String NEW_LINE = System.getProperty("line.separator");
+                StringBuilder word = new StringBuilder();
+
+                String magicPwd = ps.getString(PreferenceConstants.TTL_AUTH_PWD_HIDE);
+                if (magicPwd == null || magicPwd.isEmpty()) {
+                    magicPwd = "PASSWORD";
+                }
+                if (this.tab.getGateway().getAuthcheck().contains(magicPwd)) {
+                    word.append(magicPwd + "=param2" + NEW_LINE); // 認証パスワードはセキュリティのためマクロ実行引数で渡します。
+                    word.append("strlen " + magicPwd + NEW_LINE);
+                    word.append("if result = 0 then" + NEW_LINE);
+                    word.append("    passwordbox 'パスワードを入力してください。[" + authUsr + "]' '認証'" + NEW_LINE);
+                    word.append("    strlen inputstr" + NEW_LINE);
+                    word.append("    if result = 0 then" + NEW_LINE);
+                    word.append("        exit" + NEW_LINE);
+                    word.append("    else" + NEW_LINE);
+                    word.append("        " + magicPwd + "=inputstr" + NEW_LINE);
+                    word.append("    endif" + NEW_LINE);
+                    word.append("endif" + NEW_LINE);
+                }
+
+                for (String authCheckLine : sub.replace(this.tab.getGateway().getAuthcheck()).split("\r\n")) {
+                    word.append(authCheckLine.trim() + NEW_LINE);
+                }
+                pw.println(word.toString());
+            } catch (Exception e) {
+                MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
+                return;
+            } finally {
+                pw.close();
+            }
+            Runtime runtime = Runtime.getRuntime();
+            String pwdArg = this.pwdTxt.getText();
+            String ttpmacroexe = ps.getString(PreferenceConstants.TTPMACRO_EXE);
+            runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
+        } catch (FileNotFoundException fnfe) {
+            MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
+        } catch (Exception e) {
+            MessageDialog.openError(getParent().getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
+        }
     }
 
     /**
@@ -808,36 +862,6 @@ public class EnvTabItem extends TabItem {
         } catch (Exception e) {
             MessageDialog.openError(getParent().getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
         }
-    }
-
-    /**
-     * genAuthCheckText<br>
-     * 認証チェック用の文字列を生成して返します。
-     * 
-     * @return 認証チェック用の文字列
-     */
-    private String genAuthCheckText() throws Exception {
-        StringBuilder word = new StringBuilder();
-        try {
-            // ---------- もろもろ情報を取得 ここから ----------
-            String authUsr = this.usrTxt.getText();
-            String authPwd = this.pwdTxt.getText();
-            // ---------- もろもろ情報を取得 ここまで ----------
-            Map<String, String> valuesMap = new TreeMap<String, String>();
-            valuesMap.put("authuser", authUsr);
-            valuesMap.put("authpassword", authPwd);
-            StrSubstitutor sub = new StrSubstitutor(valuesMap);
-            word.append(this.tab.getGateway().getGwIpAddr() + "\n");
-            if (this.tab.getGateway().getAuthcheck() != null) {
-                for (String negoLine : sub.replace(this.tab.getGateway().getAuthcheck()).split("\n")) {
-                    word.append(negoLine.trim() + "\n");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        return word.toString();
     }
 
     /**

@@ -36,16 +36,6 @@ public class Gateway implements Serializable {
      */
     private String authcheck;
 
-    /**
-     * 認証チェックのためのやり取りのOKパターン（任意）
-     */
-    private String authcheckOkPtn;
-
-    /**
-     * 認証チェックのためのやり取りNGパターン（任意）
-     */
-    private String authcheckNgPtn;
-
     public String getGwIpAddr() {
         return gwIpAddr;
     }
@@ -92,22 +82,6 @@ public class Gateway implements Serializable {
 
     public void setAuthcheck(String authcheck) {
         this.authcheck = authcheck;
-    }
-
-    public String getAuthcheckOkPtn() {
-        return authcheckOkPtn;
-    }
-
-    public void setAuthcheckOkPtn(String authcheckOkPtn) {
-        this.authcheckOkPtn = authcheckOkPtn;
-    }
-
-    public String getAuthcheckNgPtn() {
-        return authcheckNgPtn;
-    }
-
-    public void setAuthcheckNgPtn(String authcheckNgPtn) {
-        this.authcheckNgPtn = authcheckNgPtn;
     }
 
 }
