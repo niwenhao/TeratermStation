@@ -1,20 +1,7 @@
-﻿gateway:
-  ipaddress: 192.177.237.12
-  errptn: authentication failed
-  auth: true
-  password_memory: true
-  password_autoclear: false
-  password_group: oyoyo
-
-connect: connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
-
-negotiation: |
+﻿connect: |
+  connect '192.177.237.12 /nossh /T=1 /f="${inifile}"'
   wait 'Host name:'
   sendln '${ipaddress}'
-  wait 'Username:'
-  sendln '${authuser}'
-  wait 'Password:'
-  sendln '${authpassword}'
   wait 'login:'
   sendln '${loginuser}'
   waitregex 'Password.*:'

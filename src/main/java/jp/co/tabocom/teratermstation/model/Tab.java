@@ -17,9 +17,8 @@ public class Tab implements Serializable {
     private String name;
     private String dirPath;
     private String iconPath;
-    private Gateway gateway;
+    private Auth auth;
     private String connect;
-    private String negotiation;
     private String loginUsr;
     private String loginPwd;
     private String iniFile;
@@ -66,12 +65,12 @@ public class Tab implements Serializable {
         this.iconPath = iconPath;
     }
 
-    public Gateway getGateway() {
-        return gateway;
+    public Auth getAuth() {
+        return auth;
     }
 
-    public void setGateway(Gateway gateway) {
-        this.gateway = gateway;
+    public void setAuth(Auth auth) {
+        this.auth = auth;
     }
 
     public String getConnect() {
@@ -80,14 +79,6 @@ public class Tab implements Serializable {
 
     public void setConnect(String connect) {
         this.connect = connect;
-    }
-
-    public String getNegotiation() {
-        return negotiation;
-    }
-
-    public void setNegotiation(String negotiation) {
-        this.negotiation = negotiation;
     }
 
     public String getLoginUsr() {

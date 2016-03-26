@@ -182,18 +182,18 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     TabIni tabIni = yaml.loadAs(is, TabIni.class);
                     is.close();
                     System.out.println(tabIni);
-                    Gateway gw = new Gateway();
-                    gw.setGwIpAddr(tabIni.getGatewayIpaddress());
-                    gw.setAuth(tabIni.isGatewayAuth());
-                    gw.setMemoryPwd(tabIni.isGatewayPasswordMemory());
-                    gw.setPwdAutoClear(tabIni.isGatewayPasswordAutoclear());
-                    gw.setPwdGroup(tabIni.getGatewayPasswordGroup());
-                    gw.setAuthcheck(tabIni.getGatewayAuthCheck());
+                    Auth auth = null;
+                    if (tabIni.getAuth() != null) {
+                        auth = new Auth();
+                        auth.setMemory(tabIni.isAuthMemory());
+                        auth.setAutoclear(tabIni.isAuthAutoclear());
+                        auth.setGroup(tabIni.getAuthGroup());
+                        auth.setCheck(tabIni.getAuthCheck());
+                    }
 
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     tab.setConnect(tabIni.getConnect());
-                    tab.setGateway(gw);
-                    tab.setNegotiation(tabIni.getNegotiation());
+                    tab.setAuth(auth);
                     tab.setLoginUsr(tabIni.getLoginuser());
                     tab.setLoginPwd(tabIni.getLoginpassword());
                     tab.setIniFile(tabIni.getInifile());

@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import jp.co.tabocom.teratermstation.Main;
+import jp.co.tabocom.teratermstation.model.Auth;
 import jp.co.tabocom.teratermstation.model.Category;
-import jp.co.tabocom.teratermstation.model.Gateway;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
@@ -163,11 +163,11 @@ public class EnvTabItem extends TabItem {
             }
         }
         this.categoryMap = targetMapCopy(this.defaultCategoryMap);
-        if (this.tab.getGateway() != null) {
-            this.authFlg = this.tab.getGateway().isAuth();
-            this.memoryPwdFlg = this.tab.getGateway().isMemoryPwd();
-            this.pwdAutoClearFlg = this.tab.getGateway().isPwdAutoClear();
-            this.pwdGroup = this.tab.getGateway().getPwdGroup();
+        if (this.tab.getAuth() != null) {
+            this.authFlg = true;
+            this.memoryPwdFlg = this.tab.getAuth().isMemory();
+            this.pwdAutoClearFlg = this.tab.getAuth().isAutoclear();
+            this.pwdGroup = this.tab.getAuth().getGroup();
         }
 
         if (this.tab.getIconPath() != null && !this.tab.getIconPath().isEmpty()) {
@@ -507,14 +507,14 @@ public class EnvTabItem extends TabItem {
         this.usrTxt.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 authInputChange();
-                propertyChangeSupport.firePropertyChange("authUsr", null, tab.getGateway().getPwdGroup() + "/" + usrTxt.getText());
+                propertyChangeSupport.firePropertyChange("authUsr", null, tab.getAuth().getGroup() + "/" + usrTxt.getText());
             }
         });
 
         this.pwdTxt.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 authInputChange();
-                propertyChangeSupport.firePropertyChange("authPwd", null, tab.getGateway().getPwdGroup() + "/" + pwdTxt.getText());
+                propertyChangeSupport.firePropertyChange("authPwd", null, tab.getAuth().getGroup() + "/" + pwdTxt.getText());
             }
         });
 
@@ -577,11 +577,11 @@ public class EnvTabItem extends TabItem {
     }
 
     private boolean isValidAuthCheck() {
-        Gateway gateway = this.tab.getGateway();
-        if (gateway == null) {
+        Auth auth = this.tab.getAuth();
+        if (auth == null) {
             return false;
         }
-        if (gateway.getAuthcheck() == null || gateway.getAuthcheck().isEmpty()) {
+        if (auth.getCheck() == null || auth.getCheck().isEmpty()) {
             return false;
         }
         return true;
@@ -657,9 +657,6 @@ public class EnvTabItem extends TabItem {
                 Map<String, String> valuesMap = new TreeMap<String, String>();
                 valuesMap.put("authuser", authUsr);
                 valuesMap.put("authpassword", authPwd);
-                if (this.tab.getGateway() != null) {
-                    valuesMap.put("gateway_ipaddress", this.tab.getGateway().getGwIpAddr());
-                }
                 valuesMap.put("inidir", iniDir);
                 valuesMap.put("logdir", logDir);
                 valuesMap.put("workdir", workDir);
@@ -672,7 +669,7 @@ public class EnvTabItem extends TabItem {
                 if (magicPwd == null || magicPwd.isEmpty()) {
                     magicPwd = "PASSWORD";
                 }
-                if (this.tab.getGateway().getAuthcheck().contains(magicPwd)) {
+                if (this.tab.getAuth().getCheck().contains(magicPwd)) {
                     word.append(magicPwd + "=param2" + NEW_LINE); // 認証パスワードはセキュリティのためマクロ実行引数で渡します。
                     word.append("strlen " + magicPwd + NEW_LINE);
                     word.append("if result = 0 then" + NEW_LINE);
@@ -686,7 +683,7 @@ public class EnvTabItem extends TabItem {
                     word.append("endif" + NEW_LINE);
                 }
 
-                for (String authCheckLine : sub.replace(this.tab.getGateway().getAuthcheck()).split("\r\n")) {
+                for (String authCheckLine : sub.replace(this.tab.getAuth().getCheck()).split("\r\n")) {
                     word.append(authCheckLine.trim() + NEW_LINE);
                 }
                 pw.println(word.toString());
@@ -934,9 +931,6 @@ public class EnvTabItem extends TabItem {
             valuesMap.put("ipaddress", ipAddr);
             valuesMap.put("loginuser", loginUsr);
             valuesMap.put("loginpassword", loginPwd);
-            if (this.tab.getGateway() != null) {
-                valuesMap.put("gateway_ipaddress", this.tab.getGateway().getGwIpAddr());
-            }
             valuesMap.put("inidir", iniDir);
             valuesMap.put("inifile", iniFile);
             valuesMap.put("logdir", logDir);
@@ -947,12 +941,12 @@ public class EnvTabItem extends TabItem {
             String connect = sub.replace(this.tab.getConnect());
 
             String NEW_LINE = System.getProperty("line.separator");
-            if (this.tab.getNegotiation() != null && this.authFlg) {
+            if (this.authFlg) {
                 String magicPwd = ps.getString(PreferenceConstants.TTL_AUTH_PWD_HIDE);
                 if (magicPwd == null || magicPwd.isEmpty()) {
                     magicPwd = "PASSWORD";
                 }
-                if (this.tab.getNegotiation().contains(magicPwd)) {
+                if (connect.contains(magicPwd)) {
                     word.append(magicPwd + "=param2" + NEW_LINE); // 認証パスワードはセキュリティのためマクロ実行引数で渡します。
                     word.append("strlen " + magicPwd + NEW_LINE);
                     word.append("if result = 0 then" + NEW_LINE);
@@ -966,14 +960,11 @@ public class EnvTabItem extends TabItem {
                     word.append("endif" + NEW_LINE);
                 }
             }
-            word.append(connect + NEW_LINE);
+            for (String line : sub.replace(connect).split("\r\n")) {
+                word.append(line.trim() + NEW_LINE);
+            }
             word.append("settitle '" + seqNo + svrType + " - " + targetSvr + "'" + NEW_LINE); // タイトルはサーバ種別とサーバ名
             word.append(genLogOpen(node));
-            if (this.tab.getNegotiation() != null) {
-                for (String negoLine : sub.replace(this.tab.getNegotiation()).split("\r\n")) {
-                    word.append(negoLine.trim() + NEW_LINE);
-                }
-            }
             // ここまで
             if (node.getProcedure() != null) {
                 String procedure = sub.replace(node.getProcedure());
@@ -1306,15 +1297,15 @@ public class EnvTabItem extends TabItem {
 
     public void setAuthUsrPwdText(String usrGrp, String usr, String pwdGrp, String pwd) {
         if (usrGrp != null && usr != null) {
-            if (this.tab.getGateway() != null) {
-                if (usrGrp.equals(this.tab.getGateway().getPwdGroup())) {
+            if (this.tab.getAuth() != null) {
+                if (usrGrp.equals(this.tab.getAuth().getGroup())) {
                     this.usrTxt.setText(usr);
                 }
             }
         }
         if (pwdGrp != null && pwd != null) {
-            if (this.tab.getGateway() != null) {
-                if (pwdGrp.equals(this.tab.getGateway().getPwdGroup())) {
+            if (this.tab.getAuth() != null) {
+                if (pwdGrp.equals(this.tab.getAuth().getGroup())) {
                     this.pwdTxt.setText(pwd);
                 }
             }
