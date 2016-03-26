@@ -40,6 +40,8 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     private Map<String, Tab> tabMap;
     private List<String> orderList;
     private String iniFile;
+    
+    private StringBuilder fmtNgMsgBuilder;
 
     /**
      * デフォルトコンストラクタ
@@ -51,6 +53,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         this.depthCnt = depthCnt;
         this.tabMap = new HashMap<String, Tab>();
         this.orderList = new ArrayList<String>();
+        this.fmtNgMsgBuilder = new StringBuilder();
     }
 
     @Override
@@ -140,6 +143,14 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     InputStream is = new FileInputStream(file);
                     SettingsIni settingsIni = yaml.loadAs(is, SettingsIni.class);
                     is.close();
+                    if (settingsIni == null) {
+                        break;
+                    }
+                    String ngMsg = settingsIni.validate();
+                    if (ngMsg != null) {
+                        fmtNgMsgBuilder.append(String.format("%s\r\n", file));
+                        fmtNgMsgBuilder.append(ngMsg);
+                    }
                     System.out.println(settingsIni);
                     this.width = settingsIni.getWidth();
                     this.height = settingsIni.getHeight();
@@ -181,6 +192,11 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     InputStream is = new FileInputStream(file);
                     TabIni tabIni = yaml.loadAs(is, TabIni.class);
                     is.close();
+                    String ngMsg = tabIni.validate();
+                    if (ngMsg != null) {
+                        fmtNgMsgBuilder.append(String.format("%s\r\n", file));
+                        fmtNgMsgBuilder.append(ngMsg);
+                    }
                     System.out.println(tabIni);
                     Auth auth = null;
                     if (tabIni.getAuth() != null) {
@@ -316,4 +332,9 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     public List<String> getOrderList() {
         return orderList;
     }
+
+    public StringBuilder getFmtNgMsgBuilder() {
+        return fmtNgMsgBuilder;
+    }
+
 }

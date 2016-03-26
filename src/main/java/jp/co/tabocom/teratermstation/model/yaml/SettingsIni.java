@@ -80,19 +80,47 @@ public class SettingsIni {
     }
 
     public String getInitialTtpmacroexe() {
-        return this.initial.get("ttpmacroexe").toString();
+        if (this.initial == null) {
+            return "";
+        }
+        if (this.initial.containsKey("ttpmacroexe")) {
+            return this.initial.get("ttpmacroexe").toString();
+        }
+        return "";
     }
 
     public String getInitialDirWork() {
-        return this.initial.get("dir_work").toString();
+        if (this.initial == null) {
+            return "";
+        }
+        if (this.initial.containsKey("dir_work")) {
+            return this.initial.get("dir_work").toString();
+        }
+        return "";
     }
 
     public String getInitialDirLog() {
-        return this.initial.get("dir_log").toString();
+        if (this.initial == null) {
+            return "";
+        }
+        if (this.initial.containsKey("dir_log")) {
+            return this.initial.get("dir_log").toString();
+        }
+        return "";
     }
 
     public String getInitialDirIni() {
-        return this.initial.get("dir_ini").toString();
+        if (this.initial == null) {
+            return "";
+        }
+        if (this.initial.containsKey("dir_ini")) {
+            return this.initial.get("dir_ini").toString();
+        }
+        return "";
+    }
+
+    public String validate() {
+        return null;
     }
 
     @Override

@@ -10,26 +10,32 @@ import java.util.Map;
  *
  * <pre>
  * --------------------------------------------------------------------------------
- * gateway:
- *   ipaddress: 192.177.237.111
- *   auth: true
- *   password_memory: true
- *   password_autoclear: false
- *   password_group: dev
- *   authcheck:
- *     negotiation: |
- *       wait 'Host name:'
- *       sendln '192.177.238.100'
- *       wait 'Username:'
- *       sendln '${authuser}'
- *       wait 'Password:'
- *       sendln '${authpassword}'
- *     ok: 'login:'
- *     ng: 'Username:'
+ * auth:
+ *   memory: true
+ *   autoclear: true
+ *   group: oyoyo
+ *   check: |
+ *     show -1
+ *     connect '192.177.237.12 /nossh /T=1 /f="${inifile}"'
+ *     showtt -1
+ *     wait 'Host name:'
+ *     sendln '192.177.238.204'
+ *     wait 'Username:'
+ *     sendln '${authuser}'
+ *     wait 'Password:'
+ *     sendln '${authpassword}'
+ *     wait 'login:' 'autentication failed'
+ *     if result=1 then
+ *         messagebox '認証に成功しました。' '認証成功'
+ *     endif
+ *     if result=2 then
+ *         messagebox 'ユーザーまたはパスワードが正しくないようです。' '認証エラー'
+ *     endif
+ *     closett
+ *     end
  * 
- * connect: connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
- * 
- * negotiation: |
+ * connect: |
+ *   connect '${gateway_ipaddress} /nossh /T=1 /f="${inifile}"'
  *   wait 'Host name:'
  *   sendln '${ipaddress}'
  *   wait 'Username:'
@@ -153,6 +159,17 @@ public class TabIni {
         return null;
     }
 
+    public String validate() {
+        StringBuilder builder = new StringBuilder();
+        if (this.connect == null || this.connect.isEmpty()) {
+            builder.append("- connect: がありません。");
+        }
+        if (builder.length() > 0) {
+            return builder.toString();
+        }
+        return null;
+    }
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.co.tabocom.teratermstation.exception.FormatException;
 import jp.co.tabocom.teratermstation.model.Initial;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.ToolDefinition;
@@ -260,6 +261,8 @@ public class Main implements PropertyChangeListener, WindowProc {
                     }
                     loadDirErrorMsg = builder.toString();
                 }
+            } catch (FormatException fe) {
+                loadDirErrorMsg = fe.getMessage();
             } catch (Exception e) {
                 loadDirErrorMsg = "サーバ定義の読み込みに失敗したため、サンプル定義(sample)でツールを起動します。\r\nご指定のサーバ定義に問題がないか、ご確認ください。";
                 toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.yaml.snakeyaml.error.YAMLException;
+
+import jp.co.tabocom.teratermstation.exception.FormatException;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 public class ToolDefinition {
@@ -121,9 +124,14 @@ public class ToolDefinition {
         MyFileVisitor myVisitor = new MyFileVisitor(this.rootDirPath.getNameCount() - 1);
         try {
             Files.walkFileTree(this.rootDirPath, options, MAX_DEPTH, myVisitor);
+        } catch (YAMLException ye) {
+            throw new FormatException(ye.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
+        }
+        if (myVisitor.getFmtNgMsgBuilder().length() > 0) {
+            throw new FormatException(myVisitor.getFmtNgMsgBuilder().toString());
         }
         for (Tab tab : myVisitor.getTabMap().values()) {
             // inifile
