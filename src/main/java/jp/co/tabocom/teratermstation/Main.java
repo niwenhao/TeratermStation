@@ -300,7 +300,7 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     private void createPart() {
         Display display = new Display();
-        shell = new Shell(display, SWT.TITLE | SWT.MIN | SWT.CLOSE);
+        shell = new Shell(display, SWT.TITLE | SWT.MIN | SWT.MAX | SWT.CLOSE | SWT.RESIZE);
         shell.setData("main", this);
         shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
         if (toolDefine.getWidth() > 0 && toolDefine.getHeight() > 0) {
