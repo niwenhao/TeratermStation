@@ -171,28 +171,76 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         this.iniFile = iniType;
     }
 
-    public String getLoginUsr() {
+    private String getLoginUsrStr() {
         if (this.loginUsr != null) {
             return this.loginUsr;
         }
         if (this.category != null) {
             return this.category.getLoginUsr();
         }
-        return getParent().getLoginUsr();
+        return getParent().getLoginUsrStr();
+    }
+
+    public String getLoginUsr(int idx) {
+        String userStr = getLoginUsrStr();
+        String loginUsr = null;
+        if (userStr == null || userStr.isEmpty()) {
+            loginUsr = "";
+        } else {
+            String[] userArray = userStr.split(" ");
+            if (userArray.length > 1) {
+                try {
+                    loginUsr = userArray[idx - 1];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    loginUsr = userArray[0];
+                }
+            } else {
+                loginUsr = getLoginUsrStr();
+            }
+        }
+        return loginUsr;
+    }
+
+    public String getLoginUsr() {
+        return getLoginUsr(1);
     }
 
     public void setLoginUsr(String loginUsr) {
         this.loginUsr = loginUsr;
     }
 
-    public String getLoginPwd() {
+    private String getLoginPwdStr() {
         if (this.loginPwd != null) {
             return this.loginPwd;
         }
         if (this.category != null) {
             return this.category.getLoginPwd();
         }
-        return getParent().getLoginPwd();
+        return getParent().getLoginPwdStr();
+    }
+
+    public String getLoginPwd(int idx) {
+        String passStr = getLoginPwdStr();
+        String loginPwd = null;
+        if (passStr == null || passStr.isEmpty()) {
+            loginPwd = "";
+        } else {
+            String[] passArray = passStr.split(" ");
+            if (passArray.length > 1) {
+                try {
+                    loginPwd = passArray[idx - 1];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    loginPwd = passArray[0];
+                }
+            } else {
+                loginPwd = getLoginPwdStr();
+            }
+        }
+        return loginPwd;
+    }
+
+    public String getLoginPwd() {
+        return getLoginPwd(1);
     }
 
     public void setLoginPwd(String loginPwd) {

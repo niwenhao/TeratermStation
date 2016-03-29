@@ -886,38 +886,8 @@ public class EnvTabItem extends TabItem {
                 svrType = node.getCategory().getName();
             }
             int usrIdx = main.getLoginUserIdx();
-            String userStr = node.getLoginUsr();
-            String loginUsr = null;
-            if (userStr == null || userStr.isEmpty()) {
-                loginUsr = "";
-            } else {
-                String[] userArray = userStr.split(" ");
-                if (userArray.length > 1) {
-                    try {
-                        loginUsr = userArray[usrIdx - 1];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        loginUsr = userArray[0];
-                    }
-                } else {
-                    loginUsr = node.getLoginUsr();
-                }
-            }
-            String passStr = node.getLoginPwd();
-            String loginPwd = null;
-            if (passStr == null || passStr.isEmpty()) {
-                loginPwd = "";
-            } else {
-                String[] passArray = passStr.split(" ");
-                if (passArray.length > 1) {
-                    try {
-                        loginPwd = passArray[usrIdx - 1];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        loginPwd = passArray[0];
-                    }
-                } else {
-                    loginPwd = node.getLoginPwd();
-                }
-            }
+            String loginUsr = node.getLoginUsr(usrIdx);
+            String loginPwd = node.getLoginPwd(usrIdx);
             // INIファイル
             String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
             String logDir = ps.getString(PreferenceConstants.LOG_DIR);
@@ -1165,22 +1135,9 @@ public class EnvTabItem extends TabItem {
             StringBuilder builder = new StringBuilder();
             if (node.getChildren().isEmpty()) {
                 // 要は子供（サーバ号機）の場合
-                String userStr = node.getLoginUsr();
-                String user = "";
-                if (userStr != null) {
-                    String[] userArray = userStr.split(" ");
-                    if (userArray.length > 1) {
-                        Main main = (Main) getParent().getShell().getData("main");
-                        int usrIdx = main.getLoginUserIdx();
-                        try {
-                            user = userArray[usrIdx - 1];
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                            user = userArray[0];
-                        }
-                    } else {
-                        user = node.getLoginUsr();
-                    }
-                }
+                Main main = (Main) getParent().getShell().getData("main");
+                int usrIdx = main.getLoginUserIdx();
+                String user = node.getLoginUsr(usrIdx);
                 builder.append(user);
                 builder.append("@");
                 builder.append(node.getIpAddr());
@@ -1348,22 +1305,9 @@ public class EnvTabItem extends TabItem {
         StringBuilder builder = new StringBuilder();
         if (node.getChildren().isEmpty()) {
             // 要は子供（サーバ号機）の場合
-            String userStr = node.getLoginUsr();
-            String user = "";
-            if (userStr != null) {
-                String[] userArray = userStr.split(" ");
-                if (userArray.length > 1) {
-                    Main main = (Main) getParent().getShell().getData("main");
-                    int usrIdx = main.getLoginUserIdx();
-                    try {
-                        user = userArray[usrIdx - 1];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        user = userArray[0];
-                    }
-                } else {
-                    user = node.getLoginUsr();
-                }
-            }
+            Main main = (Main) getParent().getShell().getData("main");
+            int usrIdx = main.getLoginUserIdx();
+            String user = node.getLoginUsr(usrIdx);
             builder.append(user);
             builder.append("@");
             builder.append(node.getIpAddr());
