@@ -673,11 +673,13 @@ public class EnvTabItem extends TabItem {
                 if (!workDirFile.isAbsolute()) {
                     workDir = workDirFile.getCanonicalPath();
                 }
+                String iniFile = iniDir + "\\" + tab.getIniFile();
                 // ---------- もろもろ情報を取得 ここまで ----------
                 Map<String, String> valuesMap = new TreeMap<String, String>();
                 valuesMap.put("authuser", authUsr);
                 valuesMap.put("authpassword", authPwd);
                 valuesMap.put("inidir", iniDir);
+                valuesMap.put("inifile", iniFile);
                 valuesMap.put("logdir", logDir);
                 valuesMap.put("workdir", workDir);
 
