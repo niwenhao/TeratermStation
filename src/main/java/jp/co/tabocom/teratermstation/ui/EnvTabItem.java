@@ -616,6 +616,14 @@ public class EnvTabItem extends TabItem {
         IPreferenceStore ps = main.getPreferenceStore();
         // まずはTTLファイルを作成するディレクトリを取得
         String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
+        File ttlDirFile = new File(ttlDir);
+        if (!ttlDirFile.isAbsolute()) {
+            try {
+                ttlDir = ttlDirFile.getCanonicalPath();
+            } catch (IOException e) {
+                MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+            }
+        }
         if (this.authFlg) {
             ttlDir = ttlDir + "\\" + this.usrTxt.getText();
             if (!makeUserDirectory(ttlDir)) {
@@ -651,8 +659,20 @@ public class EnvTabItem extends TabItem {
                 String authPwd = this.pwdTxt.getText();
                 // INIファイル
                 String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
+                File iniDirFile = new File(iniDir);
+                if (!iniDirFile.isAbsolute()) {
+                    iniDir = iniDirFile.getCanonicalPath();
+                }
                 String logDir = ps.getString(PreferenceConstants.LOG_DIR);
+                File logDirFile = new File(logDir);
+                if (!logDirFile.isAbsolute()) {
+                    logDir = logDirFile.getCanonicalPath();
+                }
                 String workDir = ps.getString(PreferenceConstants.WORK_DIR);
+                File workDirFile = new File(workDir);
+                if (!workDirFile.isAbsolute()) {
+                    workDir = workDirFile.getCanonicalPath();
+                }
                 // ---------- もろもろ情報を取得 ここまで ----------
                 Map<String, String> valuesMap = new TreeMap<String, String>();
                 valuesMap.put("authuser", authUsr);
@@ -696,6 +716,14 @@ public class EnvTabItem extends TabItem {
             Runtime runtime = Runtime.getRuntime();
             String pwdArg = this.pwdTxt.getText();
             String ttpmacroexe = ps.getString(PreferenceConstants.TTPMACRO_EXE);
+            File ttpmacroexeFile = new File(ttpmacroexe);
+            if (!ttpmacroexeFile.isAbsolute()) {
+                try {
+                    ttpmacroexe = ttpmacroexeFile.getCanonicalPath();
+                } catch (IOException e) {
+                    MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                }
+            }
             runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
         } catch (FileNotFoundException fnfe) {
             MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
