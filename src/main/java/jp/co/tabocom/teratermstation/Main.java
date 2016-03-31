@@ -2,6 +2,7 @@ package jp.co.tabocom.teratermstation;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -239,17 +240,21 @@ public class Main implements PropertyChangeListener, WindowProc {
     private void initialize() {
         try {
             String homeDir = System.getProperty("user.home");
-            this.preferenceStore = new PreferenceStore(homeDir + "\\conntool.properties");
+            this.preferenceStore = new PreferenceStore(homeDir + "\\teratermstation.properties");
             try {
                 this.preferenceStore.load();
             } catch (FileNotFoundException fnfe) {
-                this.preferenceStore = new PreferenceStore("conntool.properties");
+                this.preferenceStore = new PreferenceStore("teratermstation.properties");
                 this.preferenceStore.load();
             }
 
             String rootDir = this.preferenceStore.getString(PreferenceConstants.TARGET_DIR);
             if (rootDir == null || rootDir.isEmpty()) {
                 rootDir = ROOT_DIR;
+            }
+            File rootDirFile = new File(rootDir);
+            if (!rootDirFile.isAbsolute()) {
+                rootDir = rootDirFile.getCanonicalPath();
             }
             toolDefine = new ToolDefinition(Paths.get(rootDir));
             try {
