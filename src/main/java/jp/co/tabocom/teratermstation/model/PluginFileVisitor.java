@@ -2,6 +2,7 @@ package jp.co.tabocom.teratermstation.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileVisitResult;
@@ -10,9 +11,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.yaml.snakeyaml.Yaml;
 
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
@@ -55,6 +59,9 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
                     URL url = file.getCanonicalFile().toURI().toURL();
                     URLClassLoader loader = new URLClassLoader(new URL[] { url });
                     try {
+                        InputStream yamlIs = loader.getResourceAsStream("plugin.yaml");
+                        Yaml yaml = new Yaml();
+                        Map<String, Object> pluginYaml = yaml.loadAs(yamlIs, Map.class);
                         Class<?> cobj = loader.loadClass(cname);
                         Class[] ifnames = cobj.getInterfaces();
                         for (int j = 0; j < ifnames.length; j++) {
