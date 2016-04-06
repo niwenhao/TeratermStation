@@ -19,6 +19,14 @@ public abstract class TeratermStationAction extends SelectionListenerAction {
     protected Shell shell;
     protected TargetNode node;
 
+    public TeratermStationAction(String text, String icon) {
+        super(text);
+        if (icon != null && !icon.isEmpty()) {
+            Image image = new Image(shell.getDisplay(), getClass().getClassLoader().getResourceAsStream(icon));
+            setImageDescriptor(ImageDescriptor.createFromImage(image));
+        }
+    }
+    
     /**
      * デフォルトコンストラクタ
      * 

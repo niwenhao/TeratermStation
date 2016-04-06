@@ -18,7 +18,9 @@ import java.util.jar.Manifest;
 
 import org.yaml.snakeyaml.Yaml;
 
+import jp.co.tabocom.teratermstation.plugin.TSPlugin;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 
 public class PluginFileVisitor extends SimpleFileVisitor<Path> {
 
@@ -62,17 +64,46 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
                         InputStream yamlIs = loader.getResourceAsStream("plugin.yaml");
                         Yaml yaml = new Yaml();
                         Map<String, Object> pluginYaml = yaml.loadAs(yamlIs, Map.class);
-                        Class<?> cobj = loader.loadClass(cname);
-                        Class[] ifnames = cobj.getInterfaces();
-                        for (int j = 0; j < ifnames.length; j++) {
-                            if (ifnames[j] == TeratermStationPlugin.class) {
-                                System.out.println("load..... " + cname);
-                                TeratermStationPlugin plugin = (TeratermStationPlugin) cobj.newInstance();
-                                plugin.initialize();
-                                nodePluginList.add(plugin);
-                                break;
-                            }
+                        TSPlugin tsPlugin = null;
+                        // 基本情報
+                        if (pluginYaml.containsKey("name") && pluginYaml.containsKey("version")) {
+                            tsPlugin = new TSPlugin((String)pluginYaml.get("name"), (String)pluginYaml.get("version"));
+                        } else {
+                            throw new Exception();
                         }
+                        if (pluginYaml.containsKey("class")) {
+                            Map<String, Object> classMap = (Map<String, Object>)pluginYaml.get("class");
+                            if (classMap.containsKey("context")) {
+                                Map<String, Object> contextMap = (Map<String, Object>)classMap.get("context");
+                                if (contextMap.containsKey("submenus") && contextMap.get("submenus") != null) {
+                                    Class<?> cobj = loader.loadClass((String)contextMap.get("submenus"));
+                                }
+                                if (contextMap.containsKey("actions") && contextMap.get("actions") != null) {
+                                    String actions = (String)contextMap.get("actions");
+                                    for (String action : actions.split("\n")) {
+                                        Class<?> cobj = loader.loadClass(action);
+                                        Class superClass = cobj.getSuperclass();
+                                        if (superClass == TeratermStationAction.class) {
+                                            TeratermStationAction tsAction = (TeratermStationAction)cobj.newInstance();
+                                            tsPlugin.addAction(tsAction);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            throw new Exception();
+                        }
+//                        Class<?> cobj = loader.loadClass(cname);
+//                        Class[] ifnames = cobj.getInterfaces();
+//                        for (int j = 0; j < ifnames.length; j++) {
+//                            if (ifnames[j] == TeratermStationPlugin.class) {
+//                                System.out.println("load..... " + cname);
+//                                TeratermStationPlugin plugin = (TeratermStationPlugin) cobj.newInstance();
+//                                plugin.initialize();
+//                                nodePluginList.add(plugin);
+//                                break;
+//                            }
+//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         loadExceptionList.add(new Exception(String.format("%s のロードに失敗しました。", file.getName())));
