@@ -1,15 +1,19 @@
 package jp.co.tabocom.teratermstation.plugin;
 
 import java.util.List;
+import java.util.Map;
 
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
 
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -76,6 +80,10 @@ public interface TeratermStationPlugin {
      */
     public List<TeratermStationBulkAction> getBulkActions(List<TargetNode> nodeList, Shell shell);
 
+    public Map<MenuDisplay, Menu> getDnDSubmenus(TargetNode node, String[] files, Shell shell);
+
+    public List<TeratermStationDnDAction> getDnDActions(TargetNode node, String[] files, Shell shell);
+
     /**
      * プラグインで設定ページを使用する場合に設定ページを返します。<br>
      * 設定ページが必要ない場合はnullを返します。
@@ -84,4 +92,9 @@ public interface TeratermStationPlugin {
      * @see PreferencePage
      */
     public PreferencePage getPreferencePage();
+    
+    public class MenuDisplay {
+        public String text;
+        public Image image;
+    }
 }
