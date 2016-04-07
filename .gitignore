@@ -2,7 +2,6 @@
 /build
 /.gradle
 /.settings
-/.classpath
 /teratermstation.log
 /ini
 /log
