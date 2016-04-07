@@ -36,6 +36,11 @@ public class TreeViewActionGroup extends ActionGroup {
         TargetNode node = (TargetNode) selection.getFirstElement();
         Main main = (Main) this.shell.getData("main");
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+            try {
+                plugin.getClass().getDeclaredMethod("getSubmenus", TargetNode.class, Shell.class, ISelectionProvider.class);
+            } catch (NoSuchMethodException | SecurityException e) {
+                continue;
+            }
             List<MenuManager> subMenuList = plugin.getSubmenus(node, shell, selectionProvider);
             if (subMenuList != null) {
                 menu.add(new Separator());
@@ -44,6 +49,11 @@ public class TreeViewActionGroup extends ActionGroup {
                 }
             }
 
+            try {
+                plugin.getClass().getDeclaredMethod("getActions", TargetNode.class, Shell.class, ISelectionProvider.class);
+            } catch (NoSuchMethodException | SecurityException e) {
+                continue;
+            }
             List<TeratermStationAction> actionList = plugin.getActions(node, shell, selectionProvider);
             if (actionList != null) { // 拡張機能の無いプラグインはnullを返すので.
                 menu.add(new Separator());

@@ -33,6 +33,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -339,7 +340,10 @@ public class Main implements PropertyChangeListener, WindowProc {
                 if (toolDefine.getPluginList() != null) {
                     for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
                         try {
+                            plugin.getClass().getDeclaredMethod("teminate", PreferencePage.class);
                             plugin.teminate(preferenceStore);
+                        } catch (NoSuchMethodException | SecurityException e) {
+                            continue;
                         } catch (Exception e) {
                             MessageDialog.openError(shell, "終了時処理", e.getMessage());
                         }
@@ -498,6 +502,11 @@ public class Main implements PropertyChangeListener, WindowProc {
                 mgr.addToRoot(pluginsNode);
                 if (toolDefine.getPluginList() != null) {
                     for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
+                        try {
+                            plugin.getClass().getDeclaredMethod("getPreferencePage");
+                        } catch (NoSuchMethodException | SecurityException e) {
+                            continue;
+                        }
                         if (plugin.getPreferencePage() != null) {
                             PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
                             mgr.addTo(pluginsNode.getId(), pluginNode);

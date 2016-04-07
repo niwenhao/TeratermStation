@@ -14,6 +14,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.eclipse.swt.widgets.Shell;
+
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 public class PluginFileVisitor extends SimpleFileVisitor<Path> {
@@ -61,6 +63,11 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
                             if (ifnames[j] == TeratermStationPlugin.class) {
                                 System.out.println("load..... " + cname);
                                 TeratermStationPlugin plugin = (TeratermStationPlugin) cobj.newInstance();
+                                try {
+                                    plugin.getClass().getDeclaredMethod("initialize");
+                                } catch (NoSuchMethodException | SecurityException e) {
+                                    continue;
+                                }
                                 plugin.initialize();
                                 nodePluginList.add(plugin);
                                 break;

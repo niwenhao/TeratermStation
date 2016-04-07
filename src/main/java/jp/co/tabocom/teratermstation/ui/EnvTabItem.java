@@ -56,6 +56,7 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -89,6 +90,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -763,6 +765,11 @@ public class EnvTabItem extends TabItem {
 
         List<TeratermStationBulkAction> bulkActionList = new ArrayList<TeratermStationBulkAction>();
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+            try {
+                plugin.getClass().getDeclaredMethod("getBulkActions", List.class, Shell.class);
+            } catch (NoSuchMethodException | SecurityException e) {
+                continue;
+            }
             List<TeratermStationBulkAction> actionList = plugin.getBulkActions(checkedTreeList, getParent().getShell());
             if (actionList != null) { // 一括接続での拡張機能の無いプラグインはnullを返すので.
                 for (TeratermStationBulkAction action : actionList) {
