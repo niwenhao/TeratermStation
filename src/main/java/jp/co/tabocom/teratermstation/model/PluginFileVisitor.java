@@ -14,8 +14,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.eclipse.swt.widgets.Shell;
-
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 
 public class PluginFileVisitor extends SimpleFileVisitor<Path> {
