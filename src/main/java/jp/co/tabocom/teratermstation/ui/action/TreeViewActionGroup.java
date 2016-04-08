@@ -38,30 +38,28 @@ public class TreeViewActionGroup extends ActionGroup {
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
             try {
                 plugin.getClass().getDeclaredMethod("getSubmenus", TargetNode.class, Shell.class, ISelectionProvider.class);
-            } catch (NoSuchMethodException | SecurityException e) {
-                continue;
-            }
-            List<MenuManager> subMenuList = plugin.getSubmenus(node, shell, selectionProvider);
-            if (subMenuList != null) {
-                menu.add(new Separator());
-                for (MenuManager subMenu : subMenuList) {
-                    menu.add(subMenu);
+                List<MenuManager> subMenuList = plugin.getSubmenus(node, shell, selectionProvider);
+                if (subMenuList != null) {
+                    menu.add(new Separator());
+                    for (MenuManager subMenu : subMenuList) {
+                        menu.add(subMenu);
+                    }
                 }
+            } catch (NoSuchMethodException | SecurityException e) {
             }
 
             try {
                 plugin.getClass().getDeclaredMethod("getActions", TargetNode.class, Shell.class, ISelectionProvider.class);
-            } catch (NoSuchMethodException | SecurityException e) {
-                continue;
-            }
-            List<TeratermStationAction> actionList = plugin.getActions(node, shell, selectionProvider);
-            if (actionList != null) { // 拡張機能の無いプラグインはnullを返すので.
-                menu.add(new Separator());
-                for (TeratermStationAction action : actionList) {
-                    if (action.isValid()) {
-                        addToMenu(menu, action);
+                List<TeratermStationAction> actionList = plugin.getActions(node, shell, selectionProvider);
+                if (actionList != null) { // 拡張機能の無いプラグインはnullを返すので.
+                    menu.add(new Separator());
+                    for (TeratermStationAction action : actionList) {
+                        if (action.isValid()) {
+                            addToMenu(menu, action);
+                        }
                     }
                 }
+            } catch (NoSuchMethodException | SecurityException e) {
             }
         }
     }
