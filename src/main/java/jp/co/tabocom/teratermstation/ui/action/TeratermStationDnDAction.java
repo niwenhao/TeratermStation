@@ -2,17 +2,14 @@ package jp.co.tabocom.teratermstation.ui.action;
 
 import jp.co.tabocom.teratermstation.model.TargetNode;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.actions.SelectionListenerAction;
 
 /**
  * TeratermStationの右クリックメニューに追加するアクションはこのクラスを継承します。
  * 
  * @author turbou
- *
+ * 
  */
 public abstract class TeratermStationDnDAction {
 
