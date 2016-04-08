@@ -31,7 +31,6 @@ import jp.co.tabocom.teratermstation.model.Category;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
-import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin.MenuDisplay;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
@@ -58,7 +57,6 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -500,19 +498,17 @@ public class EnvTabItem extends TabItem {
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        Map<MenuDisplay, Menu> subMenuMap = plugin.getDnDSubmenus(node, files, getParent().getShell());
+                        Map<String, Menu> subMenuMap = plugin.getDnDSubmenus(menu, node, files, getParent().getShell());
                         if (subMenuMap != null) {
-                            for (MenuDisplay display : subMenuMap.keySet()) {
+                            for (String text : subMenuMap.keySet()) {
                                 MenuItem subMenuItem = new MenuItem(menu, SWT.CASCADE);
-                                subMenuItem.setText(display.text);
-                                subMenuItem.setImage(display.image);
-                                subMenuItem.setMenu(subMenuMap.get(display));
+                                subMenuItem.setText(text);
+                                subMenuItem.setMenu(subMenuMap.get(text));
                             }
                         }
 
                         try {
-                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode.class, String[].class, Shell.class,
-                                    ISelectionProvider.class);
+                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode.class, String[].class, Shell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }

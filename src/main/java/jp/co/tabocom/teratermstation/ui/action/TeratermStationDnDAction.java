@@ -14,9 +14,10 @@ import org.eclipse.swt.widgets.Shell;
 public abstract class TeratermStationDnDAction {
 
     protected String text;
-    protected Shell shell;
-    protected TargetNode node;
     protected Image image;
+    protected TargetNode node;
+    protected String[] files;
+    protected Shell shell;
 
     /**
      * デフォルトコンストラクタ
@@ -31,10 +32,11 @@ public abstract class TeratermStationDnDAction {
      * @param shell
      *            画面作成で必要となるベース
      */
-    protected TeratermStationDnDAction(String text, String icon, TargetNode node, Shell shell) {
+    protected TeratermStationDnDAction(String text, String icon, TargetNode node, String[] files, Shell shell) {
         this.text = text;
-        this.shell = shell;
         this.node = node;
+        this.files = files;
+        this.shell = shell;
         if (icon != null && !icon.isEmpty()) {
             this.image = new Image(shell.getDisplay(), getClass().getClassLoader().getResourceAsStream(icon));
         }

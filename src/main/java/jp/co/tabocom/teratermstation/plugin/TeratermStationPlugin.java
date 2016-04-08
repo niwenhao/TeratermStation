@@ -12,7 +12,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
@@ -80,8 +79,39 @@ public interface TeratermStationPlugin {
      */
     public List<TeratermStationBulkAction> getBulkActions(List<TargetNode> nodeList, Shell shell);
 
-    public Map<MenuDisplay, Menu> getDnDSubmenus(TargetNode node, String[] files, Shell shell);
+    /**
+     * TeratermStationでノードにファイルがドラッグアンドドロップされた時のポップアップサブメニューを返します。<br>
+     * ポップアップサブメニューが不要な場合はnullを返します。
+     * 
+     * @param parentMenu
+     *            親メニューのインスタンス
+     * 
+     * @param node
+     *            ファイルをドロップされたノード（サーバグループかサーバ）
+     * 
+     * @param files
+     *            ドロップされたファイル(ファイルパス)の配列
+     * @param shell
+     *            画面作成で必要となるベースです。これを使用してウインドウやダイアログを生成できます。
+     * @return サブメニューのタイトルとサブメニューインスタンスのMap
+     * @see TeratermStationDnDAction
+     */
+    public Map<String, Menu> getDnDSubmenus(Menu parentMenu, TargetNode node, String[] files, Shell shell);
 
+    /**
+     * TeratermStationでノードにファイルがドラッグアンドドロップされた時のポップアップのアクションを返します。<br>
+     * アクションが不要な場合はnullを返します。
+     * 
+     * @param node
+     *            ファイルをドロップされたノード（サーバグループかサーバ）
+     * 
+     * @param files
+     *            ドロップされたファイル(ファイルパス)の配列
+     * @param shell
+     *            画面作成で必要となるベースです。これを使用してウインドウやダイアログを生成できます。
+     * @return TeratermStationDnDActionの配列
+     * @see TeratermStationDnDAction
+     */
     public List<TeratermStationDnDAction> getDnDActions(TargetNode node, String[] files, Shell shell);
 
     /**
@@ -92,9 +122,5 @@ public interface TeratermStationPlugin {
      * @see PreferencePage
      */
     public PreferencePage getPreferencePage();
-    
-    public class MenuDisplay {
-        public String text;
-        public Image image;
-    }
+
 }
