@@ -33,6 +33,7 @@ import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
 import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +67,11 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.FocusEvent;
@@ -86,9 +92,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -455,6 +464,69 @@ public class EnvTabItem extends TabItem {
                         Clipboard clipBoard = new Clipboard(composite.getShell().getDisplay());
                         clipBoard.setContents(new Object[] { builder.toString() }, new Transfer[] { TextTransfer.getInstance() });
                     }
+                }
+            });
+
+            // ドラッグアンドドロップ
+            Transfer[] types = new Transfer[] { FileTransfer.getInstance() };
+            DropTarget dropTarget = new DropTarget(tree, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY);
+            dropTarget.setTransfer(types);
+            dropTarget.addDropListener(new DropTargetAdapter() {
+
+                @Override
+                public void dragEnter(DropTargetEvent event) {
+                    if (event.detail == DND.DROP_DEFAULT) {
+                        event.detail = DND.DROP_MOVE;
+                    }
+                }
+
+                @Override
+                public void dragOperationChanged(DropTargetEvent event) {
+                    if (event.detail == DND.DROP_DEFAULT) {
+                        event.detail = DND.DROP_COPY;
+                    }
+                }
+
+                @Override
+                public void drop(DropTargetEvent event) {
+                    TargetNode node = (TargetNode) event.item.getData();
+                    String[] files = (String[]) event.data;
+                    Menu menu = new Menu(getParent().getShell(), SWT.POP_UP);
+                    for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+                        try {
+                            plugin.getClass().getDeclaredMethod("getDnDSubmenus", Menu.class, TargetNode.class, String[].class, Shell.class);
+                            Map<String, Menu> subMenuMap = plugin.getDnDSubmenus(menu, node, files, getParent().getShell());
+                            if (subMenuMap != null) {
+                                for (String text : subMenuMap.keySet()) {
+                                    MenuItem subMenuItem = new MenuItem(menu, SWT.CASCADE);
+                                    subMenuItem.setText(text);
+                                    subMenuItem.setMenu(subMenuMap.get(text));
+                                }
+                            }
+                        } catch (NoSuchMethodException | SecurityException e) {
+                        }
+
+                        try {
+                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode.class, String[].class, Shell.class);
+                            List<TeratermStationDnDAction> actionList = plugin.getDnDActions(node, files, getParent().getShell());
+                            if (actionList != null) { // 拡張機能の無いプラグインはnullを返すので.
+                                for (final TeratermStationDnDAction action : actionList) {
+                                    MenuItem item = new MenuItem(menu, SWT.PUSH);
+                                    item.setText(action.getText());
+                                    item.setImage(action.getImage());
+                                    item.addListener(SWT.Selection, new Listener() {
+                                        @Override
+                                        public void handleEvent(Event event) {
+                                            action.run();
+                                        }
+                                    });
+                                }
+                            }
+                        } catch (NoSuchMethodException | SecurityException e) {
+                        }
+                    }
+                    menu.setLocation(event.x, event.y);
+                    menu.setVisible(true);
                 }
             });
 
