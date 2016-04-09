@@ -32,8 +32,9 @@ import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationActionInterface;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
 import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
 import org.apache.commons.lang3.StringUtils;
@@ -498,18 +499,19 @@ public class EnvTabItem extends TabItem {
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        Map<String, List<TeratermStationDnDAction>> actionMap = plugin.getDnDActions(node, files, getParent().getShell());
-                        if (actionMap != null) { // 拡張機能の無いプラグインはnullを返すので.
-                            for (String menuTitle : actionMap.keySet()) {
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(node, files, getParent().getShell());
+                        if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
+                            for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;
-                                if (!menuTitle.isEmpty()) {
+                                if (contextMenu.isSubMenu()) {
                                     Menu subMenu = new Menu(parentMenu);
                                     MenuItem subMenuItem = new MenuItem(parentMenu, SWT.CASCADE);
-                                    subMenuItem.setText(menuTitle);
+                                    subMenuItem.setText(contextMenu.getText());
+                                    subMenuItem.setImage(contextMenu.getImage());
                                     subMenuItem.setMenu(subMenu);
                                     menu = subMenu;
                                 }
-                                for (final TeratermStationDnDAction action : actionMap.get(menuTitle)) {
+                                for (final TeratermStationActionInterface action : contextMenu.getActionList()) {
                                     MenuItem item = new MenuItem(menu, SWT.PUSH);
                                     item.setText(action.getText());
                                     item.setImage(action.getImage());

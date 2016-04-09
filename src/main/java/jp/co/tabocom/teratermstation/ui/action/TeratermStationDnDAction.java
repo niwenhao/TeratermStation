@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Shell;
  * @author turbou
  * 
  */
-public abstract class TeratermStationDnDAction {
+public abstract class TeratermStationDnDAction implements TeratermStationActionInterface {
 
     protected String text;
     protected Image image;

@@ -1,11 +1,11 @@
 package jp.co.tabocom.teratermstation.plugin;
 
 import java.util.List;
-import java.util.Map;
 
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
 
 import org.eclipse.jface.action.MenuManager;
@@ -93,7 +93,7 @@ public interface TeratermStationPlugin {
      *         サブメニューが必要ない場合はKeyに""の長さ0の文字列を設定してください。
      * @see TeratermStationDnDAction
      */
-    public Map<String, List<TeratermStationDnDAction>> getDnDActions(TargetNode node, String[] files, Shell shell);
+    public List<TeratermStationContextMenu> getDnDActions(TargetNode node, String[] files, Shell shell);
 
     /**
      * プラグインで設定ページを使用する場合に設定ページを返します。<br>
