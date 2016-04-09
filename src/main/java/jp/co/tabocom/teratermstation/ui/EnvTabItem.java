@@ -491,26 +491,25 @@ public class EnvTabItem extends TabItem {
                 public void drop(DropTargetEvent event) {
                     TargetNode node = (TargetNode) event.item.getData();
                     String[] files = (String[]) event.data;
-                    Menu menu = new Menu(getParent().getShell(), SWT.POP_UP);
+                    Menu parentMenu = new Menu(getParent().getShell(), SWT.POP_UP);
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
                         try {
-                            plugin.getClass().getDeclaredMethod("getDnDSubmenus", Menu.class, TargetNode.class, String[].class, Shell.class);
-                            Map<String, Menu> subMenuMap = plugin.getDnDSubmenus(menu, node, files, getParent().getShell());
-                            if (subMenuMap != null) {
-                                for (String text : subMenuMap.keySet()) {
-                                    MenuItem subMenuItem = new MenuItem(menu, SWT.CASCADE);
-                                    subMenuItem.setText(text);
-                                    subMenuItem.setMenu(subMenuMap.get(text));
-                                }
-                            }
-                        } catch (NoSuchMethodException | SecurityException e) {
-                        }
-
-                        try {
                             plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode.class, String[].class, Shell.class);
-                            List<TeratermStationDnDAction> actionList = plugin.getDnDActions(node, files, getParent().getShell());
-                            if (actionList != null) { // 拡張機能の無いプラグインはnullを返すので.
-                                for (final TeratermStationDnDAction action : actionList) {
+                        } catch (NoSuchMethodException | SecurityException e) {
+                            continue;
+                        }
+                        Map<String, List<TeratermStationDnDAction>> actionMap = plugin.getDnDActions(node, files, getParent().getShell());
+                        if (actionMap != null) { // 拡張機能の無いプラグインはnullを返すので.
+                            for (String menuTitle : actionMap.keySet()) {
+                                Menu menu = parentMenu;
+                                if (!menuTitle.isEmpty()) {
+                                    Menu subMenu = new Menu(parentMenu);
+                                    MenuItem subMenuItem = new MenuItem(parentMenu, SWT.CASCADE);
+                                    subMenuItem.setText(menuTitle);
+                                    subMenuItem.setMenu(subMenu);
+                                    menu = subMenu;
+                                }
+                                for (final TeratermStationDnDAction action : actionMap.get(menuTitle)) {
                                     MenuItem item = new MenuItem(menu, SWT.PUSH);
                                     item.setText(action.getText());
                                     item.setImage(action.getImage());
@@ -522,11 +521,10 @@ public class EnvTabItem extends TabItem {
                                     });
                                 }
                             }
-                        } catch (NoSuchMethodException | SecurityException e) {
                         }
                     }
-                    menu.setLocation(event.x, event.y);
-                    menu.setVisible(true);
+                    parentMenu.setLocation(event.x, event.y);
+                    parentMenu.setVisible(true);
                 }
             });
 
