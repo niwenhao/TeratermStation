@@ -503,7 +503,8 @@ public class EnvTabItem extends TabItem {
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(node, files, getParent().getShell());
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, files,
+                                getParent().getShell());
                         if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
                             for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;

@@ -15,8 +15,10 @@ public abstract class TeratermStationDnDAction implements TeratermStationActionI
 
     protected String text;
     protected Image image;
-    protected TargetNode node;
+    protected TargetNode[] nodes;
     protected String[] files;
+    protected Object value;
+    
     protected Shell shell;
 
     /**
@@ -32,10 +34,10 @@ public abstract class TeratermStationDnDAction implements TeratermStationActionI
      * @param shell
      *            画面作成で必要となるベース
      */
-    protected TeratermStationDnDAction(String text, String icon, TargetNode node, String[] files, Shell shell) {
+    protected TeratermStationDnDAction(String text, String icon, TargetNode[] nodes, Object value, Shell shell) {
         this.text = text;
-        this.node = node;
-        this.files = files;
+        this.nodes = nodes;
+        this.value = value;
         this.shell = shell;
         if (icon != null && !icon.isEmpty()) {
             this.image = new Image(shell.getDisplay(), getClass().getClassLoader().getResourceAsStream(icon));
