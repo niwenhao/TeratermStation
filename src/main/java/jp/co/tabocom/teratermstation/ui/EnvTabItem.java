@@ -35,13 +35,9 @@ import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationActionInterface;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
-import jp.co.tabocom.teratermstation.ui.action.TreeViewActionGroup;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -61,7 +57,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -81,6 +76,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -107,7 +104,6 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.actions.ActionContext;
 
 public class EnvTabItem extends TabItem {
 
@@ -499,7 +495,7 @@ public class EnvTabItem extends TabItem {
                     Menu parentMenu = new Menu(getParent().getShell(), SWT.POP_UP);
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
                         try {
-                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode.class, String[].class, Shell.class);
+                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, Shell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
@@ -565,19 +561,76 @@ public class EnvTabItem extends TabItem {
             this.treeMap.put(category.getName(), chkTree);
 
             // ここからサーバツリーの右クリックメニューの設定
-            MenuManager manager = new MenuManager();
-            manager.setRemoveAllWhenShown(true);
-            manager.addMenuListener(new IMenuListener() {
-                public void menuAboutToShow(IMenuManager mgr) {
-                    IStructuredSelection selection = chkTree == null ? null : (StructuredSelection) chkTree.getSelection();
-                    ActionContext context = new ActionContext(selection);
-                    TreeViewActionGroup actionGroup = new TreeViewActionGroup(composite.getShell(), chkTree);
-                    actionGroup.setContext(context);
-                    actionGroup.fillContextMenu(mgr);
+            Menu parentMenu = new Menu(chkTree.getTree());
+            chkTree.getTree().setMenu(parentMenu);
+            parentMenu.addMenuListener(new MenuAdapter() {
+                public void menuShown(MenuEvent event) {
+                    MenuItem[] items = parentMenu.getItems();
+                    for (MenuItem item : items) {
+                        item.dispose();
+                    }
+                    TargetNode node = (TargetNode) chkTree.getTree().getSelection()[0].getData();
+                    for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+                        try {
+                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, Shell.class);
+                        } catch (NoSuchMethodException | SecurityException e) {
+                            continue;
+                        }
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, null,
+                                getParent().getShell());
+                        if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
+                            for (TeratermStationContextMenu contextMenu : contextMenuList) {
+                                Menu menu = parentMenu;
+                                if (contextMenu.isSubMenu()) {
+                                    Menu subMenu = new Menu(parentMenu);
+                                    MenuItem subMenuItem = new MenuItem(parentMenu, SWT.CASCADE);
+                                    subMenuItem.setText(contextMenu.getText());
+                                    subMenuItem.setImage(contextMenu.getImage());
+                                    org.eclipse.swt.widgets.ToolTip toolTip = contextMenu.getToolTip();
+                                    subMenuItem.addArmListener(new ArmListener() {
+                                        @Override
+                                        public void widgetArmed(ArmEvent e) {
+                                            if (currentItemToolTip != null && currentItemToolTip.isVisible()) {
+                                                currentItemToolTip.setVisible(false);
+                                            }
+                                            if (toolTip != null) {
+                                                toolTip.setVisible(true);
+                                                currentItemToolTip = toolTip;
+                                            }
+                                        }
+                                    });
+                                    subMenuItem.setMenu(subMenu);
+                                    menu = subMenu;
+                                }
+                                for (final TeratermStationActionInterface action : contextMenu.getActionList()) {
+                                    MenuItem item = new MenuItem(menu, SWT.PUSH);
+                                    item.setText(action.getText());
+                                    item.setImage(action.getImage());
+                                    item.addListener(SWT.Selection, new Listener() {
+                                        @Override
+                                        public void handleEvent(Event event) {
+                                            action.run();
+                                        }
+                                    });
+                                    org.eclipse.swt.widgets.ToolTip toolTip = action.getToolTip();
+                                    item.addArmListener(new ArmListener() {
+                                        @Override
+                                        public void widgetArmed(ArmEvent e) {
+                                            if (currentItemToolTip != null && currentItemToolTip.isVisible()) {
+                                                currentItemToolTip.setVisible(false);
+                                            }
+                                            if (toolTip != null) {
+                                                toolTip.setVisible(true);
+                                                currentItemToolTip = toolTip;
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
             });
-            Menu menu = manager.createContextMenu(chkTree.getControl());
-            chkTree.getControl().setMenu(menu);
         }
 
         Composite bottomGrp = new Composite(composite, SWT.NONE);
