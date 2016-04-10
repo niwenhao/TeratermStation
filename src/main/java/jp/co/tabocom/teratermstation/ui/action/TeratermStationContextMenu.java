@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.ToolTip;
 
 public class TeratermStationContextMenu {
     private String text;
+    private ToolTip toolTip;
     private Image image;
 
     private List<TeratermStationActionInterface> actionList;
@@ -21,6 +23,14 @@ public class TeratermStationContextMenu {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public ToolTip getToolTip() {
+        return toolTip;
+    }
+
+    public void setToolTip(ToolTip toolTip) {
+        this.toolTip = toolTip;
     }
 
     public Image getImage() {

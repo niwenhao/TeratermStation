@@ -134,7 +134,7 @@ public class EnvTabItem extends TabItem {
 
     private ServerFilter serverFilter = new ServerFilter();
     
-    private org.eclipse.swt.widgets.ToolTip currentToolTip;
+    private org.eclipse.swt.widgets.ToolTip currentItemToolTip;
 
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
@@ -512,6 +512,19 @@ public class EnvTabItem extends TabItem {
                                     MenuItem subMenuItem = new MenuItem(parentMenu, SWT.CASCADE);
                                     subMenuItem.setText(contextMenu.getText());
                                     subMenuItem.setImage(contextMenu.getImage());
+                                    org.eclipse.swt.widgets.ToolTip toolTip = contextMenu.getToolTip();
+                                    subMenuItem.addArmListener(new ArmListener() {
+                                        @Override
+                                        public void widgetArmed(ArmEvent e) {
+                                            if (currentItemToolTip != null && currentItemToolTip.isVisible()) {
+                                                currentItemToolTip.setVisible(false);
+                                            }
+                                            if (toolTip != null) {
+                                                toolTip.setVisible(true);
+                                                currentItemToolTip = toolTip;
+                                            }
+                                        }
+                                    });
                                     subMenuItem.setMenu(subMenu);
                                     menu = subMenu;
                                 }
@@ -529,12 +542,12 @@ public class EnvTabItem extends TabItem {
                                     item.addArmListener(new ArmListener() {
                                         @Override
                                         public void widgetArmed(ArmEvent e) {
-                                            if (currentToolTip != null && currentToolTip.isVisible()) {
-                                                currentToolTip.setVisible(false);
+                                            if (currentItemToolTip != null && currentItemToolTip.isVisible()) {
+                                                currentItemToolTip.setVisible(false);
                                             }
                                             if (toolTip != null) {
                                                 toolTip.setVisible(true);
-                                                currentToolTip = toolTip;
+                                                currentItemToolTip = toolTip;
                                             }
                                         }
                                     });
