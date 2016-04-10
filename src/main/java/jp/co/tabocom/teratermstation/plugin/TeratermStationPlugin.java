@@ -3,15 +3,11 @@ package jp.co.tabocom.teratermstation.plugin;
 import java.util.List;
 
 import jp.co.tabocom.teratermstation.model.TargetNode;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
 
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -38,20 +34,6 @@ public interface TeratermStationPlugin {
     public void teminate(PreferenceStore preferenceStore) throws Exception;
 
     /**
-     * TeratermStationでサーバグループやサーバの右クリックメニューに追加するサブメニューの配列を返します。<br>
-     * 右クリックメニューに追加するサブメニューがない場合はnullを返します。
-     * 
-     * @param node
-     *            選択されているノード（サーバグループかサーバ）
-     * @param shell
-     *            画面作成で必要となるベースです。これを使用してウインドウやダイアログを生成できます。
-     * @param selectionProvider
-     * @return MenuManagerの配列<br>
-     * @see TeratermStationAction
-     */
-    public List<MenuManager> getSubmenus(TargetNode node, Shell shell, ISelectionProvider selectionProvider);
-
-    /**
      * TeratermStationでサーバグループやサーバの右クリックメニューに追加するアクションの配列を返します。<br>
      * 右クリックメニューに追加するアクションがない場合はnullを返します。
      * 
@@ -63,7 +45,7 @@ public interface TeratermStationPlugin {
      * @return TeratermStationActionの配列<br>
      * @see TeratermStationAction
      */
-    public List<TeratermStationAction> getActions(TargetNode node, Shell shell, ISelectionProvider selectionProvider);
+    public List<TeratermStationContextMenu> getActions(TargetNode[] nodes, Shell shell);
 
     /**
      * TeratermStationで一括接続時に利用できる拡張機能の配列を返します。<br>
@@ -76,7 +58,7 @@ public interface TeratermStationPlugin {
      * @return TeratermStationBulkActionの配列
      * @see TeratermStationBulkAction
      */
-    public List<TeratermStationBulkAction> getBulkActions(List<TargetNode> nodeList, Shell shell);
+    public List<TeratermStationDnDAction> getBulkActions(TargetNode[] nodes, Shell shell);
 
     /**
      * TeratermStationでノードにファイルがドラッグアンドドロップされた時のポップアップのアクションを返します。<br>

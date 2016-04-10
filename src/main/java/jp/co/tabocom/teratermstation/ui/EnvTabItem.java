@@ -32,7 +32,6 @@ import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
 
@@ -572,12 +571,11 @@ public class EnvTabItem extends TabItem {
                     TargetNode node = (TargetNode) chkTree.getTree().getSelection()[0].getData();
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
                         try {
-                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, Shell.class);
+                            plugin.getClass().getDeclaredMethod("getActions", TargetNode[].class, Shell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, null,
-                                getParent().getShell());
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getActions(new TargetNode[] { node }, getParent().getShell());
                         if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
                             for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;
@@ -918,20 +916,17 @@ public class EnvTabItem extends TabItem {
         String dialogMsg = "一括で接続します。よろしいですか？";
         String[] buttonArray;
 
-        List<TeratermStationBulkAction> bulkActionList = new ArrayList<TeratermStationBulkAction>();
+        TargetNode[] nodes = checkedTreeList.toArray(new TargetNode[0]);
+        List<TeratermStationDnDAction> bulkActionList = new ArrayList<TeratermStationDnDAction>();
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
             try {
-                plugin.getClass().getDeclaredMethod("getBulkActions", List.class, Shell.class);
+                plugin.getClass().getDeclaredMethod("getBulkActions", TargetNode[].class, Shell.class);
             } catch (NoSuchMethodException | SecurityException e) {
                 continue;
             }
-            List<TeratermStationBulkAction> actionList = plugin.getBulkActions(checkedTreeList, getParent().getShell());
+            List<TeratermStationDnDAction> actionList = plugin.getBulkActions(nodes, getParent().getShell());
             if (actionList != null) { // 一括接続での拡張機能の無いプラグインはnullを返すので.
-                for (TeratermStationBulkAction action : actionList) {
-                    if (action.isValid()) {
-                        bulkActionList.add(action);
-                    }
-                }
+                bulkActionList.addAll(actionList);
             }
         }
 
@@ -952,7 +947,7 @@ public class EnvTabItem extends TabItem {
                 if (IDialogConstants.OK_ID != pluginResult) {
                     return;
                 }
-                TeratermStationBulkAction selectedAction = pluginDialog.getSelectedAction();
+                TeratermStationDnDAction selectedAction = pluginDialog.getSelectedAction();
                 selectedAction.run();
                 return;
             default: // Cancel or Other
