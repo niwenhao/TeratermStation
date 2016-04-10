@@ -11,10 +11,10 @@ public class TeratermStationContextMenu {
     private ToolTip toolTip;
     private Image image;
 
-    private List<TeratermStationActionInterface> actionList;
+    private List<TeratermStationDnDAction> actionList;
 
     public TeratermStationContextMenu() {
-        this.actionList = new ArrayList<TeratermStationActionInterface>();
+        this.actionList = new ArrayList<TeratermStationDnDAction>();
     }
 
     public String getText() {
@@ -41,11 +41,11 @@ public class TeratermStationContextMenu {
         this.image = image;
     }
 
-    public void addAction(TeratermStationActionInterface action) {
+    public void addAction(TeratermStationDnDAction action) {
         this.actionList.add(action);
     }
 
-    public List<TeratermStationActionInterface> getActionList() {
+    public List<TeratermStationDnDAction> getActionList() {
         return actionList;
     }
 

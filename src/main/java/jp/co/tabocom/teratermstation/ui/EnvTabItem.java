@@ -32,9 +32,9 @@ import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationActionInterface;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -525,7 +525,7 @@ public class EnvTabItem extends TabItem {
                                     subMenuItem.setMenu(subMenu);
                                     menu = subMenu;
                                 }
-                                for (final TeratermStationActionInterface action : contextMenu.getActionList()) {
+                                for (final TeratermStationDnDAction action : contextMenu.getActionList()) {
                                     MenuItem item = new MenuItem(menu, SWT.PUSH);
                                     item.setText(action.getText());
                                     item.setImage(action.getImage());
@@ -602,7 +602,7 @@ public class EnvTabItem extends TabItem {
                                     subMenuItem.setMenu(subMenu);
                                     menu = subMenu;
                                 }
-                                for (final TeratermStationActionInterface action : contextMenu.getActionList()) {
+                                for (final TeratermStationDnDAction action : contextMenu.getActionList()) {
                                     MenuItem item = new MenuItem(menu, SWT.PUSH);
                                     item.setText(action.getText());
                                     item.setImage(action.getImage());

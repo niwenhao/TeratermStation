@@ -1,9 +1,10 @@
 package jp.co.tabocom.teratermstation.ui.action;
 
-import jp.co.tabocom.teratermstation.model.TargetNode;
-
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolTip;
+
+import jp.co.tabocom.teratermstation.model.TargetNode;
 
 /**
  * TeratermStationの右クリックメニューに追加するアクションはこのクラスを継承します。
@@ -11,7 +12,7 @@ import org.eclipse.swt.widgets.Shell;
  * @author turbou
  * 
  */
-public abstract class TeratermStationDnDAction implements TeratermStationActionInterface {
+public abstract class TeratermStationDnDAction {
 
     protected String text;
     protected Image image;
@@ -53,6 +54,8 @@ public abstract class TeratermStationDnDAction implements TeratermStationActionI
     public String getText() {
         return text;
     }
+
+    public abstract ToolTip getToolTip();
 
     public Image getImage() {
         return image;
