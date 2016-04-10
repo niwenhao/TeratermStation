@@ -16,9 +16,8 @@ public abstract class TeratermStationDnDAction implements TeratermStationActionI
     protected String text;
     protected Image image;
     protected TargetNode[] nodes;
-    protected String[] files;
     protected Object value;
-    
+
     protected Shell shell;
 
     /**
@@ -43,13 +42,6 @@ public abstract class TeratermStationDnDAction implements TeratermStationActionI
             this.image = new Image(shell.getDisplay(), getClass().getClassLoader().getResourceAsStream(icon));
         }
     }
-
-    /**
-     * 状況に応じて、右クリックメニューにアクションを追加するか否かを返します。
-     * 
-     * @return 右クリックメニューに追加する場合はtrue、追加しない場合はfalse
-     */
-    public abstract boolean isValid();
 
     /*
      * (非 Javadoc)

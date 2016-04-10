@@ -10,7 +10,5 @@ public interface TeratermStationActionInterface {
 
     public Image getImage();
 
-    public boolean isValid();
-
     public void run();
 }
