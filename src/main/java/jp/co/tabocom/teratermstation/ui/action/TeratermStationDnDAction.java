@@ -14,11 +14,27 @@ import jp.co.tabocom.teratermstation.model.TargetNode;
  */
 public abstract class TeratermStationDnDAction {
 
+    /**
+     * アクションのタイトル
+     */
     protected String text;
+    /**
+     * アクションのアイコン
+     */
     protected Image image;
+    /**
+     * ノード配列<br>
+     * 右クリックやドラッグアンドドロップの場合は基本サイズ1の配列
+     */
     protected TargetNode[] nodes;
+    /**
+     * 渡されるバリュー<br>
+     * 今のところドラッグアンドドロップで渡されるファイルパスの配列
+     */
     protected Object value;
-
+    /**
+     * 画面を作る際のベースクラス
+     */
     protected Shell shell;
 
     /**
@@ -29,27 +45,22 @@ public abstract class TeratermStationDnDAction {
      * @param icon
      *            メニューにアイコンを表示する場合のアイコンファイル名<br>
      *            必要ない場合はnullでよい。
-     * @param node
-     *            右クリックメニューを表示したノード（サーバグループやサーバ）
+     * @param nodes
+     *            右クリックメニューを表示したノード（サーバグループやサーバ）の配列
+     * @param value
+     *            引き渡されるバリュー
      * @param shell
      *            画面作成で必要となるベース
      */
     protected TeratermStationDnDAction(String text, String icon, TargetNode[] nodes, Object value, Shell shell) {
         this.text = text;
-        this.nodes = nodes;
-        this.value = value;
-        this.shell = shell;
         if (icon != null && !icon.isEmpty()) {
             this.image = new Image(shell.getDisplay(), getClass().getClassLoader().getResourceAsStream(icon));
         }
+        this.nodes = nodes;
+        this.value = value;
+        this.shell = shell;
     }
-
-    /*
-     * (非 Javadoc)
-     * 
-     * @see org.eclipse.jface.action.Action#run()
-     */
-    public abstract void run();
 
     public String getText() {
         return text;
@@ -60,5 +71,7 @@ public abstract class TeratermStationDnDAction {
     public Image getImage() {
         return image;
     }
+
+    public abstract void run();
 
 }
