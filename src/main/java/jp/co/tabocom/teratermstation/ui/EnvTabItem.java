@@ -75,6 +75,8 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ArmEvent;
+import org.eclipse.swt.events.ArmListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
@@ -131,6 +133,8 @@ public class EnvTabItem extends TabItem {
     private Tab tab;
 
     private ServerFilter serverFilter = new ServerFilter();
+    
+    private org.eclipse.swt.widgets.ToolTip currentToolTip;
 
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
@@ -519,6 +523,19 @@ public class EnvTabItem extends TabItem {
                                         @Override
                                         public void handleEvent(Event event) {
                                             action.run();
+                                        }
+                                    });
+                                    org.eclipse.swt.widgets.ToolTip toolTip = action.getToolTip();
+                                    item.addArmListener(new ArmListener() {
+                                        @Override
+                                        public void widgetArmed(ArmEvent e) {
+                                            if (currentToolTip != null && currentToolTip.isVisible()) {
+                                                currentToolTip.setVisible(false);
+                                            }
+                                            if (toolTip != null) {
+                                                toolTip.setVisible(true);
+                                                currentToolTip = toolTip;
+                                            }
                                         }
                                     });
                                 }
