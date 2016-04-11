@@ -508,7 +508,7 @@ public class EnvTabItem extends TabItem {
                                     MenuItem subMenuItem = new MenuItem(parentMenu, SWT.CASCADE);
                                     subMenuItem.setText(contextMenu.getText());
                                     subMenuItem.setImage(contextMenu.getImage());
-                                    org.eclipse.swt.widgets.ToolTip toolTip = contextMenu.getToolTip();
+                                    final org.eclipse.swt.widgets.ToolTip toolTip = contextMenu.getToolTip();
                                     subMenuItem.addArmListener(new ArmListener() {
                                         @Override
                                         public void widgetArmed(ArmEvent e) {
@@ -534,7 +534,7 @@ public class EnvTabItem extends TabItem {
                                             action.run();
                                         }
                                     });
-                                    org.eclipse.swt.widgets.ToolTip toolTip = action.getToolTip();
+                                    final org.eclipse.swt.widgets.ToolTip toolTip = action.getToolTip();
                                     item.addArmListener(new ArmListener() {
                                         @Override
                                         public void widgetArmed(ArmEvent e) {
@@ -560,7 +560,7 @@ public class EnvTabItem extends TabItem {
             this.treeMap.put(category.getName(), chkTree);
 
             // ここからサーバツリーの右クリックメニューの設定
-            Menu parentMenu = new Menu(chkTree.getTree());
+            final Menu parentMenu = new Menu(chkTree.getTree());
             chkTree.getTree().setMenu(parentMenu);
             parentMenu.addMenuListener(new MenuAdapter() {
                 public void menuShown(MenuEvent event) {
@@ -584,7 +584,7 @@ public class EnvTabItem extends TabItem {
                                     MenuItem subMenuItem = new MenuItem(parentMenu, SWT.CASCADE);
                                     subMenuItem.setText(contextMenu.getText());
                                     subMenuItem.setImage(contextMenu.getImage());
-                                    org.eclipse.swt.widgets.ToolTip toolTip = contextMenu.getToolTip();
+                                    final org.eclipse.swt.widgets.ToolTip toolTip = contextMenu.getToolTip();
                                     subMenuItem.addArmListener(new ArmListener() {
                                         @Override
                                         public void widgetArmed(ArmEvent e) {
@@ -610,7 +610,7 @@ public class EnvTabItem extends TabItem {
                                             action.run();
                                         }
                                     });
-                                    org.eclipse.swt.widgets.ToolTip toolTip = action.getToolTip();
+                                    final org.eclipse.swt.widgets.ToolTip toolTip = action.getToolTip();
                                     item.addArmListener(new ArmListener() {
                                         @Override
                                         public void widgetArmed(ArmEvent e) {
