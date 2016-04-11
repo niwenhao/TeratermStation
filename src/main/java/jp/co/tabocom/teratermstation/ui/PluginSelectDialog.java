@@ -2,7 +2,7 @@ package jp.co.tabocom.teratermstation.ui;
 
 import java.util.List;
 
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationBulkAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -16,15 +16,16 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolTip;
 
 public class PluginSelectDialog extends Dialog {
 
-    private List<TeratermStationBulkAction> actionList;
-    private TeratermStationBulkAction selectedAction;
+    private List<TeratermStationAction> actionList;
+    private TeratermStationAction selectedAction;
     private Combo pluginCombo;
     private StyledText widget;
 
-    public PluginSelectDialog(Shell parentShell, List<TeratermStationBulkAction> actionList) {
+    public PluginSelectDialog(Shell parentShell, List<TeratermStationAction> actionList) {
         super(parentShell);
         this.actionList = actionList;
     }
@@ -35,8 +36,8 @@ public class PluginSelectDialog extends Dialog {
         composite.setLayout(new GridLayout(1, false));
         pluginCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
         pluginCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        for (TeratermStationBulkAction action : actionList) {
-            pluginCombo.add(action.getDisplayName());
+        for (TeratermStationAction action : actionList) {
+            pluginCombo.add(action.getText());
         }
         pluginCombo.select(0);
         pluginCombo.addSelectionListener(new SelectionListener() {
@@ -44,7 +45,10 @@ public class PluginSelectDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 int idx = pluginCombo.getSelectionIndex();
                 selectedAction = actionList.get(idx);
-                widget.setText(selectedAction.getDescription());
+                ToolTip toolTip = selectedAction.getToolTip();
+                if (toolTip != null) {
+                    widget.setText(toolTip.getMessage());
+                }
             }
 
             @Override
@@ -57,14 +61,17 @@ public class PluginSelectDialog extends Dialog {
         this.widget.setMargins(5, 5, 10, 5);
         this.widget.setEditable(false);
         this.widget.setWordWrap(true);
-        this.widget.setText(actionList.get(0).getDescription());
+        ToolTip toolTip = actionList.get(0).getToolTip();
+        if (toolTip != null) {
+            this.widget.setText(toolTip.getMessage());
+        }
 
         this.selectedAction = actionList.get(0);
 
         return composite;
     }
 
-    public TeratermStationBulkAction getSelectedAction() {
+    public TeratermStationAction getSelectedAction() {
         return selectedAction;
     }
 
