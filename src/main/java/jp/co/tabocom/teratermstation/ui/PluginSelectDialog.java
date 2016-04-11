@@ -2,7 +2,7 @@ package jp.co.tabocom.teratermstation.ui;
 
 import java.util.List;
 
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -20,12 +20,12 @@ import org.eclipse.swt.widgets.ToolTip;
 
 public class PluginSelectDialog extends Dialog {
 
-    private List<TeratermStationDnDAction> actionList;
-    private TeratermStationDnDAction selectedAction;
+    private List<TeratermStationAction> actionList;
+    private TeratermStationAction selectedAction;
     private Combo pluginCombo;
     private StyledText widget;
 
-    public PluginSelectDialog(Shell parentShell, List<TeratermStationDnDAction> actionList) {
+    public PluginSelectDialog(Shell parentShell, List<TeratermStationAction> actionList) {
         super(parentShell);
         this.actionList = actionList;
     }
@@ -36,7 +36,7 @@ public class PluginSelectDialog extends Dialog {
         composite.setLayout(new GridLayout(1, false));
         pluginCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
         pluginCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        for (TeratermStationDnDAction action : actionList) {
+        for (TeratermStationAction action : actionList) {
             pluginCombo.add(action.getText());
         }
         pluginCombo.select(0);
@@ -71,7 +71,7 @@ public class PluginSelectDialog extends Dialog {
         return composite;
     }
 
-    public TeratermStationDnDAction getSelectedAction() {
+    public TeratermStationAction getSelectedAction() {
         return selectedAction;
     }
 

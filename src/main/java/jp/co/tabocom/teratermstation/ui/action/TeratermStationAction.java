@@ -12,7 +12,7 @@ import jp.co.tabocom.teratermstation.model.TargetNode;
  * @author turbou
  * 
  */
-public abstract class TeratermStationDnDAction {
+public abstract class TeratermStationAction {
 
     /**
      * アクションのタイトル
@@ -52,7 +52,7 @@ public abstract class TeratermStationDnDAction {
      * @param shell
      *            画面作成で必要となるベース
      */
-    protected TeratermStationDnDAction(String text, String icon, TargetNode[] nodes, Object value, Shell shell) {
+    protected TeratermStationAction(String text, String icon, TargetNode[] nodes, Object value, Shell shell) {
         this.text = text;
         if (icon != null && !icon.isEmpty()) {
             this.image = new Image(shell.getDisplay(), getClass().getClassLoader().getResourceAsStream(icon));

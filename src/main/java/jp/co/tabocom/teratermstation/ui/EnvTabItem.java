@@ -33,7 +33,7 @@ import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationDnDAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -524,7 +524,7 @@ public class EnvTabItem extends TabItem {
                                     subMenuItem.setMenu(subMenu);
                                     menu = subMenu;
                                 }
-                                for (final TeratermStationDnDAction action : contextMenu.getActionList()) {
+                                for (final TeratermStationAction action : contextMenu.getActionList()) {
                                     MenuItem item = new MenuItem(menu, SWT.PUSH);
                                     item.setText(action.getText());
                                     item.setImage(action.getImage());
@@ -600,7 +600,7 @@ public class EnvTabItem extends TabItem {
                                     subMenuItem.setMenu(subMenu);
                                     menu = subMenu;
                                 }
-                                for (final TeratermStationDnDAction action : contextMenu.getActionList()) {
+                                for (final TeratermStationAction action : contextMenu.getActionList()) {
                                     MenuItem item = new MenuItem(menu, SWT.PUSH);
                                     item.setText(action.getText());
                                     item.setImage(action.getImage());
@@ -917,14 +917,14 @@ public class EnvTabItem extends TabItem {
         String[] buttonArray;
 
         TargetNode[] nodes = checkedTreeList.toArray(new TargetNode[0]);
-        List<TeratermStationDnDAction> bulkActionList = new ArrayList<TeratermStationDnDAction>();
+        List<TeratermStationAction> bulkActionList = new ArrayList<TeratermStationAction>();
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
             try {
                 plugin.getClass().getDeclaredMethod("getBulkActions", TargetNode[].class, Shell.class);
             } catch (NoSuchMethodException | SecurityException e) {
                 continue;
             }
-            List<TeratermStationDnDAction> actionList = plugin.getBulkActions(nodes, getParent().getShell());
+            List<TeratermStationAction> actionList = plugin.getBulkActions(nodes, getParent().getShell());
             if (actionList != null) { // 一括接続での拡張機能の無いプラグインはnullを返すので.
                 bulkActionList.addAll(actionList);
             }
@@ -947,7 +947,7 @@ public class EnvTabItem extends TabItem {
                 if (IDialogConstants.OK_ID != pluginResult) {
                     return;
                 }
-                TeratermStationDnDAction selectedAction = pluginDialog.getSelectedAction();
+                TeratermStationAction selectedAction = pluginDialog.getSelectedAction();
                 selectedAction.run();
                 return;
             default: // Cancel or Other

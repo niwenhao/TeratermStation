@@ -31,13 +31,13 @@ public class TeratermStationContextMenu {
     /**
      * アクションリスト
      */
-    private List<TeratermStationDnDAction> actionList;
+    private List<TeratermStationAction> actionList;
 
     /**
      * デフォルトコンストラクタ
      */
     public TeratermStationContextMenu() {
-        this.actionList = new ArrayList<TeratermStationDnDAction>();
+        this.actionList = new ArrayList<TeratermStationAction>();
     }
 
     public String getText() {
@@ -64,11 +64,11 @@ public class TeratermStationContextMenu {
         this.image = image;
     }
 
-    public void addAction(TeratermStationDnDAction action) {
+    public void addAction(TeratermStationAction action) {
         this.actionList.add(action);
     }
 
-    public List<TeratermStationDnDAction> getActionList() {
+    public List<TeratermStationAction> getActionList() {
         return actionList;
     }
 
