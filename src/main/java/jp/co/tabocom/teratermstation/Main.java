@@ -33,7 +33,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -340,7 +339,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                 if (toolDefine.getPluginList() != null) {
                     for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
                         try {
-                            plugin.getClass().getDeclaredMethod("teminate", PreferencePage.class);
+                            plugin.getClass().getDeclaredMethod("teminate", PreferenceStore.class);
                             plugin.teminate(preferenceStore);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
