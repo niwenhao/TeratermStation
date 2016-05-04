@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import jp.co.tabocom.teratermstation.exception.FormatException;
-import jp.co.tabocom.teratermstation.model.Initial;
 import jp.co.tabocom.teratermstation.model.Tab;
 import jp.co.tabocom.teratermstation.model.ToolDefinition;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
@@ -279,20 +278,13 @@ public class Main implements PropertyChangeListener, WindowProc {
                 }
             }
         } catch (FileNotFoundException fnfe) {
-            // conntool.propertiesがない場合(初回など)は初期値用のプロパティファイルを読み込む.
+            // teratermstation.propertiesがない場合(初回など)は初期値用のプロパティファイルを読み込む.
             try {
                 toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
                 try {
                     toolDefine.initialize();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-                Initial initial = this.toolDefine.getInitial();
-                if (initial != null) {
-                    this.preferenceStore.setValue(PreferenceConstants.TTPMACRO_EXE, initial.getTtpMacroExe());
-                    this.preferenceStore.setValue(PreferenceConstants.WORK_DIR, initial.getWorkDir());
-                    this.preferenceStore.setValue(PreferenceConstants.LOG_DIR, initial.getLogDir());
-                    this.preferenceStore.setValue(PreferenceConstants.INIFILE_DIR, initial.getIniFileDir());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -301,6 +293,9 @@ public class Main implements PropertyChangeListener, WindowProc {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+        this.preferenceStore.setDefault(PreferenceConstants.WORK_DIR, "work");
+        this.preferenceStore.setDefault(PreferenceConstants.LOG_DIR, "log");
+        this.preferenceStore.setDefault(PreferenceConstants.INIFILE_DIR, "ini");
     }
 
     private void createPart() {

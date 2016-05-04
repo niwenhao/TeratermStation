@@ -20,16 +20,12 @@ public class ToolDefinition {
 
     private Path rootDirPath;
     private String system;
-    private int width;
-    private int height;
 
     private Map<String, Tab> tabMap;
     private List<String> orderList;
 
     private List<TeratermStationPlugin> pluginList;
     private List<Exception> loadExceptionList;
-
-    private Initial initial;
 
     public ToolDefinition(Path path) {
         this.rootDirPath = path;
@@ -78,30 +74,6 @@ public class ToolDefinition {
         this.system = system;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public Initial getInitial() {
-        return initial;
-    }
-
-    public void setInitial(Initial initial) {
-        this.initial = initial;
-    }
-
     public Path getRootDirPath() {
         return rootDirPath;
     }
@@ -133,16 +105,7 @@ public class ToolDefinition {
         if (myVisitor.getFmtNgMsgBuilder().length() > 0) {
             throw new FormatException(myVisitor.getFmtNgMsgBuilder().toString());
         }
-        for (Tab tab : myVisitor.getTabMap().values()) {
-            // inifile
-            if (tab.getIniFile() == null || tab.getIniFile().isEmpty()) {
-                tab.setIniFile(myVisitor.getIniFile());
-            }
-        }
         setSystem(myVisitor.getSystem());
-        setWidth(myVisitor.getWidth());
-        setHeight(myVisitor.getHeight());
-        setInitial(myVisitor.getInitial());
         setTabMap(myVisitor.getTabMap());
         setOrderList(myVisitor.getOrderList());
     }

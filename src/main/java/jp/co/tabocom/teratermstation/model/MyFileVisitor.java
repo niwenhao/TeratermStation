@@ -21,7 +21,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import jp.co.tabocom.teratermstation.model.yaml.CategoryIni;
 import jp.co.tabocom.teratermstation.model.yaml.GroupIni;
-import jp.co.tabocom.teratermstation.model.yaml.SettingsIni;
 import jp.co.tabocom.teratermstation.model.yaml.TabIni;
 
 /**
@@ -33,13 +32,9 @@ import jp.co.tabocom.teratermstation.model.yaml.TabIni;
 public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
     private String system;
-    private int width;
-    private int height;
-    private Initial initial;
     private int depthCnt;
     private Map<String, Tab> tabMap;
     private List<String> orderList;
-    private String iniFile;
     
     private StringBuilder fmtNgMsgBuilder;
 
@@ -49,7 +44,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
      * @param depthCnt
      */
     public MyFileVisitor(int depthCnt) {
-        this.initial = new Initial();
         this.depthCnt = depthCnt;
         this.tabMap = new HashMap<String, Tab>();
         this.orderList = new ArrayList<String>();
@@ -136,30 +130,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
         switch (depth) {
             case 2: {
-                // ========== SETTINGS.YAML ========== //
-                if (fileName.equals("settings.yaml")) {
-                    System.out.println("基本設定");
-                    Yaml yaml = new Yaml();
-                    InputStream is = new FileInputStream(file);
-                    SettingsIni settingsIni = yaml.loadAs(is, SettingsIni.class);
-                    is.close();
-                    if (settingsIni == null) {
-                        break;
-                    }
-                    String ngMsg = settingsIni.validate();
-                    if (ngMsg != null) {
-                        fmtNgMsgBuilder.append(String.format("%s\r\n", file));
-                        fmtNgMsgBuilder.append(ngMsg);
-                    }
-                    System.out.println(settingsIni);
-                    this.width = settingsIni.getWidth();
-                    this.height = settingsIni.getHeight();
-                    this.iniFile = settingsIni.getInifile();
-                    this.initial.setTtpMacroExe(settingsIni.getInitialTtpmacroexe());
-                    this.initial.setWorkDir(settingsIni.getInitialDirWork());
-                    this.initial.setLogDir(settingsIni.getInitialDirLog());
-                    this.initial.setIniFileDir(settingsIni.getInitialDirIni());
-                }
                 // ========== ORDER.INI ========== //
                 if (fileName.equals("order.ini")) {
                     System.out.println("並び順設定");
@@ -307,22 +277,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
     public String getSystem() {
         return system;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public String getIniFile() {
-        return iniFile;
-    }
-
-    public Initial getInitial() {
-        return initial;
     }
 
     public Map<String, Tab> getTabMap() {
