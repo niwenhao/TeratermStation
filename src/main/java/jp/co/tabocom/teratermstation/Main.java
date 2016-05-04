@@ -308,11 +308,6 @@ public class Main implements PropertyChangeListener, WindowProc {
         shell = new Shell(display, SWT.TITLE | SWT.MIN | SWT.MAX | SWT.CLOSE | SWT.RESIZE);
         shell.setData("main", this);
         shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
-        if (toolDefine.getWidth() > 0 && toolDefine.getHeight() > 0) {
-            shell.setSize(toolDefine.getWidth(), toolDefine.getHeight());
-        } else {
-            shell.setSize(600, 500);
-        }
         // アイコンセットアップ
         Image[] imageArray = new Image[5];
         imageArray[0] = new Image(display, Main.class.getClassLoader().getResourceAsStream("icon16.png"));
@@ -351,6 +346,8 @@ public class Main implements PropertyChangeListener, WindowProc {
                 int idx = tabFolder.getSelectionIndex();
                 // 開いていたタブを記憶しておく。
                 preferenceStore.setValue(PreferenceConstants.OPENED_TAB_IDX, idx);
+                preferenceStore.setValue(PreferenceConstants.MEM_WIDTH, shell.getSize().x);
+                preferenceStore.setValue(PreferenceConstants.MEM_HEIGHT, shell.getSize().y);
                 try {
                     preferenceStore.save();
                 } catch (IOException ioe) {
@@ -563,6 +560,13 @@ public class Main implements PropertyChangeListener, WindowProc {
         Logger logger = Logger.getLogger("conntool");
 
         uiUpdate();
+        int width = this.preferenceStore.getInt(PreferenceConstants.MEM_WIDTH);
+        int height = this.preferenceStore.getInt(PreferenceConstants.MEM_HEIGHT);
+        if (width > 0 && height > 0) {
+            shell.setSize(width, height);
+        } else {
+            shell.pack();
+        }
         shell.open();
         win32EventOn();
         try {

@@ -28,4 +28,8 @@ public class PreferenceConstants {
     public static final String OPENED_TAB_IDX = new String("jp.co.tabocom.teratermstation.openedTabIdx");
     // 開発環境で使用するときに毎回IDとパスワードを入れるのが面倒なので、それで使用するためのもの（読み込み専用）
     public static final String AUTH_USER_PWD = new String("jp.co.tabocom.teratermstation.authinfo_");
+    // ウインドウサイズの幅
+    public static final String MEM_WIDTH = new String("jp.co.tabocom.teratermstation.memWidth");
+    // ウインドウサイズの縦
+    public static final String MEM_HEIGHT = new String("jp.co.tabocom.teratermstation.memHeight");
 }
