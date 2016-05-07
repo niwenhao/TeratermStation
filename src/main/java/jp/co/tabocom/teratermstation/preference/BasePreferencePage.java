@@ -14,6 +14,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -38,6 +44,7 @@ public class BasePreferencePage extends PreferencePage {
         final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(4, false));
         IPreferenceStore preferenceStore = getPreferenceStore();
+        Transfer[] types = new Transfer[] { FileTransfer.getInstance() };
 
         // ========== 定義ディレクトリの場所 ========== //
         new Label(composite, SWT.LEFT).setText("定義基点ディレクトリ：");
@@ -58,6 +65,27 @@ public class BasePreferencePage extends PreferencePage {
                 String dir = dialog.open();
                 if (dir != null) {
                     dirTxt.setText(dir);
+                }
+            }
+        });
+        DropTarget dropTarget = new DropTarget(dirTxt, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY);
+        dropTarget.setTransfer(types);
+        dropTarget.addDropListener(new DropTargetAdapter() {
+            @Override
+            public void dragEnter(DropTargetEvent event) {
+                if (event.detail == DND.DROP_DEFAULT) {
+                    event.detail = DND.DROP_MOVE;
+                }
+            }
+
+            @Override
+            public void drop(DropTargetEvent event) {
+                String[] files = (String[]) event.data;
+                File dir = new File(files[0]);
+                if (dir.isDirectory()) {
+                    dirTxt.setText(files[0]);
+                } else {
+                    MessageDialog.openError(composite.getShell(), "基本設定", "ディレクトリを指定してください。");
                 }
             }
         });
