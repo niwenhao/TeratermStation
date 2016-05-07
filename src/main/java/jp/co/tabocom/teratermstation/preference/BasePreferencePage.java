@@ -42,7 +42,7 @@ public class BasePreferencePage extends PreferencePage {
     @Override
     protected Control createContents(Composite parent) {
         final Composite composite = new Composite(parent, SWT.NONE);
-        composite.setLayout(new GridLayout(4, false));
+        composite.setLayout(new GridLayout(3, false));
         IPreferenceStore preferenceStore = getPreferenceStore();
         Transfer[] types = new Transfer[] { FileTransfer.getInstance() };
 
@@ -91,6 +91,10 @@ public class BasePreferencePage extends PreferencePage {
         });
 
         Button restartBtn = new Button(composite, SWT.NULL);
+        GridData restartBtnGrDt = new GridData();
+        restartBtnGrDt.horizontalSpan = 3;
+        restartBtnGrDt.horizontalAlignment = GridData.END;
+        restartBtn.setLayoutData(restartBtnGrDt);
         restartBtn.setText("再起動");
         restartBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
