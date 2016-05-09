@@ -13,6 +13,10 @@ import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -29,6 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 public class BasePreferencePage extends PreferencePage {
@@ -90,6 +95,44 @@ public class BasePreferencePage extends PreferencePage {
             }
         });
 
+        LabelProvider labelProvider = new LabelProvider();
+        ITreeContentProvider contentProvider = new ITreeContentProvider() {
+            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+            }
+
+            public void dispose() {
+            }
+
+            public Object[] getElements(Object inputElement) {
+                return null;
+            }
+
+            public boolean hasChildren(Object element) {
+                return false;
+            }
+
+            public Object getParent(Object element) {
+                return null;
+            }
+
+            public Object[] getChildren(Object parentElement) {
+                return null;
+            }
+        };
+
+        Table table = new Table(composite, SWT.CHECK | SWT.BORDER);
+        GridData tableGrDt = new GridData(GridData.FILL_BOTH);
+        tableGrDt.horizontalSpan = 2;
+        table.setLayoutData(tableGrDt);
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
+        CheckboxTableViewer viewer = new CheckboxTableViewer(table);
+        viewer.setLabelProvider(labelProvider);
+        viewer.setContentProvider(contentProvider);
+
+        Composite buttonGrp = new Composite(composite, SWT.NONE);
+        buttonGrp.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+        
         Button restartBtn = new Button(composite, SWT.NULL);
         GridData restartBtnGrDt = new GridData();
         restartBtnGrDt.horizontalSpan = 3;
