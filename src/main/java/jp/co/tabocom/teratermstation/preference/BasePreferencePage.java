@@ -187,6 +187,7 @@ public class BasePreferencePage extends PreferencePage {
             public void widgetSelected(SelectionEvent e) {
                 int index = table.getSelectionIndex();
                 TableItem[] items = table.getSelection();
+                boolean chked = viewer.getChecked(items[0].getText());
                 PathDialog pathDialog = new PathDialog(getShell(), items[0].getText());
                 int result = pathDialog.open();
                 if (IDialogConstants.OK_ID != result) {
@@ -200,6 +201,7 @@ public class BasePreferencePage extends PreferencePage {
                 dirList.remove(index);
                 dirList.add(index, path);
                 viewer.refresh();
+                viewer.setChecked(path, chked);
             }
         });
 
