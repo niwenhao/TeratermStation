@@ -3,6 +3,7 @@ package jp.co.tabocom.teratermstation.preference;
 import java.io.File;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -11,6 +12,8 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -42,6 +45,16 @@ public class PathDialog extends Dialog {
         dirTxt = new Text(composite, SWT.BORDER);
         dirTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         dirTxt.setText(this.dirPath);
+        dirTxt.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if (dirPath.equals(dirTxt.getText())) {
+                    getButton(IDialogConstants.OK_ID).setEnabled(false);
+                } else {
+                    getButton(IDialogConstants.OK_ID).setEnabled(true);
+                }
+            }
+        });
         Button dirBtn = new Button(composite, SWT.NULL);
         dirBtn.setText("参照");
         dirBtn.addSelectionListener(new SelectionListener() {
@@ -86,6 +99,13 @@ public class PathDialog extends Dialog {
 
     public String getDirPath() {
         return this.dirPath;
+    }
+    
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+        Button okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+        okButton.setEnabled(false);
     }
 
     @Override

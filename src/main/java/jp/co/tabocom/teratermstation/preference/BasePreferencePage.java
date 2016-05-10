@@ -160,7 +160,12 @@ public class BasePreferencePage extends PreferencePage {
                 if (IDialogConstants.OK_ID != result) {
                     return;
                 }
-                dirList.add(pathDialog.getDirPath());
+                String path = pathDialog.getDirPath();
+                if (dirList.contains(path)) {
+                    MessageDialog.openError(composite.getShell(), "定義基点ディレクトリ", "すでに設定されているパスです。");
+                    return;
+                }
+                dirList.add(path);
                 viewer.refresh();
                 // チェックしなおし処理
                 Object[] elements = viewer.getCheckedElements();
@@ -168,7 +173,7 @@ public class BasePreferencePage extends PreferencePage {
                 for (Object element : elements) {
                     elementList.add(element.toString());
                 }
-                elementList.add(pathDialog.getDirPath());
+                elementList.add(path);
                 viewer.setCheckedElements(elementList.toArray());
             }
         });
@@ -187,8 +192,13 @@ public class BasePreferencePage extends PreferencePage {
                 if (IDialogConstants.OK_ID != result) {
                     return;
                 }
+                String path = pathDialog.getDirPath();
+                if (dirList.contains(path)) {
+                    MessageDialog.openError(composite.getShell(), "定義基点ディレクトリ", "すでに設定されているパスです。");
+                    return;
+                }
                 dirList.remove(index);
-                dirList.add(index, pathDialog.getDirPath());
+                dirList.add(index, path);
                 viewer.refresh();
             }
         });
@@ -245,10 +255,18 @@ public class BasePreferencePage extends PreferencePage {
         table.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                chgBtn.setEnabled(true);
-                rmvBtn.setEnabled(true);
-                upBtn.setEnabled(true);
-                downBtn.setEnabled(true);
+                int index = table.getSelectionIndex();
+                if (index < 0) {
+                    chgBtn.setEnabled(false);
+                    rmvBtn.setEnabled(false);
+                    upBtn.setEnabled(false);
+                    downBtn.setEnabled(false);
+                } else {
+                    chgBtn.setEnabled(true);
+                    rmvBtn.setEnabled(true);
+                    upBtn.setEnabled(true);
+                    downBtn.setEnabled(true);
+                }
             }
         });
 
