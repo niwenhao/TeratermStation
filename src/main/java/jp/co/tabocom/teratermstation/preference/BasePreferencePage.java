@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import jp.co.tabocom.teratermstation.Main;
 
@@ -13,10 +14,12 @@ import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnLayoutData;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -34,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 public class BasePreferencePage extends PreferencePage {
@@ -95,30 +99,10 @@ public class BasePreferencePage extends PreferencePage {
             }
         });
 
-        LabelProvider labelProvider = new LabelProvider();
-        ITreeContentProvider contentProvider = new ITreeContentProvider() {
-            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-            }
-
-            public void dispose() {
-            }
-
-            public Object[] getElements(Object inputElement) {
-                return null;
-            }
-
-            public boolean hasChildren(Object element) {
-                return false;
-            }
-
-            public Object getParent(Object element) {
-                return null;
-            }
-
-            public Object[] getChildren(Object parentElement) {
-                return null;
-            }
-        };
+        List<String> valueList = new ArrayList<String>();
+        valueList.add("C:\\Users\\turbou\\Desktop\\Total1");
+        valueList.add("C:\\Users\\turbou\\Desktop\\Total2");
+        valueList.add("C:\\Users\\turbou\\Desktop\\Total3");
 
         Table table = new Table(composite, SWT.CHECK | SWT.BORDER);
         GridData tableGrDt = new GridData(GridData.FILL_BOTH);
@@ -127,16 +111,46 @@ public class BasePreferencePage extends PreferencePage {
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
         CheckboxTableViewer viewer = new CheckboxTableViewer(table);
-        viewer.setLabelProvider(labelProvider);
-        viewer.setContentProvider(contentProvider);
+        viewer.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                return element.toString();
+            }
+        });
+        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setInput(valueList);
+
+        TableLayout layout = new TableLayout();
+        table.setLayout(layout);
+        ColumnLayoutData layoutData = new ColumnWeightData(100);
+        TableColumn column = new TableColumn(table, SWT.NONE, 0);
+        layout.addColumnData(layoutData);
+        column.setResizable(layoutData.resizable);
+        column.setText("定義基点ディレクトリ");
 
         Composite buttonGrp = new Composite(composite, SWT.NONE);
         buttonGrp.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-        
+        buttonGrp.setLayout(new GridLayout(1, true));
+        Button addBtn = new Button(buttonGrp, SWT.NULL);
+        addBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        addBtn.setText("新規...");
+        Button chgBtn = new Button(buttonGrp, SWT.NULL);
+        chgBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        chgBtn.setText("編集...");
+        Button rmvBtn = new Button(buttonGrp, SWT.NULL);
+        rmvBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        rmvBtn.setText("削除");
+        Button upBtn = new Button(buttonGrp, SWT.NULL);
+        upBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        upBtn.setText("上へ移動");
+        Button downBtn = new Button(buttonGrp, SWT.NULL);
+        downBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        downBtn.setText("下へ移動");
+
         Button restartBtn = new Button(composite, SWT.NULL);
         GridData restartBtnGrDt = new GridData();
         restartBtnGrDt.horizontalSpan = 3;
-        restartBtnGrDt.horizontalAlignment = GridData.END;
+        restartBtnGrDt.horizontalAlignment = GridData.BEGINNING;
         restartBtn.setLayoutData(restartBtnGrDt);
         restartBtn.setText("再起動");
         restartBtn.addSelectionListener(new SelectionListener() {
