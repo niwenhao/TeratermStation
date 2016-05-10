@@ -11,6 +11,7 @@ import java.util.List;
 import jp.co.tabocom.teratermstation.Main;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -27,6 +28,7 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -38,11 +40,14 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 public class BasePreferencePage extends PreferencePage {
 
     private Text dirTxt;
+    List<String> valueList = new ArrayList<String>();
+    CheckboxTableViewer viewer;
 
     public BasePreferencePage() {
         super("基本設定");
@@ -99,18 +104,17 @@ public class BasePreferencePage extends PreferencePage {
             }
         });
 
-        List<String> valueList = new ArrayList<String>();
         valueList.add("C:\\Users\\turbou\\Desktop\\Total1");
         valueList.add("C:\\Users\\turbou\\Desktop\\Total2");
         valueList.add("C:\\Users\\turbou\\Desktop\\Total3");
 
-        Table table = new Table(composite, SWT.CHECK | SWT.BORDER);
+        final Table table = new Table(composite, SWT.CHECK | SWT.BORDER);
         GridData tableGrDt = new GridData(GridData.FILL_BOTH);
         tableGrDt.horizontalSpan = 2;
         table.setLayoutData(tableGrDt);
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
-        CheckboxTableViewer viewer = new CheckboxTableViewer(table);
+        viewer = new CheckboxTableViewer(table);
         viewer.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -119,6 +123,7 @@ public class BasePreferencePage extends PreferencePage {
         });
         viewer.setContentProvider(new ArrayContentProvider());
         viewer.setInput(valueList);
+        viewer.setCheckedElements(valueList.toArray());
 
         TableLayout layout = new TableLayout();
         table.setLayout(layout);
@@ -131,21 +136,101 @@ public class BasePreferencePage extends PreferencePage {
         Composite buttonGrp = new Composite(composite, SWT.NONE);
         buttonGrp.setLayoutData(new GridData(GridData.FILL_VERTICAL));
         buttonGrp.setLayout(new GridLayout(1, true));
-        Button addBtn = new Button(buttonGrp, SWT.NULL);
+
+        final Button addBtn = new Button(buttonGrp, SWT.NULL);
         addBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         addBtn.setText("新規...");
-        Button chgBtn = new Button(buttonGrp, SWT.NULL);
+        addBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                PathDialog pathDialog = new PathDialog(getShell(), "");
+                int result = pathDialog.open();
+                if (IDialogConstants.OK_ID != result) {
+                    return;
+                }
+                valueList.add(pathDialog.getDirPath());
+                viewer.refresh();
+            }
+        });
+
+        final Button chgBtn = new Button(buttonGrp, SWT.NULL);
         chgBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         chgBtn.setText("編集...");
-        Button rmvBtn = new Button(buttonGrp, SWT.NULL);
+        chgBtn.setEnabled(false);
+        chgBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = table.getSelectionIndex();
+                TableItem[] items = table.getSelection();
+                PathDialog pathDialog = new PathDialog(getShell(), items[0].getText());
+                int result = pathDialog.open();
+                if (IDialogConstants.OK_ID != result) {
+                    return;
+                }
+                valueList.remove(index);
+                valueList.add(index, pathDialog.getDirPath());
+                viewer.refresh();
+            }
+        });
+
+        final Button rmvBtn = new Button(buttonGrp, SWT.NULL);
         rmvBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         rmvBtn.setText("削除");
-        Button upBtn = new Button(buttonGrp, SWT.NULL);
+        rmvBtn.setEnabled(false);
+        rmvBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = table.getSelectionIndex();
+                valueList.remove(index);
+                viewer.refresh();
+            }
+        });
+
+        final Button upBtn = new Button(buttonGrp, SWT.NULL);
         upBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         upBtn.setText("上へ移動");
-        Button downBtn = new Button(buttonGrp, SWT.NULL);
+        upBtn.setEnabled(false);
+        upBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = table.getSelectionIndex();
+                if (index > 0) {
+                    TableItem[] items = table.getSelection();
+                    valueList.remove(index);
+                    index--;
+                    valueList.add(index, items[0].getText());
+                    viewer.refresh();
+                }
+            }
+        });
+
+        final Button downBtn = new Button(buttonGrp, SWT.NULL);
         downBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         downBtn.setText("下へ移動");
+        downBtn.setEnabled(false);
+        downBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int index = table.getSelectionIndex();
+                if (index < valueList.size()) {
+                    TableItem[] items = table.getSelection();
+                    valueList.remove(index);
+                    index++;
+                    valueList.add(index, items[0].getText());
+                    viewer.refresh();
+                }
+            }
+        });
+
+        table.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                chgBtn.setEnabled(true);
+                rmvBtn.setEnabled(true);
+                upBtn.setEnabled(true);
+                downBtn.setEnabled(true);
+            }
+        });
 
         Button restartBtn = new Button(composite, SWT.NULL);
         GridData restartBtnGrDt = new GridData();
@@ -206,6 +291,9 @@ public class BasePreferencePage extends PreferencePage {
         }
         if (this.dirTxt != null) {
             ps.setValue(PreferenceConstants.TARGET_DIR, this.dirTxt.getText());
+        }
+        for (Object obj : viewer.getCheckedElements()) {
+            System.out.println(obj);
         }
         return true;
     }
