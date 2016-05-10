@@ -4,6 +4,8 @@ public class PreferenceConstants {
 
     // サーバツリー基点ディレクトリ
     public static final String TARGET_DIR = new String("jp.co.tabocom.teratermstation.targetDir");
+    // サーバツリー基点ディレクトリリスト
+    public static final String TARGET_DIRS = new String("jp.co.tabocom.teratermstation.targetDirs");
 
     // TeraTermマクロexeのフルパス
     public static final String TTPMACRO_EXE = new String("jp.co.tabocom.teratermstation.ttpmacroExe");

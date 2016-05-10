@@ -7,6 +7,8 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jp.co.tabocom.teratermstation.Main;
 
@@ -46,8 +48,8 @@ import org.eclipse.swt.widgets.Text;
 public class BasePreferencePage extends PreferencePage {
 
     private Text dirTxt;
-    List<String> valueList = new ArrayList<String>();
-    CheckboxTableViewer viewer;
+    private List<String> dirList = new ArrayList<String>();
+    private CheckboxTableViewer viewer;
 
     public BasePreferencePage() {
         super("基本設定");
@@ -104,9 +106,19 @@ public class BasePreferencePage extends PreferencePage {
             }
         });
 
-        valueList.add("C:\\Users\\turbou\\Desktop\\Total1");
-        valueList.add("C:\\Users\\turbou\\Desktop\\Total2");
-        valueList.add("C:\\Users\\turbou\\Desktop\\Total3");
+        String dirStrs = preferenceStore.getString(PreferenceConstants.TARGET_DIRS);
+        List<String> validDirList = new ArrayList<String>();
+        Pattern ptn = Pattern.compile("^<([^<>]+)>$", Pattern.DOTALL);
+        if (dirStrs.trim().length() > 0) {
+            for (String dirStr : dirStrs.split(",")) {
+                Matcher matcher = ptn.matcher(dirStr);
+                if (matcher.find()) {
+                    dirStr = matcher.group(1);
+                    validDirList.add(dirStr);
+                }
+                dirList.add(dirStr);
+            }
+        }
 
         final Table table = new Table(composite, SWT.CHECK | SWT.BORDER);
         GridData tableGrDt = new GridData(GridData.FILL_BOTH);
@@ -122,8 +134,8 @@ public class BasePreferencePage extends PreferencePage {
             }
         });
         viewer.setContentProvider(new ArrayContentProvider());
-        viewer.setInput(valueList);
-        viewer.setCheckedElements(valueList.toArray());
+        viewer.setInput(dirList);
+        viewer.setCheckedElements(validDirList.toArray());
 
         TableLayout layout = new TableLayout();
         table.setLayout(layout);
@@ -148,8 +160,16 @@ public class BasePreferencePage extends PreferencePage {
                 if (IDialogConstants.OK_ID != result) {
                     return;
                 }
-                valueList.add(pathDialog.getDirPath());
+                dirList.add(pathDialog.getDirPath());
                 viewer.refresh();
+                // チェックしなおし処理
+                Object[] elements = viewer.getCheckedElements();
+                List<String> elementList = new ArrayList<String>();
+                for (Object element : elements) {
+                    elementList.add(element.toString());
+                }
+                elementList.add(pathDialog.getDirPath());
+                viewer.setCheckedElements(elementList.toArray());
             }
         });
 
@@ -167,8 +187,8 @@ public class BasePreferencePage extends PreferencePage {
                 if (IDialogConstants.OK_ID != result) {
                     return;
                 }
-                valueList.remove(index);
-                valueList.add(index, pathDialog.getDirPath());
+                dirList.remove(index);
+                dirList.add(index, pathDialog.getDirPath());
                 viewer.refresh();
             }
         });
@@ -181,7 +201,7 @@ public class BasePreferencePage extends PreferencePage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = table.getSelectionIndex();
-                valueList.remove(index);
+                dirList.remove(index);
                 viewer.refresh();
             }
         });
@@ -196,9 +216,9 @@ public class BasePreferencePage extends PreferencePage {
                 int index = table.getSelectionIndex();
                 if (index > 0) {
                     TableItem[] items = table.getSelection();
-                    valueList.remove(index);
+                    dirList.remove(index);
                     index--;
-                    valueList.add(index, items[0].getText());
+                    dirList.add(index, items[0].getText());
                     viewer.refresh();
                 }
             }
@@ -212,11 +232,11 @@ public class BasePreferencePage extends PreferencePage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int index = table.getSelectionIndex();
-                if (index < valueList.size()) {
+                if (index < dirList.size()) {
                     TableItem[] items = table.getSelection();
-                    valueList.remove(index);
+                    dirList.remove(index);
                     index++;
-                    valueList.add(index, items[0].getText());
+                    dirList.add(index, items[0].getText());
                     viewer.refresh();
                 }
             }
@@ -292,8 +312,21 @@ public class BasePreferencePage extends PreferencePage {
         if (this.dirTxt != null) {
             ps.setValue(PreferenceConstants.TARGET_DIR, this.dirTxt.getText());
         }
-        for (Object obj : viewer.getCheckedElements()) {
-            System.out.println(obj);
+        Object[] elements = viewer.getCheckedElements();
+        List<String> checkedList = new ArrayList<String>();
+        for (Object element : elements) {
+            checkedList.add(element.toString());
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (String dir : this.dirList) {
+            if (checkedList.contains(dir)) {
+                dir = "<" + dir + ">";
+            }
+            builder.append(dir + ",");
+        }
+        if (builder.length() > 0) {
+            ps.setValue(PreferenceConstants.TARGET_DIRS, builder.toString());
         }
         return true;
     }
