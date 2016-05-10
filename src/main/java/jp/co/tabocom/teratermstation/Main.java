@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jp.co.tabocom.teratermstation.exception.FormatException;
 import jp.co.tabocom.teratermstation.model.Tab;
@@ -245,6 +247,30 @@ public class Main implements PropertyChangeListener, WindowProc {
             } catch (FileNotFoundException fnfe) {
                 this.preferenceStore = new PreferenceStore("teratermstation.properties");
                 this.preferenceStore.load();
+            }
+
+            String rootDirs = this.preferenceStore.getString(PreferenceConstants.TARGET_DIRS);
+            List<String> validDirList = new ArrayList<String>();
+            Pattern ptn = Pattern.compile("^<([^<>]+)>$", Pattern.DOTALL);
+            if (rootDirs.trim().length() > 0) {
+                for (String dirStr : rootDirs.split(",")) {
+                    Matcher matcher = ptn.matcher(dirStr);
+                    if (matcher.find()) {
+                        dirStr = matcher.group(1);
+                        File rootDirFile = new File(dirStr);
+                        if (!rootDirFile.isAbsolute()) {
+                            dirStr = rootDirFile.getCanonicalPath();
+                        }
+                        validDirList.add(dirStr);
+                    }
+                }
+            } else {
+                String dirStr = ROOT_DIR;
+                File rootDirFile = new File(dirStr);
+                if (!rootDirFile.isAbsolute()) {
+                    dirStr = rootDirFile.getCanonicalPath();
+                }
+                validDirList.add(ROOT_DIR);
             }
 
             String rootDir = this.preferenceStore.getString(PreferenceConstants.TARGET_DIR);
