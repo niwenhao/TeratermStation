@@ -124,6 +124,7 @@ public class EnvTabItem extends TabItem {
     private boolean memoryPwdFlg;
     private boolean pwdAutoClearFlg;
     private String pwdGroup;
+    private String rootDir;
 
     private Tab tab;
 
@@ -141,8 +142,9 @@ public class EnvTabItem extends TabItem {
      * @param parent
      *            TabFolder 要するに親玉
      */
-    public EnvTabItem(Tab tab, TabFolder parent) {
+    public EnvTabItem(String rootDir, Tab tab, TabFolder parent) {
         super(parent, SWT.NONE);
+        this.rootDir = rootDir;
         this.tab = tab;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
         Main main = (Main) parent.getShell().getData("main");
@@ -492,7 +494,7 @@ public class EnvTabItem extends TabItem {
                     TargetNode node = (TargetNode) event.item.getData();
                     String[] files = (String[]) event.data;
                     Menu parentMenu = new Menu(getParent().getShell(), SWT.POP_UP);
-                    for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+                    for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
                         try {
                             plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, Shell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
@@ -569,7 +571,7 @@ public class EnvTabItem extends TabItem {
                         item.dispose();
                     }
                     TargetNode node = (TargetNode) chkTree.getTree().getSelection()[0].getData();
-                    for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+                    for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
                         try {
                             plugin.getClass().getDeclaredMethod("getActions", TargetNode[].class, Shell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
@@ -918,7 +920,7 @@ public class EnvTabItem extends TabItem {
 
         TargetNode[] nodes = checkedTreeList.toArray(new TargetNode[0]);
         List<TeratermStationAction> bulkActionList = new ArrayList<TeratermStationAction>();
-        for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList()) {
+        for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
             try {
                 plugin.getClass().getDeclaredMethod("getBulkActions", TargetNode[].class, Shell.class);
             } catch (NoSuchMethodException | SecurityException e) {

@@ -7,8 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -106,7 +106,7 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     private String loadDirErrorMsg;
     private String openingMsg;
-    
+
     private int loginUserIdx = 1;
 
     /**
@@ -249,6 +249,13 @@ public class Main implements PropertyChangeListener, WindowProc {
                 this.preferenceStore.load();
             }
 
+            // ROOT_DIRの絶対パスを取得しておく
+            String rootDirStr = ROOT_DIR;
+            File rootDirFile = new File(rootDirStr);
+            if (!rootDirFile.isAbsolute()) {
+                rootDirStr = rootDirFile.getCanonicalPath();
+            }
+
             String rootDirs = this.preferenceStore.getString(PreferenceConstants.TARGET_DIRS);
             List<String> validDirList = new ArrayList<String>();
             Pattern ptn = Pattern.compile("^<([^<>]+)>$", Pattern.DOTALL);
@@ -257,45 +264,38 @@ public class Main implements PropertyChangeListener, WindowProc {
                     Matcher matcher = ptn.matcher(dirStr);
                     if (matcher.find()) {
                         dirStr = matcher.group(1);
-                        File rootDirFile = new File(dirStr);
-                        if (!rootDirFile.isAbsolute()) {
-                            dirStr = rootDirFile.getCanonicalPath();
+                        File dirFile = new File(dirStr);
+                        if (!dirFile.isAbsolute()) {
+                            dirStr = dirFile.getCanonicalPath();
                         }
                         validDirList.add(dirStr);
                     }
                 }
             } else {
-                String dirStr = ROOT_DIR;
-                File rootDirFile = new File(dirStr);
-                if (!rootDirFile.isAbsolute()) {
-                    dirStr = rootDirFile.getCanonicalPath();
-                }
-                validDirList.add(ROOT_DIR);
+                validDirList.add(rootDirStr);
             }
 
-            String rootDir = this.preferenceStore.getString(PreferenceConstants.TARGET_DIR);
-            if (rootDir == null || rootDir.isEmpty()) {
-                rootDir = ROOT_DIR;
-            }
-            File rootDirFile = new File(rootDir);
-            if (!rootDirFile.isAbsolute()) {
-                rootDir = rootDirFile.getCanonicalPath();
-            }
-            toolDefine = new ToolDefinition(Paths.get(rootDir));
+            // String rootDir = this.preferenceStore.getString(PreferenceConstants.TARGET_DIR);
+            // if (rootDir == null || rootDir.isEmpty()) {
+            // rootDir = ROOT_DIR;
+            // }
+            toolDefine = new ToolDefinition(validDirList);
             try {
                 toolDefine.initialize();
-                if (!toolDefine.getLoadExceptionList().isEmpty()) {
-                    StringBuilder builder = new StringBuilder();
-                    for (Exception e : toolDefine.getLoadExceptionList()) {
-                        builder.append(e.getMessage() + "\r\n");
+                for (String rootDir : this.toolDefine.getRootDirList()) {
+                    if (!toolDefine.getLoadExceptionList(rootDir).isEmpty()) {
+                        StringBuilder builder = new StringBuilder();
+                        for (Exception e : toolDefine.getLoadExceptionList(rootDir)) {
+                            builder.append(e.getMessage() + "\r\n");
+                        }
+                        loadDirErrorMsg = builder.toString();
                     }
-                    loadDirErrorMsg = builder.toString();
                 }
             } catch (FormatException fe) {
                 loadDirErrorMsg = fe.getMessage();
             } catch (Exception e) {
                 loadDirErrorMsg = "サーバ定義の読み込みに失敗したため、サンプル定義(sample)でツールを起動します。\r\nご指定のサーバ定義に問題がないか、ご確認ください。";
-                toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
+                toolDefine = new ToolDefinition(Arrays.asList(rootDirStr));
                 try {
                     toolDefine.initialize();
                 } catch (Exception e1) {
@@ -306,7 +306,12 @@ public class Main implements PropertyChangeListener, WindowProc {
         } catch (FileNotFoundException fnfe) {
             // teratermstation.propertiesがない場合(初回など)は初期値用のプロパティファイルを読み込む.
             try {
-                toolDefine = new ToolDefinition(Paths.get(ROOT_DIR));
+                String rootDirStr = ROOT_DIR;
+                File rootDirFile = new File(rootDirStr);
+                if (!rootDirFile.isAbsolute()) {
+                    rootDirStr = rootDirFile.getCanonicalPath();
+                }
+                toolDefine = new ToolDefinition(Arrays.asList(rootDirStr));
                 try {
                     toolDefine.initialize();
                 } catch (Exception e) {
@@ -352,15 +357,17 @@ public class Main implements PropertyChangeListener, WindowProc {
 
             @Override
             public void shellClosed(ShellEvent event) {
-                if (toolDefine.getPluginList() != null) {
-                    for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
-                        try {
-                            plugin.getClass().getDeclaredMethod("teminate", PreferenceStore.class);
-                            plugin.teminate(preferenceStore);
-                        } catch (NoSuchMethodException | SecurityException e) {
-                            continue;
-                        } catch (Exception e) {
-                            MessageDialog.openError(shell, "終了時処理", e.getMessage());
+                for (String rootDir : toolDefine.getRootDirList()) {
+                    if (toolDefine.getPluginList(rootDir) != null) {
+                        for (TeratermStationPlugin plugin : toolDefine.getPluginList(rootDir)) {
+                            try {
+                                plugin.getClass().getDeclaredMethod("teminate", PreferenceStore.class);
+                                plugin.teminate(preferenceStore);
+                            } catch (NoSuchMethodException | SecurityException e) {
+                                continue;
+                            } catch (Exception e) {
+                                MessageDialog.openError(shell, "終了時処理", e.getMessage());
+                            }
                         }
                     }
                 }
@@ -412,48 +419,50 @@ public class Main implements PropertyChangeListener, WindowProc {
 
         // ==================== ここで各環境のタブを生成しています ==================== //
         this.tabItemMap = new LinkedHashMap<String, EnvTabItem>();
-        if (this.toolDefine.getTabMap() != null) {
-            List<String> orderList = this.toolDefine.getOrderList();
-            if (orderList != null && !orderList.isEmpty()) {
-                List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap().keySet());
-                Map<String, String> sortMap = new HashMap<String, String>();
-                for (String key : keys) {
-                    int idx = orderList.indexOf(key);
-                    if (idx > -1) {
-                        sortMap.put(String.format("%04d", idx), key);
-                    } else {
-                        sortMap.put(key, key);
+        if (!this.toolDefine.isTabMapEmpty()) {
+            for (String rootDir : this.toolDefine.getRootDirList()) {
+                List<String> orderList = this.toolDefine.getOrderList(rootDir);
+                if (orderList != null && !orderList.isEmpty()) {
+                    List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap(rootDir).keySet());
+                    Map<String, String> sortMap = new HashMap<String, String>();
+                    for (String key : keys) {
+                        int idx = orderList.indexOf(key);
+                        if (idx > -1) {
+                            sortMap.put(String.format("%04d", idx), key);
+                        } else {
+                            sortMap.put(key, key);
+                        }
                     }
-                }
-                List<String> idxList = new ArrayList<String>(sortMap.keySet());
-                Collections.sort(idxList);
-                for (String idx : idxList) {
-                    String key = sortMap.get(idx);
-                    Tab tab = this.toolDefine.getTabMap().get(key);
-                    tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
-                }
-            } else {
-                // 挿入順（正確には辞書順）となるように制御
-                List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap().keySet());
-                Collections.sort(keys);
-                for (int i = 0; i < keys.size(); i++) {
-                    Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
-                    tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
-                }
-                // 下は逆順とする場合
-                // for (int i = keys.size() - 1; i >= 0; i--) {
-                // Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
-                // tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
-                // }
+                    List<String> idxList = new ArrayList<String>(sortMap.keySet());
+                    Collections.sort(idxList);
+                    for (String idx : idxList) {
+                        String key = sortMap.get(idx);
+                        Tab tab = this.toolDefine.getTabMap(rootDir).get(key);
+                        tabItemMap.put(key, new EnvTabItem(rootDir, tab, tabFolder));
+                    }
+                } else {
+                    // 挿入順（正確には辞書順）となるように制御
+                    List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap(rootDir).keySet());
+                    Collections.sort(keys);
+                    for (int i = 0; i < keys.size(); i++) {
+                        Tab tab = this.toolDefine.getTabMap(rootDir).get(keys.get(i));
+                        tabItemMap.put(keys.get(i), new EnvTabItem(rootDir, tab, tabFolder));
+                    }
+                    // 下は逆順とする場合
+                    // for (int i = keys.size() - 1; i >= 0; i--) {
+                    // Tab tab = this.toolDefine.getTabMap().get(keys.get(i));
+                    // tabItemMap.put(keys.get(i), new EnvTabItem(tab, tabFolder));
+                    // }
 
-                // これは普通のやりかた
-                // for (String key : toolDefine.getTabMap().keySet()) {
-                // Tab tab = toolDefine.getTabMap().get(key);
-                // tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
-                // }
-            }
-            for (EnvTabItem item : tabItemMap.values()) {
-                item.addPropertyChangeListener(this);
+                    // これは普通のやりかた
+                    // for (String key : toolDefine.getTabMap().keySet()) {
+                    // Tab tab = toolDefine.getTabMap().get(key);
+                    // tabItemMap.put(key, new EnvTabItem(tab, tabFolder));
+                    // }
+                }
+                for (EnvTabItem item : tabItemMap.values()) {
+                    item.addPropertyChangeListener(this);
+                }
             }
         }
         // ============================================================================
@@ -517,16 +526,18 @@ public class Main implements PropertyChangeListener, WindowProc {
 
                 PreferenceNode pluginsNode = new PreferenceNode("plugins", new PluginPreferencePage());
                 mgr.addToRoot(pluginsNode);
-                if (toolDefine.getPluginList() != null) {
-                    for (TeratermStationPlugin plugin : toolDefine.getPluginList()) {
-                        try {
-                            plugin.getClass().getDeclaredMethod("getPreferencePage");
-                        } catch (NoSuchMethodException | SecurityException e) {
-                            continue;
-                        }
-                        if (plugin.getPreferencePage() != null) {
-                            PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
-                            mgr.addTo(pluginsNode.getId(), pluginNode);
+                for (String rootDir : toolDefine.getRootDirList()) {
+                    if (toolDefine.getPluginList(rootDir) != null) {
+                        for (TeratermStationPlugin plugin : toolDefine.getPluginList(rootDir)) {
+                            try {
+                                plugin.getClass().getDeclaredMethod("getPreferencePage");
+                            } catch (NoSuchMethodException | SecurityException e) {
+                                continue;
+                            }
+                            if (plugin.getPreferencePage() != null) {
+                                PreferenceNode pluginNode = new PreferenceNode(plugin.getClass().getName(), plugin.getPreferencePage());
+                                mgr.addTo(pluginsNode.getId(), pluginNode);
+                            }
                         }
                     }
                 }
@@ -669,7 +680,7 @@ public class Main implements PropertyChangeListener, WindowProc {
     public int getLoginUserIdx() {
         return loginUserIdx;
     }
-    
+
     public void setWindowTitle(String text) {
         if (text == null || text.isEmpty()) {
             this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));

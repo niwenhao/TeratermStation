@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.yaml.snakeyaml.error.YAMLException;
-
 import jp.co.tabocom.teratermstation.exception.FormatException;
 import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
+
+import org.yaml.snakeyaml.error.YAMLException;
 
 public class ToolDefinition {
 
@@ -30,18 +30,34 @@ public class ToolDefinition {
 
     private Map<String, Map<String, Tab>> tabMapMap;
     private Map<String, List<String>> orderListMap;
-    
+
     private List<TeratermStationPlugin> pluginList;
     private List<Exception> loadExceptionList;
+
+    private Map<String, List<TeratermStationPlugin>> pluginListMap;
+    private Map<String, List<Exception>> loadExceptionListMap;
 
     public ToolDefinition(Path path) {
         this.rootDirPath = path;
     }
-    
+
     public ToolDefinition(List<String> rootDirList) {
         this.rootDirList = rootDirList;
         this.tabMapMap = new HashMap<String, Map<String, Tab>>();
         this.orderListMap = new HashMap<String, List<String>>();
+        this.pluginListMap = new HashMap<String, List<TeratermStationPlugin>>();
+        this.loadExceptionListMap = new HashMap<String, List<Exception>>();
+    }
+
+    public List<String> getRootDirList() {
+        return rootDirList;
+    }
+
+    public boolean isTabMapEmpty() {
+        if (this.tabMapMap == null) {
+            return true;
+        }
+        return this.tabMapMap.isEmpty();
     }
 
     public Map<String, Tab> getTabMap() {
@@ -56,6 +72,10 @@ public class ToolDefinition {
         this.tabMapMap.put(rootDir, tabMap);
     }
 
+    public Map<String, Tab> getTabMap(String rootDir) {
+        return tabMapMap.get(rootDir);
+    }
+
     public List<String> getOrderList() {
         return orderList;
     }
@@ -68,6 +88,10 @@ public class ToolDefinition {
         this.orderListMap.put(rootDir, orderList);
     }
 
+    public List<String> getOrderList(String rootDir) {
+        return orderListMap.get(rootDir);
+    }
+
     public List<TeratermStationPlugin> getPluginList() {
         return pluginList;
     }
@@ -76,12 +100,28 @@ public class ToolDefinition {
         this.pluginList = pluginList;
     }
 
+    public void addPluginList(String rootDir, List<TeratermStationPlugin> pluginList) {
+        this.pluginListMap.put(rootDir, pluginList);
+    }
+
+    public List<TeratermStationPlugin> getPluginList(String rootDir) {
+        return pluginListMap.get(rootDir);
+    }
+
     public List<Exception> getLoadExceptionList() {
         return loadExceptionList;
     }
 
     public void setLoadExceptionList(List<Exception> loadExceptionList) {
         this.loadExceptionList = loadExceptionList;
+    }
+
+    public void addLoadExceptionList(String rootDir, List<Exception> loadExceptionList) {
+        this.loadExceptionListMap.put(rootDir, loadExceptionList);
+    }
+
+    public List<Exception> getLoadExceptionList(String rootDir) {
+        return loadExceptionListMap.get(rootDir);
     }
 
     public String getSystem() {
@@ -109,8 +149,8 @@ public class ToolDefinition {
         }
     }
 
-    private void initializeMulti() throws Exception {        
-        StringBuilder systemBuilder = new StringBuilder("-");
+    private void initializeMulti() throws Exception {
+        StringBuilder systemBuilder = new StringBuilder(":");
         for (String rootDir : this.rootDirList) {
             Path rootPath = Paths.get(rootDir);
             Set<FileVisitOption> options = EnumSet.allOf(FileVisitOption.class);
@@ -123,8 +163,8 @@ public class ToolDefinition {
                 e.printStackTrace();
                 throw e;
             }
-            setPluginList(pluginVisitor.getNodePluginList());
-            setLoadExceptionList(pluginVisitor.getLoadExceptionList());
+            addPluginList(rootDir, pluginVisitor.getNodePluginList());
+            addLoadExceptionList(rootDir, pluginVisitor.getLoadExceptionList());
 
             // 次にサーバツリー定義をロード
             MyFileVisitor myVisitor = new MyFileVisitor(rootPath.getNameCount() - 1);
@@ -139,7 +179,7 @@ public class ToolDefinition {
             if (myVisitor.getFmtNgMsgBuilder().length() > 0) {
                 throw new FormatException(myVisitor.getFmtNgMsgBuilder().toString());
             }
-            systemBuilder.append(myVisitor.getSystem() + "-");
+            systemBuilder.append(myVisitor.getSystem() + ":");
             addTabMap(rootDir, myVisitor.getTabMap());
             addOrderList(rootDir, myVisitor.getOrderList());
         }
