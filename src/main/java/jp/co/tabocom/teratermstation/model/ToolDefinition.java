@@ -20,7 +20,6 @@ public class ToolDefinition {
     // これは固定。タブ、カテゴリ、グループ、サーバで4階層ということ
     private static final int MAX_DEPTH = 4;
 
-    private Path rootDirPath;
     private List<String> rootDirList;
     private String system;
 
@@ -90,10 +89,6 @@ public class ToolDefinition {
 
     public void setSystem(String system) {
         this.system = system;
-    }
-
-    public Path getRootDirPath() {
-        return rootDirPath;
     }
 
     public void initialize() throws Exception {

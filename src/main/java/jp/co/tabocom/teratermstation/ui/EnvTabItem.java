@@ -1490,6 +1490,10 @@ public class EnvTabItem extends TabItem {
         }
     }
 
+    public String getRootDir() {
+        return rootDir;
+    }
+
     public String getAuthId() {
         return this.usrTxt.getText();
     }
