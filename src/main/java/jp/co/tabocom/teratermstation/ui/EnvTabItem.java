@@ -129,7 +129,7 @@ public class EnvTabItem extends TabItem {
     private Tab tab;
 
     private ServerFilter serverFilter = new ServerFilter();
-    
+
     private org.eclipse.swt.widgets.ToolTip currentItemToolTip;
 
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
@@ -148,7 +148,7 @@ public class EnvTabItem extends TabItem {
         this.tab = tab;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
         Main main = (Main) parent.getShell().getData("main");
-        List<String> orderList = main.getToolDefine().getOrderList();
+        List<String> orderList = main.getToolDefine().getOrderList(rootDir);
         if (orderList != null && !orderList.isEmpty()) {
             List<String> keys = new ArrayList<String>();
             for (Category category : tab.getCategoryList()) {
@@ -362,7 +362,7 @@ public class EnvTabItem extends TabItem {
         });
 
         // ==================== サーバ選択グループ ====================
-        List<String> orderList = main.getToolDefine().getOrderList();
+        List<String> orderList = main.getToolDefine().getOrderList(this.rootDir);
         this.treeMap = new HashMap<String, CheckboxTreeViewer>();
         for (Category category : this.categoryMap.values()) {
             Group targetSubGrp = new Group(composite, SWT.NONE);
@@ -500,8 +500,8 @@ public class EnvTabItem extends TabItem {
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, files,
-                                getParent().getShell());
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, files, getParent()
+                                .getShell());
                         if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
                             for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;
@@ -697,7 +697,7 @@ public class EnvTabItem extends TabItem {
 
     private void defaultTreeData() {
         Main main = (Main) getParent().getShell().getData("main");
-        List<String> orderList = main.getToolDefine().getOrderList();
+        List<String> orderList = main.getToolDefine().getOrderList(this.rootDir);
         this.categoryMap = targetMapCopy(this.defaultCategoryMap);
         for (Category category : this.categoryMap.values()) {
             CheckboxTreeViewer treeViewer = this.treeMap.get(category.getName());

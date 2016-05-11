@@ -19,12 +19,12 @@ import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
 public class PluginFileVisitor extends SimpleFileVisitor<Path> {
 
     private int depthCnt;
-    private List<TeratermStationPlugin> nodePluginList;
+    private List<TeratermStationPlugin> pluginList;
     private List<Exception> loadExceptionList;
 
     public PluginFileVisitor(int depthCnt) {
         this.depthCnt = depthCnt;
-        this.nodePluginList = new ArrayList<TeratermStationPlugin>();
+        this.pluginList = new ArrayList<TeratermStationPlugin>();
         this.loadExceptionList = new ArrayList<Exception>();
     }
 
@@ -67,7 +67,7 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
                                     continue;
                                 }
                                 plugin.initialize();
-                                nodePluginList.add(plugin);
+                                pluginList.add(plugin);
                                 break;
                             }
                         }
@@ -91,8 +91,8 @@ public class PluginFileVisitor extends SimpleFileVisitor<Path> {
         return super.visitFileFailed(arg0, arg1);
     }
 
-    public List<TeratermStationPlugin> getNodePluginList() {
-        return nodePluginList;
+    public List<TeratermStationPlugin> getPluginList() {
+        return pluginList;
     }
 
     public List<Exception> getLoadExceptionList() {
