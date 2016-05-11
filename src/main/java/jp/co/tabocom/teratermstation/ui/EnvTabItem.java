@@ -442,19 +442,24 @@ public class EnvTabItem extends TabItem {
                         StringBuilder builder = new StringBuilder();
                         if (node.getChildren().isEmpty()) {
                             // 要は子供（サーバ号機）の場合
-                            builder.append(String.format("%-8s", node.getHostName()));
-                            builder.append(",");
-                            builder.append(String.format("%-15s", node.getIpAddr()));
-                            builder.append(",");
                             builder.append(node.getParent().getName());
-                            builder.append(",");
+                            builder.append("\r\n");
                             builder.append(node.getName());
+                            builder.append("\r\n");
+                            builder.append(String.format("%s", node.getHostName()));
+                            builder.append("\r\n");
+                            builder.append(String.format("%s", node.getIpAddr()));
+                            builder.append("\r\n");
+                            builder.append(String.format("%s", node.getLoginUsr()));
+                            builder.append("\r\n");
                         } else {
                             // 要は親（サーバ種別）の場合
                             builder.append(node.getName());
                             builder.append("\r\n");
                             for (TargetNode nd : node.getChildren()) {
-                                builder.append(String.format("%-8s", nd.getHostName()));
+                                builder.append(String.format("%s", nd.getLoginUsr()));
+                                builder.append("@");
+                                builder.append(String.format("%s", nd.getHostName()));
                                 builder.append(",");
                                 builder.append(String.format("%-15s", nd.getIpAddr()));
                                 builder.append(",");
