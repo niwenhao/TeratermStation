@@ -24,12 +24,6 @@ import org.eclipse.jface.viewers.ColumnLayoutData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.FileTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -38,16 +32,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 
 public class BasePreferencePage extends PreferencePage {
 
-    private Text dirTxt;
     private List<String> dirList = new ArrayList<String>();
     private CheckboxTableViewer viewer;
 
@@ -60,51 +50,6 @@ public class BasePreferencePage extends PreferencePage {
         final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(3, false));
         IPreferenceStore preferenceStore = getPreferenceStore();
-        Transfer[] types = new Transfer[] { FileTransfer.getInstance() };
-
-        // ========== 定義ディレクトリの場所 ========== //
-        new Label(composite, SWT.LEFT).setText("定義基点ディレクトリ：");
-        dirTxt = new Text(composite, SWT.BORDER);
-        dirTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        dirTxt.setText(preferenceStore.getString(PreferenceConstants.TARGET_DIR));
-        Button dirBtn = new Button(composite, SWT.NULL);
-        dirBtn.setText("参照");
-        dirBtn.addSelectionListener(new SelectionListener() {
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
-
-            public void widgetSelected(SelectionEvent e) {
-                DirectoryDialog dialog = new DirectoryDialog(getShell());
-                dialog.setText("定義基点ディレクトリを指定してください。");
-                String currentPath = dirTxt.getText();
-                dialog.setFilterPath(currentPath.isEmpty() ? "C:\\" : currentPath);
-                String dir = dialog.open();
-                if (dir != null) {
-                    dirTxt.setText(dir);
-                }
-            }
-        });
-        DropTarget dropTarget = new DropTarget(dirTxt, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY);
-        dropTarget.setTransfer(types);
-        dropTarget.addDropListener(new DropTargetAdapter() {
-            @Override
-            public void dragEnter(DropTargetEvent event) {
-                if (event.detail == DND.DROP_DEFAULT) {
-                    event.detail = DND.DROP_MOVE;
-                }
-            }
-
-            @Override
-            public void drop(DropTargetEvent event) {
-                String[] files = (String[]) event.data;
-                File dir = new File(files[0]);
-                if (dir.isDirectory()) {
-                    dirTxt.setText(files[0]);
-                } else {
-                    MessageDialog.openError(composite.getShell(), "基本設定", "ディレクトリを指定してください。");
-                }
-            }
-        });
 
         String dirStrs = preferenceStore.getString(PreferenceConstants.TARGET_DIRS);
         List<String> validDirList = new ArrayList<String>();
@@ -328,9 +273,6 @@ public class BasePreferencePage extends PreferencePage {
         IPreferenceStore ps = getPreferenceStore();
         if (ps == null) {
             return true;
-        }
-        if (this.dirTxt != null) {
-            ps.setValue(PreferenceConstants.TARGET_DIR, this.dirTxt.getText());
         }
         Object[] elements = viewer.getCheckedElements();
         List<String> checkedList = new ArrayList<String>();

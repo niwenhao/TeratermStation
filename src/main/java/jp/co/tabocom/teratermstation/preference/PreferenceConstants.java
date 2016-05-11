@@ -2,8 +2,6 @@ package jp.co.tabocom.teratermstation.preference;
 
 public class PreferenceConstants {
 
-    // サーバツリー基点ディレクトリ
-    public static final String TARGET_DIR = new String("jp.co.tabocom.teratermstation.targetDir");
     // サーバツリー基点ディレクトリリスト
     public static final String TARGET_DIRS = new String("jp.co.tabocom.teratermstation.targetDirs");
 
