@@ -1,8 +1,0 @@
-width: 1000
-height: 1000
-
-initial:
-  ttpmacroexe: C:\Program Files (x86)\teraterm\ttpmacro.exe
-  dir_work: C:\library\work
-  dir_log: C:\library\log
-  dir_ini: C:\library\ini
