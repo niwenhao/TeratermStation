@@ -1,5 +1,7 @@
 package jp.co.tabocom.teratermstation.model.yaml;
 
+import java.util.Map;
+
 /**
  * 
  * category.yamlを読み込むためのクラスです。<br>
@@ -14,6 +16,9 @@ package jp.co.tabocom.teratermstation.model.yaml;
  * procedure: |
  *   wait ']$'
  *   sendln 'date'
+ * variable:
+ *   APL_DIR: /APL/group01/local
+ *   APL_PKG01_DIR: /APL/group01/pkg01
  * --------------------------------------------------------------------------------
  * </pre>
  * 
@@ -37,6 +42,10 @@ public class CategoryIni {
      * ログイン後の手続き（任意）
      */
     private String procedure;
+    /**
+     * 変数マップ
+     */
+    private Map<String, String> variable;
 
     public String getInifile() {
         return inifile;
@@ -70,6 +79,14 @@ public class CategoryIni {
         this.procedure = procedure;
     }
 
+    public Map<String, String> getVariable() {
+        return variable;
+    }
+
+    public void setVariable(Map<String, String> variable) {
+        this.variable = variable;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -77,6 +94,7 @@ public class CategoryIni {
         builder.append(String.format("loginuser     : %s\n", this.loginuser));
         builder.append(String.format("loginpassword : %s\n", this.loginpassword));
         builder.append(String.format("procedure     : %s\n", this.procedure));
+        builder.append(String.format("variable      : %s\n", this.variable));
         return builder.toString();
     }
 }

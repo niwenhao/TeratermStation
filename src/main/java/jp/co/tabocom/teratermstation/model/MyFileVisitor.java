@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.io.FilenameUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import jp.co.tabocom.teratermstation.model.yaml.CategoryIni;
 import jp.co.tabocom.teratermstation.model.yaml.GroupIni;
+import jp.co.tabocom.teratermstation.model.yaml.ServerIni;
 import jp.co.tabocom.teratermstation.model.yaml.TabIni;
 
 /**
@@ -118,14 +118,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     public FileVisitResult visitFile(Path filePath, BasicFileAttributes attr) throws IOException {
         String fileName = filePath.getFileName().toString();
         File file = filePath.toFile();
-        Properties prop = new Properties();
-        InputStream inputStream = new FileInputStream(file);
-        try {
-            prop.load(inputStream);
-        } catch (Exception e) {
-        } finally {
-            inputStream.close();
-        }
         int depth = filePath.getNameCount() - this.depthCnt;
 
         switch (depth) {
@@ -207,19 +199,26 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     category.setLoginPwd(categoryIni.getLoginpassword());
                     category.setIniFile(categoryIni.getInifile());
                     category.setProcedure(categoryIni.getProcedure());
-                }
-                // ========== SERVER.TXT ========== //
-                if (fileName.endsWith(".txt")) {
+                    category.setVariable(categoryIni.getVariable());
+                } else if (fileName.endsWith(".yaml")) {
+                    // ========== SERVER.YAML ========== //
                     System.out.println("サーバ定義（グループ所属なし）");
+                    Yaml yaml = new Yaml();
+                    InputStream is = new FileInputStream(file);
+                    ServerIni serverIni = yaml.loadAs(is, ServerIni.class);
+                    is.close();
+                    System.out.println(serverIni);
                     TargetNode node = new TargetNode();
                     node.setFile(file);
-                    node.setName(FilenameUtils.getBaseName(file.getName())); // 拡張子txtを取り除く
-                    node.setId(prop.getProperty("id"));
-                    node.setHostName(prop.getProperty("hostname"));
-                    node.setIpAddr(prop.getProperty("ipaddress"));
-                    node.setLoginUsr(prop.getProperty("loginuser"));
-                    node.setLoginPwd(prop.getProperty("loginpassword"));
-                    node.setIniFile(prop.getProperty("inifile"));
+                    node.setName(FilenameUtils.getBaseName(file.getName())); // 拡張子.yamlを取り除く
+                    node.setId(serverIni.getId());
+                    node.setHostName(serverIni.getHostname());
+                    node.setIpAddr(serverIni.getIpaddress());
+                    node.setLoginUsr(serverIni.getLoginuser());
+                    node.setLoginPwd(serverIni.getLoginpassword());
+                    node.setIniFile(serverIni.getInifile());
+                    node.setProcedure(serverIni.getProcedure());
+                    node.setVariable(serverIni.getVariable());
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     node.setCategory(category);
@@ -244,19 +243,26 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     group.setLoginPwd(groupIni.getLoginpassword());
                     group.setIniFile(groupIni.getInifile());
                     group.setProcedure(groupIni.getProcedure());
-                }
-                // ========== SERVER.TXT ========== //
-                if (fileName.endsWith(".txt")) {
+                    group.setVariable(groupIni.getVariable());
+                } else if (fileName.endsWith(".yaml")) {
+                    // ========== SERVER.YAML ========== //
                     System.out.println("サーバ定義");
+                    Yaml yaml = new Yaml();
+                    InputStream is = new FileInputStream(file);
+                    ServerIni serverIni = yaml.loadAs(is, ServerIni.class);
+                    is.close();
+                    System.out.println(serverIni);
                     TargetNode node = new TargetNode();
                     node.setFile(file);
-                    node.setName(FilenameUtils.getBaseName(file.getName())); // 拡張子txtを取り除く
-                    node.setId(prop.getProperty("id"));
-                    node.setHostName(prop.getProperty("hostname"));
-                    node.setIpAddr(prop.getProperty("ipaddress"));
-                    node.setLoginUsr(prop.getProperty("loginuser"));
-                    node.setLoginPwd(prop.getProperty("loginpassword"));
-                    node.setIniFile(prop.getProperty("inifile"));
+                    node.setName(FilenameUtils.getBaseName(file.getName())); // 拡張子.yamlを取り除く
+                    node.setId(serverIni.getId());
+                    node.setHostName(serverIni.getHostname());
+                    node.setIpAddr(serverIni.getIpaddress());
+                    node.setLoginUsr(serverIni.getLoginuser());
+                    node.setLoginPwd(serverIni.getLoginpassword());
+                    node.setIniFile(serverIni.getInifile());
+                    node.setProcedure(serverIni.getProcedure());
+                    node.setVariable(serverIni.getVariable());
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());

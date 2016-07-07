@@ -42,7 +42,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String loginPwd;
     private String keyValue;
     private String procedure;
-
+    private Map<String, String> variable;
     // ========== 実データここまで ========== //
 
     public void propertyChange(final PropertyChangeEvent event) {
@@ -287,6 +287,34 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     public void setProcedure(String procedure) {
         this.procedure = procedure;
+    }
+
+    public Map<String, String> getVariable() {
+        return variable;
+    }
+
+    public String getVariableValue(String key) {
+        String value = null;
+        if (this.variable != null) {
+            // まずサーバの持っている変数マップからチェック
+            value = this.variable.get(key);
+        }
+        if (value == null) {
+            // 変数が見つからなかったら
+            if (this.category != null) {
+                // カテゴリがnullじゃなかったら、つまりこれがグループだったらカテゴリの変数マップをチェック
+                value = this.category.getVariableValue(key);
+            }
+        }
+        if (value == null) {
+            // ここでも変数が見つかってなかったら、グループの変数マップをチェック
+            value = getParent().getVariableValue(key);
+        }
+        return value;
+    }
+    
+    public void setVariable(Map<String, String> variable) {
+        this.variable = variable;
     }
 
     public void sortChildren(List<String> orderList) {

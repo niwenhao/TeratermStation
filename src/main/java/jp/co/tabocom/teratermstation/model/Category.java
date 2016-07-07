@@ -23,6 +23,7 @@ public class Category implements Serializable {
     private String loginPwd;
     private String iniFile;
     private String procedure;
+    private Map<String, String> variable;
     private Tab tab;
 
     public Category() {
@@ -98,6 +99,21 @@ public class Category implements Serializable {
 
     public void setProcedure(String procedure) {
         this.procedure = procedure;
+    }
+
+    public Map<String, String> getVariable() {
+        return variable;
+    }
+
+    public String getVariableValue(String key) {
+        if (this.variable != null) {
+            return this.variable.get(key);
+        }
+        return null;
+    }
+
+    public void setVariable(Map<String, String> variable) {
+        this.variable = variable;
     }
 
     public void setTab(Tab tab) {
