@@ -33,18 +33,18 @@ XXXXProject
   └─開発環境
     ├─基盤チーム
     │  ├─A面
-    │  │  DBサーバ.txt
-    │  │  Webサーバ.txt
+    │  │  DBサーバ.yaml
+    │  │  Webサーバ.yaml
     │  └─B面
-    │     DBサーバ.txt
-    │     Webサーバ.txt
+    │     DBサーバ.yaml
+    │     Webサーバ.yaml
     └─業務チーム
        ├─C面
-       │  DBサーバ.txt
-       │  Webサーバ.txt
+       │  DBサーバ.yaml
+       │  Webサーバ.yaml
        └─D面
-          DBサーバ.txt
-          Webサーバ.txt
+          DBサーバ.yaml
+          Webサーバ.yaml
 ```
 TeratermStationには基点ディレクトリである__XXXXProject__を指定します。  
 TeratermStationではこのようにツール本体とは独立して接続設定を用意することができます。  
