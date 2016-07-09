@@ -421,7 +421,7 @@ public class Main implements PropertyChangeListener, WindowProc {
         this.tabItemMap = new LinkedHashMap<String, EnvTabItem>();
         if (!this.toolDefine.isTabMapEmpty()) {
             for (String rootDir : this.toolDefine.getRootDirList()) {
-                List<String> orderList = this.toolDefine.getOrderList(rootDir);
+                List<String> orderList = this.toolDefine.getOrderList(rootDir, "tab");
                 if (orderList != null && !orderList.isEmpty()) {
                     List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap(rootDir).keySet());
                     Map<String, String> sortMap = new HashMap<String, String>();

@@ -24,7 +24,7 @@ public class ToolDefinition {
     private String system;
 
     private Map<String, Map<String, Tab>> tabMapMap;
-    private Map<String, List<String>> orderListMap;
+    private Map<String, Map<String, List<String>>> orderListMap;
 
     private Map<String, List<TeratermStationPlugin>> pluginListMap;
     private Map<String, List<Exception>> loadExceptionListMap;
@@ -32,7 +32,7 @@ public class ToolDefinition {
     public ToolDefinition(List<String> rootDirList) {
         this.rootDirList = rootDirList;
         this.tabMapMap = new HashMap<String, Map<String, Tab>>();
-        this.orderListMap = new HashMap<String, List<String>>();
+        this.orderListMap = new HashMap<String, Map<String, List<String>>>();
         this.pluginListMap = new HashMap<String, List<TeratermStationPlugin>>();
         this.loadExceptionListMap = new HashMap<String, List<Exception>>();
     }
@@ -56,12 +56,12 @@ public class ToolDefinition {
         return tabMapMap.get(rootDir);
     }
 
-    public void addOrderList(String rootDir, List<String> orderList) {
-        this.orderListMap.put(rootDir, orderList);
+    public void addOrderListMap(String rootDir, Map<String, List<String>> map) {
+        this.orderListMap.put(rootDir, map);
     }
 
-    public List<String> getOrderList(String rootDir) {
-        return orderListMap.get(rootDir);
+    public List<String> getOrderList(String rootDir, String type) {
+        return orderListMap.get(rootDir).get(type);
     }
 
     public void addPluginList(String rootDir, List<TeratermStationPlugin> pluginList) {
@@ -123,7 +123,7 @@ public class ToolDefinition {
             }
             systemBuilder.append(myVisitor.getSystem() + ":");
             addTabMap(rootDir, myVisitor.getTabMap());
-            addOrderList(rootDir, myVisitor.getOrderList());
+            addOrderListMap(rootDir, myVisitor.getOrderListMap());
         }
         setSystem(systemBuilder.toString());
     }

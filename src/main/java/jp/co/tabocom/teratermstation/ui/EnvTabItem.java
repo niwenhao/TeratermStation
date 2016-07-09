@@ -148,7 +148,7 @@ public class EnvTabItem extends TabItem {
         this.tab = tab;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
         Main main = (Main) parent.getShell().getData("main");
-        List<String> orderList = main.getToolDefine().getOrderList(rootDir);
+        List<String> orderList = main.getToolDefine().getOrderList(rootDir, "category");
         if (orderList != null && !orderList.isEmpty()) {
             List<String> keys = new ArrayList<String>();
             for (Category category : tab.getCategoryList()) {
@@ -362,7 +362,8 @@ public class EnvTabItem extends TabItem {
         });
 
         // ==================== サーバ選択グループ ====================
-        List<String> orderList = main.getToolDefine().getOrderList(this.rootDir);
+        List<String> groupOrderList = main.getToolDefine().getOrderList(this.rootDir, "group");
+        List<String> serverOrderList = main.getToolDefine().getOrderList(this.rootDir, "server");
         this.treeMap = new HashMap<String, CheckboxTreeViewer>();
         for (Category category : this.categoryMap.values()) {
             Group targetSubGrp = new Group(composite, SWT.NONE);
@@ -374,9 +375,7 @@ public class EnvTabItem extends TabItem {
             chkTree.setContentProvider(new TreeContentProvider());
             ColumnViewerToolTipSupport.enableFor(chkTree, ToolTip.NO_RECREATE);
             chkTree.setLabelProvider(new TreeLabelProvider());
-            if (orderList != null && !orderList.isEmpty()) {
-                category.sortTargetNode(orderList);
-            }
+            category.sortTargetNode(groupOrderList, serverOrderList);
             chkTree.setInput(category.getTargetNode());
             final Tree tree = chkTree.getTree();
             tree.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -702,13 +701,12 @@ public class EnvTabItem extends TabItem {
 
     private void defaultTreeData() {
         Main main = (Main) getParent().getShell().getData("main");
-        List<String> orderList = main.getToolDefine().getOrderList(this.rootDir);
+        List<String> groupOrderList = main.getToolDefine().getOrderList(this.rootDir, "group");
+        List<String> serverOrderList = main.getToolDefine().getOrderList(this.rootDir, "server");
         this.categoryMap = targetMapCopy(this.defaultCategoryMap);
         for (Category category : this.categoryMap.values()) {
             CheckboxTreeViewer treeViewer = this.treeMap.get(category.getName());
-            if (orderList != null && !orderList.isEmpty()) {
-                category.sortTargetNode(orderList);
-            }
+            category.sortTargetNode(groupOrderList, serverOrderList);
             treeViewer.setInput(category.getTargetNode());
             treeViewer.refresh();
         }

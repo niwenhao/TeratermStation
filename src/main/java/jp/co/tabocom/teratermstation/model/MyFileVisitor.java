@@ -1,16 +1,13 @@
 package jp.co.tabocom.teratermstation.model;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +17,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import jp.co.tabocom.teratermstation.model.yaml.CategoryIni;
 import jp.co.tabocom.teratermstation.model.yaml.GroupIni;
+import jp.co.tabocom.teratermstation.model.yaml.OrderIni;
 import jp.co.tabocom.teratermstation.model.yaml.ServerIni;
 import jp.co.tabocom.teratermstation.model.yaml.TabIni;
 
@@ -34,7 +32,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     private String system;
     private int depthCnt;
     private Map<String, Tab> tabMap;
-    private List<String> orderList;
+    private Map<String, List<String>> orderListMap;
     
     private StringBuilder fmtNgMsgBuilder;
 
@@ -46,7 +44,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     public MyFileVisitor(int depthCnt) {
         this.depthCnt = depthCnt;
         this.tabMap = new HashMap<String, Tab>();
-        this.orderList = new ArrayList<String>();
+        this.orderListMap = new HashMap<String, List<String>>();
         this.fmtNgMsgBuilder = new StringBuilder();
     }
 
@@ -122,27 +120,18 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
         switch (depth) {
             case 2: {
-                // ========== ORDER.INI ========== //
-                if (fileName.equals("order.ini")) {
+                // ========== ORDER.YAML ========== //
+                if (fileName.equals("order.yaml")) {
                     System.out.println("並び順設定");
-                    BufferedReader br = null;
-                    try {
-                        br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-                        String line;
-                        while ((line = br.readLine()) != null) {
-                            if (line.length() > 0) {
-                                orderList.add(line);
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            br.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    Yaml yaml = new Yaml();
+                    InputStream is = new FileInputStream(file);
+                    OrderIni orderIni = yaml.loadAs(is, OrderIni.class);
+                    is.close();
+                    System.out.println(orderIni);
+                    this.orderListMap.put("tab", orderIni.getTab());
+                    this.orderListMap.put("category", orderIni.getCategory());
+                    this.orderListMap.put("group", orderIni.getGroup());
+                    this.orderListMap.put("server", orderIni.getServer());
                 }
                 break;
             }
@@ -289,8 +278,8 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         return tabMap;
     }
 
-    public List<String> getOrderList() {
-        return orderList;
+    public Map<String, List<String>> getOrderListMap() {
+        return orderListMap;
     }
 
     public StringBuilder getFmtNgMsgBuilder() {

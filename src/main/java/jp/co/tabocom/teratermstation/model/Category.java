@@ -129,8 +129,13 @@ public class Category implements Serializable {
         return this.name;
     }
 
-    public void sortTargetNode(List<String> orderList) {
+    public void sortTargetNode(List<String> groupOrderList, List<String> serverOrderList) {
         TargetNode sortedNode = new TargetNode();
+
+        if (groupOrderList == null) {
+            // グループオーダーリストがnullの場合はサイズ０のリストとしておく。
+            groupOrderList = new ArrayList<String>();
+        }
 
         List<String> keys = new ArrayList<String>();
         for (TargetNode child : this.targetNode.getChildren()) {
@@ -138,7 +143,7 @@ public class Category implements Serializable {
         }
         Map<String, String> sortMap = new HashMap<String, String>();
         for (String key : keys) {
-            int idx = orderList.indexOf(key);
+            int idx = groupOrderList.indexOf(key);
             if (idx > -1) {
                 sortMap.put(String.format("%04d", idx), key);
             } else {
@@ -150,7 +155,7 @@ public class Category implements Serializable {
         for (String idx : idxList) {
             String key = sortMap.get(idx);
             TargetNode child = this.getChild(key);
-            child.sortChildren(orderList);
+            child.sortChildren(serverOrderList);
             sortedNode.addChild(child);
         }
         this.targetNode = sortedNode;

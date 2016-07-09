@@ -318,6 +318,9 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     public void sortChildren(List<String> orderList) {
+        if (orderList == null || orderList.isEmpty()) {
+            return;
+        }
         List<String> keys = new ArrayList<String>();
         for (TargetNode child : this.getChildren()) {
             keys.add(child.getName());
