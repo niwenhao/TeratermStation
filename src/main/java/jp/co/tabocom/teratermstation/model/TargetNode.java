@@ -290,7 +290,21 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     public Map<String, String> getVariable() {
-        return variable;
+        Map<String, String> value = null;
+        if (this.variable != null) {
+            value = this.variable;
+        }
+        if (value == null) {
+            // mapが見つからなかったら
+            if (this.category != null) {
+                value = this.category.getVariable();
+            }
+        }
+        if (value == null) {
+            // ここでもmapが見つかってなかったら、グループの変数マップをチェック
+            value = getParent().getVariable();
+        }
+        return value;
     }
 
     public String getVariableValue(String key) {
