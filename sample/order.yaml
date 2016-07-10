@@ -1,0 +1,8 @@
+tab:
+  - Telnet
+  - SSH
+  - Proxy
+  - ProxyWithAuth
+server:
+  - WebAP
+  - DB
