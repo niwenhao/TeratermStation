@@ -1363,8 +1363,21 @@ public class EnvTabItem extends TabItem {
                 if (node.getHostName() != null) {
                     builder.append(String.format("(%s)", node.getHostName()));
                 }
+                // ID
                 if (node.getId() != null && !node.getId().isEmpty() && !node.getHostName().equals(node.getId())) {
                     builder.append(String.format("[%s]", node.getId()));
+                }
+                // Procedure
+                if (node.getProcedure() != null) {
+                    builder.append("\r\n--- procedure ---\r\n");
+                    builder.append(node.getProcedure());
+                }
+                // Variable
+                if (node.getVariable() != null && !node.getVariable().isEmpty()) {
+                    builder.append("\r\n--- variable ---\r\n");
+                    for (String key : node.getVariable().keySet()) {
+                        builder.append(String.format("%s: %s\r\n", key, node.getVariable().get(key)));
+                    }
                 }
             } else {
                 // 要は親（サーバ種別）の場合
