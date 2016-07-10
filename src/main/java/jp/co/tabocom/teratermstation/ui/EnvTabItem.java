@@ -441,7 +441,7 @@ public class EnvTabItem extends TabItem {
                         StringBuilder builder = new StringBuilder();
                         if (node.getChildren().isEmpty()) {
                             // 要は子供（サーバ号機）の場合
-                            builder.append(node.getParent().getName());
+                            builder.append(node.getParentName());
                             builder.append("\r\n");
                             builder.append(node.getName());
                             builder.append("\r\n");
@@ -1010,11 +1010,7 @@ public class EnvTabItem extends TabItem {
         // 例） C:\library\work\4面-新WebAP_con_t-shiozaki.ttl
         StringBuilder ttlFile = new StringBuilder(ttlDir);
         ttlFile.append("\\");
-        if (target.getParent().getName() != null) {
-            ttlFile.append(target.getParent().getName());
-        } else {
-            ttlFile.append(target.getCategory().getName());
-        }
+        ttlFile.append(target.getParentName());
         ttlFile.append("-");
         ttlFile.append(target.getName());
         ttlFile.append("_");
@@ -1089,10 +1085,7 @@ public class EnvTabItem extends TabItem {
             String authPwd = this.pwdTxt.getText();
             String ipAddr = node.getIpAddr();
             String targetSvr = node.getName();
-            String svrType = node.getParent().getName();
-            if (svrType == null) {
-                svrType = node.getCategory().getName();
-            }
+            String svrType = node.getParentName();
             int usrIdx = main.getLoginUserIdx();
             String loginUsr = node.getLoginUsr(usrIdx);
             String loginPwd = node.getLoginPwd(usrIdx);
@@ -1194,10 +1187,7 @@ public class EnvTabItem extends TabItem {
         String[] dirArray = new String[] { logDir, monthDir, dateDir };
 
         // ログファイル
-        String svrType = node.getParent().getName();
-        if (svrType == null) {
-            svrType = node.getCategory().getName();
-        }
+        String svrType = node.getParentName();
         String targetSvr = node.getName();
         String logFile = dateDir + "\\" + timestamp + "_" + svrType + "_" + targetSvr + "_" + pcName + ".log";
 
