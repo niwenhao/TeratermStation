@@ -1225,14 +1225,14 @@ public class EnvTabItem extends TabItem {
         if (templateCmd == null) {
             return "";
         }
-        Map<String, String> valuesMap = new TreeMap<String, String>();
-        String keyValueStr = node.getKeyValue();
-        if (keyValueStr != null) {
-            for (String keyValue : keyValueStr.split(",")) {
-                valuesMap.put(keyValue.split(":")[0].trim(), keyValue.split(":")[1].trim());
-            }
+        Map<String, String> valueMap = new HashMap<String, String>();
+        // HOSTNAMEをセットしておく
+        valueMap.put("HOSTNAME", node.getHostName());
+        // あとは変数マップから
+        if (node.getVariable() != null) {
+            valueMap.putAll(node.getVariable());
         }
-        StrSubstitutor sub = new StrSubstitutor(valuesMap);
+        StrSubstitutor sub = new StrSubstitutor(valueMap);
         return sub.replace(templateCmd);
     }
 

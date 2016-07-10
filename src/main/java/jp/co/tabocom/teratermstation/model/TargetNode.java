@@ -40,7 +40,6 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String iniFile;
     private String loginUsr;
     private String loginPwd;
-    private String keyValue;
     private String procedure;
     private Map<String, String> variable;
     // ========== 実データここまで ========== //
@@ -272,14 +271,6 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     public Category getCategory() {
         return category;
-    }
-
-    public String getKeyValue() {
-        return keyValue;
-    }
-
-    public void setKeyValue(String keyValue) {
-        this.keyValue = keyValue;
     }
 
     public String getProcedure() {
