@@ -290,41 +290,13 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     public Map<String, String> getVariable() {
-        Map<String, String> value = null;
         if (this.variable != null) {
-            value = this.variable;
+            return this.variable;
         }
-        if (value == null) {
-            // mapが見つからなかったら
-            if (this.category != null) {
-                value = this.category.getVariable();
-            }
+        if (this.category != null) {
+            return this.category.getVariable();
         }
-        if (value == null) {
-            // ここでもmapが見つかってなかったら、グループの変数マップをチェック
-            value = getParent().getVariable();
-        }
-        return value;
-    }
-
-    public String getVariableValue(String key) {
-        String value = null;
-        if (this.variable != null) {
-            // まずサーバの持っている変数マップからチェック
-            value = this.variable.get(key);
-        }
-        if (value == null) {
-            // 変数が見つからなかったら
-            if (this.category != null) {
-                // カテゴリがnullじゃなかったら、つまりこれがグループだったらカテゴリの変数マップをチェック
-                value = this.category.getVariableValue(key);
-            }
-        }
-        if (value == null) {
-            // ここでも変数が見つかってなかったら、グループの変数マップをチェック
-            value = getParent().getVariableValue(key);
-        }
-        return value;
+        return getParent().getVariable();
     }
     
     public void setVariable(Map<String, String> variable) {
