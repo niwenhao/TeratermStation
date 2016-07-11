@@ -19,15 +19,15 @@ public class Category implements Serializable {
 
     private String name;
     private TargetNode targetNode;
-    private String loginUsr;
-    private String loginPwd;
     private String iniFile;
     private String procedure;
     private Map<String, String> variable;
+    private Map<Integer, Login> loginMap;
     private Tab tab;
 
     public Category() {
         this.targetNode = new TargetNode();
+        this.loginMap = new HashMap<Integer, Login>();
     }
 
     public TargetNode addChild(TargetNode child) {
@@ -58,28 +58,6 @@ public class Category implements Serializable {
 
     public void setTargetNode(TargetNode targetNode) {
         this.targetNode = targetNode;
-    }
-
-    public String getLoginUsr() {
-        if (this.loginUsr != null) {
-            return this.loginUsr;
-        }
-        return this.tab.getLoginUsr();
-    }
-
-    public void setLoginUsr(String loginUsr) {
-        this.loginUsr = loginUsr;
-    }
-
-    public String getLoginPwd() {
-        if (this.loginPwd != null) {
-            return this.loginPwd;
-        }
-        return this.tab.getLoginPwd();
-    }
-
-    public void setLoginPwd(String loginPwd) {
-        this.loginPwd = loginPwd;
     }
 
     public String getIniFile() {
@@ -114,6 +92,20 @@ public class Category implements Serializable {
 
     public void setVariable(Map<String, String> variable) {
         this.variable = variable;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setLoginMap(List<Map<String, Object>> login) {
+        for (Map<String, Object> map : login) {
+            Login l = new Login();
+            l.setIndex(map.get("index"));
+            l.setUser(map.get("user"));
+            l.setPassword(map.get("password"));
+            l.setIniFile(map.get("inifile"));
+            l.setProcedure(map.get("procedure"));
+            l.setVariable((Map<String, String>) map.get("variable"));
+            this.loginMap.put(l.getIndex(), l);
+        }
     }
 
     public void setTab(Tab tab) {
@@ -159,5 +151,12 @@ public class Category implements Serializable {
             sortedNode.addChild(child);
         }
         this.targetNode = sortedNode;
+    }
+
+    public Map<Integer, Login> getLoginMap() {
+        if (this.loginMap != null) {
+            return this.loginMap;
+        }
+        return this.tab.getLoginMap();
     }
 }

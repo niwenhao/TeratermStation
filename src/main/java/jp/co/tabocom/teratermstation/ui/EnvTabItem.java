@@ -1,5 +1,6 @@
 package jp.co.tabocom.teratermstation.ui;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.ByteArrayInputStream;
@@ -104,7 +105,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-public class EnvTabItem extends TabItem {
+public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
     private static final int BULK_INTERVAL = 1700;
     private static final int FILE_INTERVAL = 300;
@@ -118,7 +119,7 @@ public class EnvTabItem extends TabItem {
     private Button authCheckBtn;
     private Text filterTxt;
     private Button allCheckBtn;
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private PropertyChangeSupport support = new PropertyChangeSupport(this);
     private boolean authInputStatus;
     private boolean authFlg;
     private boolean memoryPwdFlg;
@@ -377,6 +378,12 @@ public class EnvTabItem extends TabItem {
             chkTree.setLabelProvider(new TreeLabelProvider());
             category.sortTargetNode(groupOrderList, serverOrderList);
             chkTree.setInput(category.getTargetNode());
+            for (TargetNode group : category.getTargetNode().getChildren()) {
+                addPropertyChangeListener(group);
+                for (TargetNode server : group.getChildren()) {
+                    addPropertyChangeListener(server);
+                }
+            }
             final Tree tree = chkTree.getTree();
             tree.setLayoutData(new GridData(GridData.FILL_BOTH));
             tree.setToolTipText("対象のサーバにチェックを入れてください。");
@@ -636,7 +643,6 @@ public class EnvTabItem extends TabItem {
                 }
             });
         }
-
         Composite bottomGrp = new Composite(composite, SWT.NONE);
         bottomGrp.setLayout(new GridLayout(2, true));
         GridData bottomGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
@@ -668,14 +674,14 @@ public class EnvTabItem extends TabItem {
         this.usrTxt.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 authInputChange();
-                propertyChangeSupport.firePropertyChange("authUsr", null, tab.getAuth().getGroup() + "/" + usrTxt.getText());
+                support.firePropertyChange("authUsr", null, tab.getAuth().getGroup() + "/" + usrTxt.getText());
             }
         });
 
         this.pwdTxt.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 authInputChange();
-                propertyChangeSupport.firePropertyChange("authPwd", null, tab.getAuth().getGroup() + "/" + pwdTxt.getText());
+                support.firePropertyChange("authPwd", null, tab.getAuth().getGroup() + "/" + pwdTxt.getText());
             }
         });
 
@@ -724,15 +730,15 @@ public class EnvTabItem extends TabItem {
             this.idPwdMemoryBtn.setEnabled(false);
             this.authCheckBtn.setEnabled(false);
             if (this.authFlg) {
-                this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.FALSE);
+                this.support.firePropertyChange("authInput", null, Boolean.FALSE);
             } else {
-                this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.TRUE);
+                this.support.firePropertyChange("authInput", null, Boolean.TRUE);
             }
         } else {
             this.authInputStatus = true;
             this.idPwdMemoryBtn.setEnabled(this.memoryPwdFlg);
             this.authCheckBtn.setEnabled(this.isValidAuthCheck());
-            this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.TRUE);
+            this.support.firePropertyChange("authInput", null, Boolean.TRUE);
         }
     }
 
@@ -1086,9 +1092,8 @@ public class EnvTabItem extends TabItem {
             String ipAddr = node.getIpAddr();
             String targetSvr = node.getName();
             String svrType = node.getParentName();
-            int usrIdx = main.getLoginUserIdx();
-            String loginUsr = node.getLoginUsr(usrIdx);
-            String loginPwd = node.getLoginPwd(usrIdx);
+            String loginUsr = node.getLoginUsr();
+            String loginPwd = node.getLoginPwd();
             // INIファイル
             String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
             File iniDirFile = new File(iniDir);
@@ -1344,9 +1349,7 @@ public class EnvTabItem extends TabItem {
             StringBuilder builder = new StringBuilder();
             if (node.getChildren().isEmpty()) {
                 // 要は子供（サーバ号機）の場合
-                Main main = (Main) getParent().getShell().getData("main");
-                int usrIdx = main.getLoginUserIdx();
-                String user = node.getLoginUsr(usrIdx);
+                String user = node.getLoginUsr();
                 builder.append(user);
                 builder.append("@");
                 builder.append(node.getIpAddr());
@@ -1516,11 +1519,11 @@ public class EnvTabItem extends TabItem {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.addPropertyChangeListener(listener);
+        this.support.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.removePropertyChangeListener(listener);
+        this.support.removePropertyChangeListener(listener);
     }
 
     public Tab getTab() {
@@ -1531,9 +1534,7 @@ public class EnvTabItem extends TabItem {
         StringBuilder builder = new StringBuilder();
         if (node.getChildren().isEmpty()) {
             // 要は子供（サーバ号機）の場合
-            Main main = (Main) getParent().getShell().getData("main");
-            int usrIdx = main.getLoginUserIdx();
-            String user = node.getLoginUsr(usrIdx);
+            String user = node.getLoginUsr();
             builder.append(user);
             builder.append("@");
             builder.append(node.getIpAddr());
@@ -1555,5 +1556,13 @@ public class EnvTabItem extends TabItem {
     @Override
     protected void checkSubclass() {
         // super.checkSubclass();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        if ("userswitch".equals(event.getPropertyName())) {
+            int idx = ((Integer) event.getNewValue()).intValue();
+            support.firePropertyChange("userswitch", 0, idx);
+        }
     }
 }

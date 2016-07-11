@@ -2,6 +2,7 @@ package jp.co.tabocom.teratermstation;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -107,7 +108,7 @@ public class Main implements PropertyChangeListener, WindowProc {
     private String loadDirErrorMsg;
     private String openingMsg;
 
-    private int loginUserIdx = 1;
+    private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     /**
      * @param args
@@ -394,7 +395,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                 if (event.stateMask == SWT.CTRL) {
                     int num = Character.getNumericValue(event.character);
                     if (num > -1) {
-                        loginUserIdx = num;
+                        support.firePropertyChange("userswitch", 0, num);
                         tabItemRefresh();
                     }
                 }
@@ -462,6 +463,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                 }
                 for (EnvTabItem item : tabItemMap.values()) {
                     item.addPropertyChangeListener(this);
+                    this.addPropertyChangeListener(item);
                 }
             }
         }
@@ -677,15 +679,25 @@ public class Main implements PropertyChangeListener, WindowProc {
         return toolDefine;
     }
 
-    public int getLoginUserIdx() {
-        return loginUserIdx;
-    }
-
     public void setWindowTitle(String text) {
         if (text == null || text.isEmpty()) {
             this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
         } else {
             this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), text));
         }
+    }
+
+    /**
+     * @param listener
+     */
+    public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.support.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * @param listener
+     */
+    public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.support.removePropertyChangeListener(listener);
     }
 }

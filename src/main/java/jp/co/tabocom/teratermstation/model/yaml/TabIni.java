@@ -1,5 +1,6 @@
 package jp.co.tabocom.teratermstation.model.yaml;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,9 +48,28 @@ import java.util.Map;
  *   waitregex 'Password.*:'
  *   sendln '${loginpassword}'
  * 
- * loginuser: aplusr
- * loginpassword: aplpwd
  * inifile: DEV.INI
+ * procedure: |
+ *   wait ']$'
+ *   sendln 'date'
+ * variable:
+ *   APL_DIR: /APL/group01/local
+ *   APL_PKG01_DIR: /APL/group01/pkg01
+ * 
+ * login:
+ *   - index: 1
+ *     user: aplusr
+ *     password: aplpwd
+ *     inifile: DEV.INI
+ *     procedure: |
+ *       wait ']$'
+ *       sendln 'date'
+ *     variable:
+ *       APL_DIR: /APL/group01/local
+ *       APL_PKG01_DIR: /APL/group01/pkg01
+ *   - index: 2
+ *     user: libusr
+ *     password: libpwd
  * --------------------------------------------------------------------------------
  * </pre>
  *
@@ -78,6 +98,18 @@ public class TabIni {
      * タブ全体に適用されるサーバログインパスワード（任意）
      */
     private String loginpassword;
+    /**
+     * ログイン後の手続き（任意）
+     */
+    private String procedure;
+    /**
+     * 変数マップ
+     */
+    private Map<String, String> variable;
+    /**
+     * ログインリスト
+     */
+    private List<Map<String, Object>> login;
 
     public Map<String, Object> getAuth() {
         return auth;
@@ -117,6 +149,30 @@ public class TabIni {
 
     public void setLoginpassword(String loginpassword) {
         this.loginpassword = loginpassword;
+    }
+
+    public String getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(String procedure) {
+        this.procedure = procedure;
+    }
+
+    public Map<String, String> getVariable() {
+        return variable;
+    }
+
+    public void setVariable(Map<String, String> variable) {
+        this.variable = variable;
+    }
+
+    public List<Map<String, Object>> getLogin() {
+        return login;
+    }
+
+    public void setLogin(List<Map<String, Object>> login) {
+        this.login = login;
     }
 
     public boolean isAuthMemory() {
@@ -169,7 +225,7 @@ public class TabIni {
         }
         return null;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -177,6 +233,7 @@ public class TabIni {
         builder.append(String.format("inifile        : %s\n", this.inifile));
         builder.append(String.format("loginuser      : %s\n", this.loginuser));
         builder.append(String.format("loginpassword  : %s\n", this.loginpassword));
+        builder.append(String.format("login          : %s\n", this.login));
         builder.append(String.format("auth           : %s\n", this.auth == null ? "false" : "true"));
         builder.append(String.format("auth_memory    : %s\n", isAuthMemory()));
         builder.append(String.format("auth_autoclear : %s\n", isAuthAutoclear()));

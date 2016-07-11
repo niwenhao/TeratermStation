@@ -1,5 +1,6 @@
 package jp.co.tabocom.teratermstation.model.yaml;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,6 +62,10 @@ public class ServerIni {
      * 変数マップ
      */
     private Map<String, String> variable;
+    /**
+     * ログインリスト
+     */
+    private List<Map<String, Object>> login;
 
     public String getId() {
         return id;
@@ -126,6 +131,14 @@ public class ServerIni {
         this.variable = variable;
     }
 
+    public List<Map<String, Object>> getLogin() {
+        return login;
+    }
+
+    public void setLogin(List<Map<String, Object>> login) {
+        this.login = login;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -135,6 +148,7 @@ public class ServerIni {
         builder.append(String.format("inifile       : %s\n", this.inifile));
         builder.append(String.format("loginuser     : %s\n", this.loginuser));
         builder.append(String.format("loginpassword : %s\n", this.loginpassword));
+        builder.append(String.format("login          : %s\n", this.login));
         builder.append(String.format("procedure     : %s\n", this.procedure));
         builder.append(String.format("variable      : %s\n", this.variable));
         return builder.toString();
