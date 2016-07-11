@@ -1,0 +1,22 @@
+﻿inifile: CAT.INI
+
+procedure: |
+  wait ']$'
+  sendln 'echo "CAT"'
+
+variable:
+  POSITION: CAT
+
+login:
+  - index: 1
+    user: cataplusr
+    password: cataplpwd
+    inifile: DEV.INI
+    procedure: |
+      wait ']$'
+      sendln 'date'
+    variable:
+      POSITION: CAT_APLUSR
+  - index: 2
+    user: catlibusr
+    password: catlibpwd
