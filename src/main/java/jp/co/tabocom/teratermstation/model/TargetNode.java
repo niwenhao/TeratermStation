@@ -71,7 +71,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     public String getParentName() {
         if (getParent() != null) {
-            getParent().getName();
+            return getParent().getName();
         }
         return getCategory().getName();
     }
