@@ -2,13 +2,13 @@ package jp.co.tabocom.teratermstation.plugin;
 
 import java.util.List;
 
+import jp.co.tabocom.teratermstation.TeratermStationShell;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
 import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
-import org.eclipse.swt.widgets.Shell;
 
 /**
  * TeratermStationを機能拡張するプラグインを作成する際には、このインターフェイスを継承します。<br>
@@ -45,7 +45,7 @@ public interface TeratermStationPlugin {
      * @return TeratermStationContextMenuの配列<br>
      * @see TeratermStationContextMenu
      */
-    public List<TeratermStationContextMenu> getActions(TargetNode[] nodes, Shell shell);
+    public List<TeratermStationContextMenu> getActions(TargetNode[] nodes, TeratermStationShell shell);
 
     /**
      * TeratermStationで一括接続時に利用できる拡張機能の配列を返します。<br>
@@ -58,7 +58,7 @@ public interface TeratermStationPlugin {
      * @return TeratermStationBulkActionの配列
      * @see TeratermStationBulkAction
      */
-    public List<TeratermStationAction> getBulkActions(TargetNode[] nodes, Shell shell);
+    public List<TeratermStationAction> getBulkActions(TargetNode[] nodes, TeratermStationShell shell);
 
     /**
      * TeratermStationでノードにファイルがドラッグアンドドロップされた時のポップアップのアクションを返します。<br>
@@ -75,7 +75,7 @@ public interface TeratermStationPlugin {
      *         サブメニューが必要ない場合はKeyに""の長さ0の文字列を設定してください。
      * @see TeratermStationAction
      */
-    public List<TeratermStationContextMenu> getDnDActions(TargetNode[] nodes, Object value, Shell shell);
+    public List<TeratermStationContextMenu> getDnDActions(TargetNode[] nodes, Object value, TeratermStationShell shell);
 
     /**
      * プラグインで設定ページを使用する場合に設定ページを返します。<br>

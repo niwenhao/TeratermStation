@@ -50,7 +50,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
@@ -75,7 +74,7 @@ public class Main implements PropertyChangeListener, WindowProc {
     public static final String ROOT_DIR = "sample";
     public static final String WINDOW_TITLE = "TeratermStation - %s - %s";
 
-    private Shell shell;
+    private TeratermStationShell shell;
 
     // 各種定義(xmlから定義をロードしたオブジェクト)
     private ToolDefinition toolDefine;
@@ -332,8 +331,7 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     private void createPart() {
         Display display = new Display();
-        shell = new Shell(display, SWT.TITLE | SWT.MIN | SWT.MAX | SWT.CLOSE | SWT.RESIZE);
-        shell.setData("main", this);
+        shell = new TeratermStationShell(display, this);
         shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
         // アイコンセットアップ
         Image[] imageArray = new Image[5];
@@ -439,7 +437,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                     for (String idx : idxList) {
                         String key = sortMap.get(idx);
                         Tab tab = this.toolDefine.getTabMap(rootDir).get(key);
-                        tabItemMap.put(key, new EnvTabItem(rootDir, tab, tabFolder));
+                        tabItemMap.put(key, new EnvTabItem(rootDir, tab, tabFolder, this));
                     }
                 } else {
                     // 挿入順（正確には辞書順）となるように制御
@@ -447,7 +445,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                     Collections.sort(keys);
                     for (int i = 0; i < keys.size(); i++) {
                         Tab tab = this.toolDefine.getTabMap(rootDir).get(keys.get(i));
-                        tabItemMap.put(keys.get(i), new EnvTabItem(rootDir, tab, tabFolder));
+                        tabItemMap.put(keys.get(i), new EnvTabItem(rootDir, tab, tabFolder, this));
                     }
                     // 下は逆順とする場合
                     // for (int i = keys.size() - 1; i >= 0; i--) {

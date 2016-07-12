@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import jp.co.tabocom.teratermstation.Main;
+import jp.co.tabocom.teratermstation.TeratermStationShell;
 import jp.co.tabocom.teratermstation.model.Auth;
 import jp.co.tabocom.teratermstation.model.Category;
 import jp.co.tabocom.teratermstation.model.Tab;
@@ -128,12 +129,22 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
     private String rootDir;
 
     private Tab tab;
+    
+    private Main main;
 
     private ServerFilter serverFilter = new ServerFilter();
 
     private org.eclipse.swt.widgets.ToolTip currentItemToolTip;
 
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+
+    public Main getMain() {
+        return main;
+    }
+
+    public TeratermStationShell getShell() {
+        return (TeratermStationShell) getParent().getShell();
+    }
 
     /**
      * デフォルトコンストラクタ<br>
@@ -143,12 +154,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
      * @param parent
      *            TabFolder 要するに親玉
      */
-    public EnvTabItem(String rootDir, Tab tab, TabFolder parent) {
+    public EnvTabItem(String rootDir, Tab tab, TabFolder parent, Main main) {
         super(parent, SWT.NONE);
         this.rootDir = rootDir;
         this.tab = tab;
+        this.main = main;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
-        Main main = (Main) parent.getShell().getData("main");
         List<String> orderList = main.getToolDefine().getOrderList(rootDir, "category");
         if (orderList != null && !orderList.isEmpty()) {
             List<String> keys = new ArrayList<String>();
@@ -200,7 +211,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         composite.setLayout(new GridLayout(this.categoryMap.size(), true));
 
         // 設定の取得
-        final Main main = (Main) getParent().getShell().getData("main");
         final PreferenceStore ps = main.getPreferenceStore();
 
         // ==================== 認証設定グループ ====================
@@ -233,7 +243,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         usrTxt.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {
-                getParent().getShell().setImeInputMode(SWT.NONE);
+                getShell().setImeInputMode(SWT.NONE);
             }
 
             @Override
@@ -272,7 +282,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         pwdTxt.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {
-                getParent().getShell().setImeInputMode(SWT.NONE);
+                getShell().setImeInputMode(SWT.NONE);
             }
 
             @Override
@@ -291,9 +301,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 ps.setValue(PreferenceConstants.AUTH_USER_PWD + pwdGroup, String.format("%s/%s", usrTxt.getText(), pwdTxt.getText()));
                 try {
                     ps.save();
-                    MessageDialog.openInformation(getParent().getShell(), "認証情報", "認証情報を記憶しました。");
+                    MessageDialog.openInformation(getShell(), "認証情報", "認証情報を記憶しました。");
                 } catch (IOException ioe) {
-                    MessageDialog.openError(getParent().getShell(), "認証情報", "認証情報の記憶に失敗しました。");
+                    MessageDialog.openError(getShell(), "認証情報", "認証情報の記憶に失敗しました。");
                 }
             }
 
@@ -419,12 +429,11 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                         if (node.getIpAddr() != null) {
                             if (!authFlg || authInputStatus) {
                                 makeAndExecuteTTL(node, 1, null);
-                                Main main = (Main) getParent().getShell().getData("main");
                                 if (main.isTtlOnly()) {
-                                    MessageDialog.openInformation(getParent().getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
+                                    MessageDialog.openInformation(getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
                                 }
                             } else {
-                                MessageDialog.openError(getParent().getShell(), "サーバ接続", "認証情報が入力されていません。");
+                                MessageDialog.openError(getShell(), "サーバ接続", "認証情報が入力されていません。");
                             }
                             return;
                         }
@@ -504,15 +513,14 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 public void drop(DropTargetEvent event) {
                     TargetNode node = (TargetNode) event.item.getData();
                     String[] files = (String[]) event.data;
-                    Menu parentMenu = new Menu(getParent().getShell(), SWT.POP_UP);
+                    Menu parentMenu = new Menu(getShell(), SWT.POP_UP);
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
                         try {
                             plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, Shell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, files, getParent()
-                                .getShell());
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, files, getShell());
                         if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
                             for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;
@@ -584,11 +592,11 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                     TargetNode node = (TargetNode) chkTree.getTree().getSelection()[0].getData();
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
                         try {
-                            plugin.getClass().getDeclaredMethod("getActions", TargetNode[].class, Shell.class);
+                            plugin.getClass().getDeclaredMethod("getActions", TargetNode[].class, TeratermStationShell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        List<TeratermStationContextMenu> contextMenuList = plugin.getActions(new TargetNode[] { node }, getParent().getShell());
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getActions(new TargetNode[] { node }, getShell());
                         if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
                             for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;
@@ -706,7 +714,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
     }
 
     private void defaultTreeData() {
-        Main main = (Main) getParent().getShell().getData("main");
         List<String> groupOrderList = main.getToolDefine().getOrderList(this.rootDir, "group");
         List<String> serverOrderList = main.getToolDefine().getOrderList(this.rootDir, "server");
         this.categoryMap = targetMapCopy(this.defaultCategoryMap);
@@ -764,7 +771,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             if (!selection.isEmpty()) {
                 Object selectedObject = selection.getFirstElement();
                 TargetNode node = (TargetNode) selectedObject;
-                Main main = (Main) getParent().getShell().getData("main");
                 main.setWindowTitle(getToolTipText(node));
             }
         }
@@ -778,7 +784,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
      */
     private void directCheck() {
         // 設定クラスを取得
-        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
         // まずはTTLファイルを作成するディレクトリを取得
         String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
@@ -787,7 +792,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             try {
                 ttlDir = ttlDirFile.getCanonicalPath();
             } catch (IOException e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
             }
         }
         if (this.authFlg) {
@@ -876,7 +881,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 }
                 pw.println(word.toString());
             } catch (Exception e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
                 return;
             } finally {
                 pw.close();
@@ -889,14 +894,14 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 try {
                     ttpmacroexe = ttpmacroexeFile.getCanonicalPath();
                 } catch (IOException e) {
-                    MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                    MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
                 }
             }
             runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
         } catch (FileNotFoundException fnfe) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
         } catch (Exception e) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
         }
     }
 
@@ -917,10 +922,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         }
         if (checkedTreeList.isEmpty()) {
             // １つもチェックされていなかったらエラーダイアログを出して終了
-            MessageDialog.openError(getParent().getShell(), "一括起動", "対象サーバが選択されていません。");
+            MessageDialog.openError(getShell(), "一括起動", "対象サーバが選択されていません。");
             return;
         }
-        Main main = (Main) getParent().getShell().getData("main");
 
         // 念のため確認ダイアログを出す。
         String templateCmd = null;
@@ -935,7 +939,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             } catch (NoSuchMethodException | SecurityException e) {
                 continue;
             }
-            List<TeratermStationAction> actionList = plugin.getBulkActions(nodes, getParent().getShell());
+            List<TeratermStationAction> actionList = plugin.getBulkActions(nodes, getShell());
             if (actionList != null) { // 一括接続での拡張機能の無いプラグインはnullを返すので.
                 bulkActionList.addAll(actionList);
             }
@@ -947,13 +951,13 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             dialogMsg += "\r\n（拡張機能を利用することもできます）";
             buttonArray = new String[] { "OK", "Cancel", "拡張機能選択..." };
         }
-        MessageDialog dialog = new MessageDialog(getParent().getShell(), "一括起動", null, dialogMsg, MessageDialog.QUESTION, buttonArray, 0);
+        MessageDialog dialog = new MessageDialog(getShell(), "一括起動", null, dialogMsg, MessageDialog.QUESTION, buttonArray, 0);
         int result = dialog.open();
         switch (result) {
             case 0: // OK
                 break;
             case 2: // 拡張機能の利用
-                PluginSelectDialog pluginDialog = new PluginSelectDialog(getParent().getShell(), bulkActionList);
+                PluginSelectDialog pluginDialog = new PluginSelectDialog(getShell(), bulkActionList);
                 int pluginResult = pluginDialog.open();
                 if (IDialogConstants.OK_ID != pluginResult) {
                     return;
@@ -976,7 +980,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             }
             if (main.isTtlOnly()) {
                 // TTLファイルの作成のみだったら、ファイル作成後、ダイアログを出す。
-                MessageDialog.openInformation(getParent().getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
+                MessageDialog.openInformation(getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -994,7 +998,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
      */
     public void makeAndExecuteTTL(TargetNode target, int idx, String templateCmd) {
         // 設定クラスを取得
-        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
         // まずはTTLファイルを作成するディレクトリを取得
         String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
@@ -1003,7 +1006,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             try {
                 ttlDir = ttlDirFile.getCanonicalPath();
             } catch (IOException e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
             }
         }
         if (this.authFlg) {
@@ -1043,7 +1046,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 // ++++++++++++++++++++ 接続、認証文字列の取得 ++++++++++++++++++++ //
                 pw.println(genConnText(target, idx, templateCmd));
             } catch (Exception e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
                 return;
             } finally {
                 pw.close();
@@ -1059,15 +1062,15 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                     try {
                         ttpmacroexe = ttpmacroexeFile.getCanonicalPath();
                     } catch (IOException e) {
-                        MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                        MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
                     }
                 }
                 runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
             }
         } catch (FileNotFoundException fnfe) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
         } catch (Exception e) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
         }
     }
 
@@ -1083,7 +1086,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         StringBuilder word = new StringBuilder();
         try {
             // 設定クラスを取得
-            Main main = (Main) getParent().getShell().getData("main");
             IPreferenceStore ps = main.getPreferenceStore();
 
             // ---------- もろもろ情報を取得 ここから ----------
@@ -1170,7 +1172,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
     private String genLogOpen(TargetNode node, String logDir) {
         // 設定クラスを取得
-        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
 
         // 端末名を取得
@@ -1262,7 +1263,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             return true;
         }
         if (!dir.mkdirs()) {
-            MessageDialog.openError(getParent().getShell(), "エラー", "ユーザーディレクトリを作成できませんでした。");
+            MessageDialog.openError(getShell(), "エラー", "ユーザーディレクトリを作成できませんでした。");
             return false;
         }
         return true;
