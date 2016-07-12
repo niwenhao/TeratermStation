@@ -157,7 +157,7 @@ public class Category implements Serializable {
     }
 
     public Map<Integer, Login> getLoginMap() {
-        if (this.loginMap != null) {
+        if (this.loginMap != null && !this.loginMap.isEmpty()) {
             return this.loginMap;
         }
         return this.tab.getLoginMap();

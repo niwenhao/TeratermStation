@@ -185,7 +185,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     private Map<Integer, Login> getLoginMap() {
-        if (this.loginMap != null) {
+        if (this.loginMap != null && !this.loginMap.isEmpty()) {
             return this.loginMap;
         }
         if (this.category != null) {
