@@ -66,6 +66,9 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     public TargetNode getParent() {
+        if (i_parent.getName() == null || i_parent.getName().isEmpty()) {
+            return null;
+        }
         return i_parent;
     }
 
