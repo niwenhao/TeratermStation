@@ -11,7 +11,7 @@ import java.util.Map;
  * TeratermStationの画面の中のまさにタブに相当するクラスです。
  * 
  * @author turbou
- *
+ * 
  */
 public class Tab implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -104,6 +104,9 @@ public class Tab implements Serializable {
 
     @SuppressWarnings("unchecked")
     public void setLoginMap(List<Map<String, Object>> login) {
+        if (login == null) {
+            return;
+        }
         for (Map<String, Object> map : login) {
             Login l = new Login();
             l.setIndex(map.get("index"));

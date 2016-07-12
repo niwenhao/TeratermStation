@@ -96,6 +96,9 @@ public class Category implements Serializable {
 
     @SuppressWarnings("unchecked")
     public void setLoginMap(List<Map<String, Object>> login) {
+        if (login == null) {
+            return;
+        }
         for (Map<String, Object> map : login) {
             Login l = new Login();
             l.setIndex(map.get("index"));

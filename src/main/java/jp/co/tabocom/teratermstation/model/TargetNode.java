@@ -202,7 +202,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         }
         return login;
     }
-    
+
     public String getLoginUsr() {
         Login login = getLogin();
         if (login != null) {
@@ -221,6 +221,9 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
 
     @SuppressWarnings("unchecked")
     public void setLoginMap(List<Map<String, Object>> login) {
+        if (login == null) {
+            return;
+        }
         for (Map<String, Object> map : login) {
             Login l = new Login();
             l.setIndex(map.get("index"));
@@ -288,7 +291,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         }
         return getParent().getVariable();
     }
-    
+
     public void setVariable(Map<String, String> variable) {
         this.variable = variable;
     }
