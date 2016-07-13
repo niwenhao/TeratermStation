@@ -722,6 +722,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             CheckboxTreeViewer treeViewer = this.treeMap.get(category.getName());
             category.sortTargetNode(groupOrderList, serverOrderList);
             treeViewer.setInput(category.getTargetNode());
+            for (TargetNode group : category.getTargetNode().getChildren()) {
+                addPropertyChangeListener(group);
+                for (TargetNode server : group.getChildren()) {
+                    addPropertyChangeListener(server);
+                }
+            }
             treeViewer.refresh();
         }
         this.filterTxt.setText("");
