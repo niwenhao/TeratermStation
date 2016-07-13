@@ -44,12 +44,15 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -135,7 +138,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
     private Image serverGroupImage;
+    private Image serverGroupImageUserNull;
     private Image serverImage;
+    private Image serverImageUserNull;
     
     public Main getMain() {
         return main;
@@ -161,6 +166,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
         this.serverGroupImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("servers.png"));
         this.serverImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("server.png"));
+        Image ngImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("usernull.png"));
+        ImageDescriptor ngDeco = ImageDescriptor.createFromImage(ngImage);
+        DecorationOverlayIcon serverGroupIcon = new DecorationOverlayIcon(serverGroupImage, ngDeco, IDecoration.TOP_RIGHT);
+        DecorationOverlayIcon serverIcon = new DecorationOverlayIcon(serverImage, ngDeco, IDecoration.TOP_RIGHT);
+        this.serverGroupImageUserNull = serverGroupIcon.createImage();
+        this.serverImageUserNull = serverIcon.createImage();
         List<String> orderList = main.getToolDefine().getOrderList(rootDir, "category");
         if (orderList != null && !orderList.isEmpty()) {
             List<String> keys = new ArrayList<String>();
@@ -1335,9 +1346,23 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         public Image getImage(Object element) {
             TargetNode node = (TargetNode) element;
             if (node.isParent()) {
-                return serverGroupImage;
+                boolean flg = false;
+                for (TargetNode child : node.getChildren()) {
+                    if (child.getLoginUsr().isEmpty()) {
+                        flg |= true;
+                    }
+                }
+                if (flg) {
+                    return serverGroupImageUserNull;
+                } else {
+                    return serverGroupImage;
+                }
             } else {
-                return serverImage;
+                if (node.getLoginUsr().isEmpty()) {
+                    return serverImageUserNull;
+                } else {
+                    return serverImage;
+                }
             }
         }
 
