@@ -516,7 +516,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                     Menu parentMenu = new Menu(getShell(), SWT.POP_UP);
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
                         try {
-                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, Shell.class);
+                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, TeratermStationShell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
@@ -935,7 +935,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         List<TeratermStationAction> bulkActionList = new ArrayList<TeratermStationAction>();
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
             try {
-                plugin.getClass().getDeclaredMethod("getBulkActions", TargetNode[].class, Shell.class);
+                plugin.getClass().getDeclaredMethod("getBulkActions", TargetNode[].class, TeratermStationShell.class);
             } catch (NoSuchMethodException | SecurityException e) {
                 continue;
             }
