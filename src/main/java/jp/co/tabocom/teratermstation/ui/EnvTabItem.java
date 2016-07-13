@@ -44,15 +44,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -137,6 +134,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
+    private Image serverGroupImage;
+    private Image serverImage;
+    
     public Main getMain() {
         return main;
     }
@@ -159,6 +159,8 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         this.tab = tab;
         this.main = main;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
+        this.serverGroupImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("servers.png"));
+        this.serverImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("server.png"));
         List<String> orderList = main.getToolDefine().getOrderList(rootDir, "category");
         if (orderList != null && !orderList.isEmpty()) {
             List<String> keys = new ArrayList<String>();
@@ -1326,21 +1328,11 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         @Override
         public Image getImage(Object element) {
             TargetNode node = (TargetNode) element;
-            Image baseImage;
             if (node.isParent()) {
-                baseImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("servers.png"));
+                return serverGroupImage;
             } else {
-                baseImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("server.png"));
+                return serverImage;
             }
-            DecorationOverlayIcon icon = null;
-            ImageDescriptor statusDeco = null;
-            // if (node.isCustomDiff()) {
-            // Image statusImage = new Image(getParent().getDisplay(),
-            // getClass().getClassLoader().getResourceAsStream("custom_ov.gif"));
-            // statusDeco = ImageDescriptor.createFromImage(statusImage);
-            // }
-            icon = new DecorationOverlayIcon(baseImage, statusDeco, IDecoration.TOP_RIGHT);
-            return icon.createImage();
         }
 
         @Override
