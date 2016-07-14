@@ -2,14 +2,16 @@ package jp.co.tabocom.teratermstation.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * タブの情報を保持するクラスです。<br>
  * TeratermStationの画面の中のまさにタブに相当するクラスです。
  * 
  * @author turbou
- *
+ * 
  */
 public class Tab implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -19,13 +21,13 @@ public class Tab implements Serializable {
     private String iconPath;
     private Auth auth;
     private String connect;
-    private String loginUsr;
-    private String loginPwd;
+    private Map<Integer, Login> loginMap;
     private String iniFile;
     private List<Category> categoryList;
 
     public Tab() {
         this.categoryList = new ArrayList<Category>();
+        this.loginMap = new HashMap<Integer, Login>();
     }
 
     public void addCategory(Category category) {
@@ -81,22 +83,6 @@ public class Tab implements Serializable {
         this.connect = connect;
     }
 
-    public String getLoginUsr() {
-        return loginUsr;
-    }
-
-    public void setLoginUsr(String loginUsr) {
-        this.loginUsr = loginUsr;
-    }
-
-    public String getLoginPwd() {
-        return loginPwd;
-    }
-
-    public void setLoginPwd(String loginPwd) {
-        this.loginPwd = loginPwd;
-    }
-
     public String getIniFile() {
         if (this.iniFile != null && !this.iniFile.isEmpty()) {
             return this.iniFile;
@@ -116,9 +102,30 @@ public class Tab implements Serializable {
         this.categoryList = categoryList;
     }
 
+    @SuppressWarnings("unchecked")
+    public void setLoginMap(List<Map<String, Object>> login) {
+        if (login == null) {
+            return;
+        }
+        for (Map<String, Object> map : login) {
+            Login l = new Login();
+            l.setIndex(map.get("index"));
+            l.setUser(map.get("user"));
+            l.setPassword(map.get("password"));
+            l.setIniFile(map.get("inifile"));
+            l.setProcedure(map.get("procedure"));
+            l.setVariable((Map<String, String>) map.get("variable"));
+            this.loginMap.put(l.getIndex(), l);
+        }
+    }
+
     @Override
     public String toString() {
         return this.name;
+    }
+
+    public Map<Integer, Login> getLoginMap() {
+        return loginMap;
     }
 
 }

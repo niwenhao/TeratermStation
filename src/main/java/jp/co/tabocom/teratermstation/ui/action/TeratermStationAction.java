@@ -1,9 +1,9 @@
 package jp.co.tabocom.teratermstation.ui.action;
 
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolTip;
 
+import jp.co.tabocom.teratermstation.TeratermStationShell;
 import jp.co.tabocom.teratermstation.model.TargetNode;
 
 /**
@@ -35,7 +35,7 @@ public abstract class TeratermStationAction {
     /**
      * 画面を作る際のベースクラス
      */
-    protected Shell shell;
+    protected TeratermStationShell shell;
 
     /**
      * デフォルトコンストラクタ
@@ -52,7 +52,7 @@ public abstract class TeratermStationAction {
      * @param shell
      *            画面作成で必要となるベース
      */
-    protected TeratermStationAction(String text, String icon, TargetNode[] nodes, Object value, Shell shell) {
+    protected TeratermStationAction(String text, String icon, TargetNode[] nodes, Object value, TeratermStationShell shell) {
         this.text = text;
         if (icon != null && !icon.isEmpty()) {
             this.image = new Image(shell.getDisplay(), getClass().getClassLoader().getResourceAsStream(icon));

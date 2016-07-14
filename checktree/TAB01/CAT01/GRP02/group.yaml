@@ -1,0 +1,23 @@
+﻿id: GRP02
+inifile: GRP02.INI
+
+procedure: |
+  wait ']$'
+  sendln 'echo "GRP02"'
+
+variable:
+  POSITION: GRP02
+
+login:
+  - index: 1
+    user: grpaplusr
+    password: grpaplpwd
+    inifile: DEV.INI
+    procedure: |
+      wait ']$'
+      sendln 'date'
+    variable:
+      POSITION: GRP_APLUSR
+  - index: 2
+    user: grplibusr
+    password: grplibpwd

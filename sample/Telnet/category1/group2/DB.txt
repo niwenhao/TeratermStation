@@ -1,4 +1,0 @@
-ipaddress = yyy.yyy.yyy.yyy
-hostname = db001
-loginuser = apusr
-loginpassword = appwd

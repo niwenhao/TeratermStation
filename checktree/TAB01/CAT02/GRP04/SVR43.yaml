@@ -1,0 +1,16 @@
+id: group04_server43
+ipaddress: 192.168.4.103
+hostname: server43
+login:
+  - index: 1
+    user: svraplusr
+    password: svraplpwd
+    inifile: SVR.INI
+    procedure: |
+      wait ']$'
+      sendln 'date'
+    variable:
+      POSITION: SVR_APLUSR
+  - index: 2
+    user: svrlibusr
+    password: svrlibpwd

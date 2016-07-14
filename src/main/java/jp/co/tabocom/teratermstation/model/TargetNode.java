@@ -38,17 +38,23 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String ipAddr;
     private String hostName;
     private String iniFile;
-    private String loginUsr;
-    private String loginPwd;
-    private String keyValue;
     private String procedure;
-
+    private Map<String, String> variable;
+    private Map<Integer, Login> loginMap;
     // ========== 実データここまで ========== //
+    private int loginUserIdx = 1;
 
     public void propertyChange(final PropertyChangeEvent event) {
+        if ("userswitch".equals(event.getPropertyName())) {
+            int idx = ((Integer) event.getNewValue()).intValue();
+            if (idx > -1) {
+                loginUserIdx = idx;
+            }
+        }
     }
 
     public TargetNode() {
+        this.loginMap = new HashMap<Integer, Login>();
     }
 
     public String getName() {
@@ -60,7 +66,17 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     }
 
     public TargetNode getParent() {
+        if (i_parent.getName() == null || i_parent.getName().isEmpty()) {
+            return null;
+        }
         return i_parent;
+    }
+
+    public String getParentName() {
+        if (getParent() != null) {
+            return getParent().getName();
+        }
+        return getCategory().getName();
     }
 
     public TargetNode addChild(TargetNode child) {
@@ -171,80 +187,56 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         this.iniFile = iniType;
     }
 
-    private String getLoginUsrStr() {
-        if (this.loginUsr != null) {
-            return this.loginUsr;
+    private Map<Integer, Login> getLoginMap() {
+        if (this.loginMap != null && !this.loginMap.isEmpty()) {
+            return this.loginMap;
         }
         if (this.category != null) {
-            return this.category.getLoginUsr();
+            return this.category.getLoginMap();
         }
-        return getParent().getLoginUsrStr();
+        return getParent().getLoginMap();
     }
 
-    public String getLoginUsr(int idx) {
-        String userStr = getLoginUsrStr();
-        String loginUsr = null;
-        if (userStr == null || userStr.isEmpty()) {
-            loginUsr = "";
-        } else {
-            String[] userArray = userStr.split(" ");
-            if (userArray.length > 1) {
-                try {
-                    loginUsr = userArray[idx - 1];
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    loginUsr = userArray[0];
-                }
-            } else {
-                loginUsr = getLoginUsrStr();
-            }
+    private Login getLogin() {
+        Map<Integer, Login> map = getLoginMap();
+        Login login = null;
+        if (map.containsKey(loginUserIdx)) {
+            login = map.get(loginUserIdx);
         }
-        return loginUsr;
+        return login;
     }
 
     public String getLoginUsr() {
-        return getLoginUsr(1);
-    }
-
-    public void setLoginUsr(String loginUsr) {
-        this.loginUsr = loginUsr;
-    }
-
-    private String getLoginPwdStr() {
-        if (this.loginPwd != null) {
-            return this.loginPwd;
+        Login login = getLogin();
+        if (login != null) {
+            return login.getUser();
         }
-        if (this.category != null) {
-            return this.category.getLoginPwd();
-        }
-        return getParent().getLoginPwdStr();
-    }
-
-    public String getLoginPwd(int idx) {
-        String passStr = getLoginPwdStr();
-        String loginPwd = null;
-        if (passStr == null || passStr.isEmpty()) {
-            loginPwd = "";
-        } else {
-            String[] passArray = passStr.split(" ");
-            if (passArray.length > 1) {
-                try {
-                    loginPwd = passArray[idx - 1];
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    loginPwd = passArray[0];
-                }
-            } else {
-                loginPwd = getLoginPwdStr();
-            }
-        }
-        return loginPwd;
+        return "";
     }
 
     public String getLoginPwd() {
-        return getLoginPwd(1);
+        Login login = getLogin();
+        if (login != null) {
+            return login.getPassword();
+        }
+        return "";
     }
 
-    public void setLoginPwd(String loginPwd) {
-        this.loginPwd = loginPwd;
+    @SuppressWarnings("unchecked")
+    public void setLoginMap(List<Map<String, Object>> login) {
+        if (login == null) {
+            return;
+        }
+        for (Map<String, Object> map : login) {
+            Login l = new Login();
+            l.setIndex(map.get("index"));
+            l.setUser(map.get("user"));
+            l.setPassword(map.get("password"));
+            l.setIniFile(map.get("inifile"));
+            l.setProcedure(map.get("procedure"));
+            l.setVariable((Map<String, String>) map.get("variable"));
+            this.loginMap.put(l.getIndex(), l);
+        }
     }
 
     public boolean isParent() {
@@ -267,15 +259,13 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         return category;
     }
 
-    public String getKeyValue() {
-        return keyValue;
-    }
-
-    public void setKeyValue(String keyValue) {
-        this.keyValue = keyValue;
-    }
-
     public String getProcedure() {
+        Login login = getLogin();
+        if (login != null) {
+            if (login.getProcedure() != null) {
+                return login.getProcedure();
+            }
+        }
         if (this.procedure != null && !this.procedure.isEmpty()) {
             return this.procedure;
         }
@@ -289,7 +279,30 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         this.procedure = procedure;
     }
 
+    public Map<String, String> getVariable() {
+        Login login = getLogin();
+        if (login != null) {
+            if (login.getVariable() != null) {
+                return login.getVariable();
+            }
+        }
+        if (this.variable != null) {
+            return this.variable;
+        }
+        if (this.category != null) {
+            return this.category.getVariable();
+        }
+        return getParent().getVariable();
+    }
+
+    public void setVariable(Map<String, String> variable) {
+        this.variable = variable;
+    }
+
     public void sortChildren(List<String> orderList) {
+        if (orderList == null || orderList.isEmpty()) {
+            return;
+        }
         List<String> keys = new ArrayList<String>();
         for (TargetNode child : this.getChildren()) {
             keys.add(child.getName());

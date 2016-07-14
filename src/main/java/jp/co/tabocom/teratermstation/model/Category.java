@@ -19,14 +19,15 @@ public class Category implements Serializable {
 
     private String name;
     private TargetNode targetNode;
-    private String loginUsr;
-    private String loginPwd;
     private String iniFile;
     private String procedure;
+    private Map<String, String> variable;
+    private Map<Integer, Login> loginMap;
     private Tab tab;
 
     public Category() {
         this.targetNode = new TargetNode();
+        this.loginMap = new HashMap<Integer, Login>();
     }
 
     public TargetNode addChild(TargetNode child) {
@@ -59,28 +60,6 @@ public class Category implements Serializable {
         this.targetNode = targetNode;
     }
 
-    public String getLoginUsr() {
-        if (this.loginUsr != null) {
-            return this.loginUsr;
-        }
-        return this.tab.getLoginUsr();
-    }
-
-    public void setLoginUsr(String loginUsr) {
-        this.loginUsr = loginUsr;
-    }
-
-    public String getLoginPwd() {
-        if (this.loginPwd != null) {
-            return this.loginPwd;
-        }
-        return this.tab.getLoginPwd();
-    }
-
-    public void setLoginPwd(String loginPwd) {
-        this.loginPwd = loginPwd;
-    }
-
     public String getIniFile() {
         if (this.iniFile != null && !this.iniFile.isEmpty()) {
             return this.iniFile;
@@ -100,6 +79,38 @@ public class Category implements Serializable {
         this.procedure = procedure;
     }
 
+    public Map<String, String> getVariable() {
+        return variable;
+    }
+
+    public String getVariableValue(String key) {
+        if (this.variable != null) {
+            return this.variable.get(key);
+        }
+        return null;
+    }
+
+    public void setVariable(Map<String, String> variable) {
+        this.variable = variable;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setLoginMap(List<Map<String, Object>> login) {
+        if (login == null) {
+            return;
+        }
+        for (Map<String, Object> map : login) {
+            Login l = new Login();
+            l.setIndex(map.get("index"));
+            l.setUser(map.get("user"));
+            l.setPassword(map.get("password"));
+            l.setIniFile(map.get("inifile"));
+            l.setProcedure(map.get("procedure"));
+            l.setVariable((Map<String, String>) map.get("variable"));
+            this.loginMap.put(l.getIndex(), l);
+        }
+    }
+
     public void setTab(Tab tab) {
         this.tab = tab;
     }
@@ -113,8 +124,13 @@ public class Category implements Serializable {
         return this.name;
     }
 
-    public void sortTargetNode(List<String> orderList) {
+    public void sortTargetNode(List<String> groupOrderList, List<String> serverOrderList) {
         TargetNode sortedNode = new TargetNode();
+
+        if (groupOrderList == null) {
+            // グループオーダーリストがnullの場合はサイズ０のリストとしておく。
+            groupOrderList = new ArrayList<String>();
+        }
 
         List<String> keys = new ArrayList<String>();
         for (TargetNode child : this.targetNode.getChildren()) {
@@ -122,7 +138,7 @@ public class Category implements Serializable {
         }
         Map<String, String> sortMap = new HashMap<String, String>();
         for (String key : keys) {
-            int idx = orderList.indexOf(key);
+            int idx = groupOrderList.indexOf(key);
             if (idx > -1) {
                 sortMap.put(String.format("%04d", idx), key);
             } else {
@@ -134,9 +150,16 @@ public class Category implements Serializable {
         for (String idx : idxList) {
             String key = sortMap.get(idx);
             TargetNode child = this.getChild(key);
-            child.sortChildren(orderList);
+            child.sortChildren(serverOrderList);
             sortedNode.addChild(child);
         }
         this.targetNode = sortedNode;
+    }
+
+    public Map<Integer, Login> getLoginMap() {
+        if (this.loginMap != null && !this.loginMap.isEmpty()) {
+            return this.loginMap;
+        }
+        return this.tab.getLoginMap();
     }
 }

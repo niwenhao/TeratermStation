@@ -1,0 +1,16 @@
+id: group02_server22
+ipaddress: 192.168.2.102
+hostname: server22
+login:
+  - index: 1
+    user: svraplusr
+    password: svraplpwd
+    inifile: SVR.INI
+    procedure: |
+      wait ']$'
+      sendln 'date'
+    variable:
+      POSITION: SVR_APLUSR
+  - index: 2
+    user: svrlibusr
+    password: svrlibpwd

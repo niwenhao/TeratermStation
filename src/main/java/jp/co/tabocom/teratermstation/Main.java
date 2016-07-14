@@ -2,6 +2,7 @@ package jp.co.tabocom.teratermstation;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,7 +50,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
@@ -74,7 +74,7 @@ public class Main implements PropertyChangeListener, WindowProc {
     public static final String ROOT_DIR = "sample";
     public static final String WINDOW_TITLE = "TeratermStation - %s - %s";
 
-    private Shell shell;
+    private TeratermStationShell shell;
 
     // 各種定義(xmlから定義をロードしたオブジェクト)
     private ToolDefinition toolDefine;
@@ -107,7 +107,7 @@ public class Main implements PropertyChangeListener, WindowProc {
     private String loadDirErrorMsg;
     private String openingMsg;
 
-    private int loginUserIdx = 1;
+    private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     /**
      * @param args
@@ -331,8 +331,7 @@ public class Main implements PropertyChangeListener, WindowProc {
 
     private void createPart() {
         Display display = new Display();
-        shell = new Shell(display, SWT.TITLE | SWT.MIN | SWT.MAX | SWT.CLOSE | SWT.RESIZE);
-        shell.setData("main", this);
+        shell = new TeratermStationShell(display, this);
         shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
         // アイコンセットアップ
         Image[] imageArray = new Image[5];
@@ -394,7 +393,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                 if (event.stateMask == SWT.CTRL) {
                     int num = Character.getNumericValue(event.character);
                     if (num > -1) {
-                        loginUserIdx = num;
+                        support.firePropertyChange("userswitch", 0, num);
                         tabItemRefresh();
                     }
                 }
@@ -421,7 +420,7 @@ public class Main implements PropertyChangeListener, WindowProc {
         this.tabItemMap = new LinkedHashMap<String, EnvTabItem>();
         if (!this.toolDefine.isTabMapEmpty()) {
             for (String rootDir : this.toolDefine.getRootDirList()) {
-                List<String> orderList = this.toolDefine.getOrderList(rootDir);
+                List<String> orderList = this.toolDefine.getOrderList(rootDir, "tab");
                 if (orderList != null && !orderList.isEmpty()) {
                     List<String> keys = new ArrayList<String>(this.toolDefine.getTabMap(rootDir).keySet());
                     Map<String, String> sortMap = new HashMap<String, String>();
@@ -438,7 +437,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                     for (String idx : idxList) {
                         String key = sortMap.get(idx);
                         Tab tab = this.toolDefine.getTabMap(rootDir).get(key);
-                        tabItemMap.put(key, new EnvTabItem(rootDir, tab, tabFolder));
+                        tabItemMap.put(key, new EnvTabItem(rootDir, tab, tabFolder, this));
                     }
                 } else {
                     // 挿入順（正確には辞書順）となるように制御
@@ -446,7 +445,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                     Collections.sort(keys);
                     for (int i = 0; i < keys.size(); i++) {
                         Tab tab = this.toolDefine.getTabMap(rootDir).get(keys.get(i));
-                        tabItemMap.put(keys.get(i), new EnvTabItem(rootDir, tab, tabFolder));
+                        tabItemMap.put(keys.get(i), new EnvTabItem(rootDir, tab, tabFolder, this));
                     }
                     // 下は逆順とする場合
                     // for (int i = keys.size() - 1; i >= 0; i--) {
@@ -462,6 +461,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                 }
                 for (EnvTabItem item : tabItemMap.values()) {
                     item.addPropertyChangeListener(this);
+                    this.addPropertyChangeListener(item);
                 }
             }
         }
@@ -677,15 +677,25 @@ public class Main implements PropertyChangeListener, WindowProc {
         return toolDefine;
     }
 
-    public int getLoginUserIdx() {
-        return loginUserIdx;
-    }
-
     public void setWindowTitle(String text) {
         if (text == null || text.isEmpty()) {
             this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), "Unselected"));
         } else {
             this.shell.setText(String.format(WINDOW_TITLE, toolDefine.getSystem(), text));
         }
+    }
+
+    /**
+     * @param listener
+     */
+    public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.support.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * @param listener
+     */
+    public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.support.removePropertyChangeListener(listener);
     }
 }

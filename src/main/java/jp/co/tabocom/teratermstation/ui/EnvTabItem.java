@@ -1,5 +1,6 @@
 package jp.co.tabocom.teratermstation.ui;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.ByteArrayInputStream;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import jp.co.tabocom.teratermstation.Main;
+import jp.co.tabocom.teratermstation.TeratermStationShell;
 import jp.co.tabocom.teratermstation.model.Auth;
 import jp.co.tabocom.teratermstation.model.Category;
 import jp.co.tabocom.teratermstation.model.Tab;
@@ -97,14 +99,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-public class EnvTabItem extends TabItem {
+public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
     private static final int BULK_INTERVAL = 1700;
     private static final int FILE_INTERVAL = 300;
@@ -118,7 +119,7 @@ public class EnvTabItem extends TabItem {
     private Button authCheckBtn;
     private Text filterTxt;
     private Button allCheckBtn;
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private PropertyChangeSupport support = new PropertyChangeSupport(this);
     private boolean authInputStatus;
     private boolean authFlg;
     private boolean memoryPwdFlg;
@@ -127,12 +128,27 @@ public class EnvTabItem extends TabItem {
     private String rootDir;
 
     private Tab tab;
+    
+    private Main main;
 
     private ServerFilter serverFilter = new ServerFilter();
 
     private org.eclipse.swt.widgets.ToolTip currentItemToolTip;
 
     public static String ACCEPTABLE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+
+    private Image serverGroupImage;
+    private Image serverGroupImageUserNull;
+    private Image serverImage;
+    private Image serverImageUserNull;
+    
+    public Main getMain() {
+        return main;
+    }
+
+    public TeratermStationShell getShell() {
+        return (TeratermStationShell) getParent().getShell();
+    }
 
     /**
      * デフォルトコンストラクタ<br>
@@ -142,13 +158,21 @@ public class EnvTabItem extends TabItem {
      * @param parent
      *            TabFolder 要するに親玉
      */
-    public EnvTabItem(String rootDir, Tab tab, TabFolder parent) {
+    public EnvTabItem(String rootDir, Tab tab, TabFolder parent, Main main) {
         super(parent, SWT.NONE);
         this.rootDir = rootDir;
         this.tab = tab;
+        this.main = main;
         this.defaultCategoryMap = new LinkedHashMap<String, Category>();
-        Main main = (Main) parent.getShell().getData("main");
-        List<String> orderList = main.getToolDefine().getOrderList(rootDir);
+        this.serverGroupImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("servers.png"));
+        this.serverImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("server.png"));
+        Image ngImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("usernull.png"));
+        ImageDescriptor ngDeco = ImageDescriptor.createFromImage(ngImage);
+        DecorationOverlayIcon serverGroupIcon = new DecorationOverlayIcon(serverGroupImage, ngDeco, IDecoration.TOP_RIGHT);
+        DecorationOverlayIcon serverIcon = new DecorationOverlayIcon(serverImage, ngDeco, IDecoration.TOP_RIGHT);
+        this.serverGroupImageUserNull = serverGroupIcon.createImage();
+        this.serverImageUserNull = serverIcon.createImage();
+        List<String> orderList = main.getToolDefine().getOrderList(rootDir, "category");
         if (orderList != null && !orderList.isEmpty()) {
             List<String> keys = new ArrayList<String>();
             for (Category category : tab.getCategoryList()) {
@@ -199,7 +223,6 @@ public class EnvTabItem extends TabItem {
         composite.setLayout(new GridLayout(this.categoryMap.size(), true));
 
         // 設定の取得
-        final Main main = (Main) getParent().getShell().getData("main");
         final PreferenceStore ps = main.getPreferenceStore();
 
         // ==================== 認証設定グループ ====================
@@ -232,7 +255,7 @@ public class EnvTabItem extends TabItem {
         usrTxt.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {
-                getParent().getShell().setImeInputMode(SWT.NONE);
+                getShell().setImeInputMode(SWT.NONE);
             }
 
             @Override
@@ -271,7 +294,7 @@ public class EnvTabItem extends TabItem {
         pwdTxt.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {
-                getParent().getShell().setImeInputMode(SWT.NONE);
+                getShell().setImeInputMode(SWT.NONE);
             }
 
             @Override
@@ -290,9 +313,9 @@ public class EnvTabItem extends TabItem {
                 ps.setValue(PreferenceConstants.AUTH_USER_PWD + pwdGroup, String.format("%s/%s", usrTxt.getText(), pwdTxt.getText()));
                 try {
                     ps.save();
-                    MessageDialog.openInformation(getParent().getShell(), "認証情報", "認証情報を記憶しました。");
+                    MessageDialog.openInformation(getShell(), "認証情報", "認証情報を記憶しました。");
                 } catch (IOException ioe) {
-                    MessageDialog.openError(getParent().getShell(), "認証情報", "認証情報の記憶に失敗しました。");
+                    MessageDialog.openError(getShell(), "認証情報", "認証情報の記憶に失敗しました。");
                 }
             }
 
@@ -362,7 +385,8 @@ public class EnvTabItem extends TabItem {
         });
 
         // ==================== サーバ選択グループ ====================
-        List<String> orderList = main.getToolDefine().getOrderList(this.rootDir);
+        List<String> groupOrderList = main.getToolDefine().getOrderList(this.rootDir, "group");
+        List<String> serverOrderList = main.getToolDefine().getOrderList(this.rootDir, "server");
         this.treeMap = new HashMap<String, CheckboxTreeViewer>();
         for (Category category : this.categoryMap.values()) {
             Group targetSubGrp = new Group(composite, SWT.NONE);
@@ -374,10 +398,14 @@ public class EnvTabItem extends TabItem {
             chkTree.setContentProvider(new TreeContentProvider());
             ColumnViewerToolTipSupport.enableFor(chkTree, ToolTip.NO_RECREATE);
             chkTree.setLabelProvider(new TreeLabelProvider());
-            if (orderList != null && !orderList.isEmpty()) {
-                category.sortTargetNode(orderList);
-            }
+            category.sortTargetNode(groupOrderList, serverOrderList);
             chkTree.setInput(category.getTargetNode());
+            for (TargetNode group : category.getTargetNode().getChildren()) {
+                addPropertyChangeListener(group);
+                for (TargetNode server : group.getChildren()) {
+                    addPropertyChangeListener(server);
+                }
+            }
             final Tree tree = chkTree.getTree();
             tree.setLayoutData(new GridData(GridData.FILL_BOTH));
             tree.setToolTipText("対象のサーバにチェックを入れてください。");
@@ -413,12 +441,11 @@ public class EnvTabItem extends TabItem {
                         if (node.getIpAddr() != null) {
                             if (!authFlg || authInputStatus) {
                                 makeAndExecuteTTL(node, 1, null);
-                                Main main = (Main) getParent().getShell().getData("main");
                                 if (main.isTtlOnly()) {
-                                    MessageDialog.openInformation(getParent().getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
+                                    MessageDialog.openInformation(getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
                                 }
                             } else {
-                                MessageDialog.openError(getParent().getShell(), "サーバ接続", "認証情報が入力されていません。");
+                                MessageDialog.openError(getShell(), "サーバ接続", "認証情報が入力されていません。");
                             }
                             return;
                         }
@@ -442,7 +469,7 @@ public class EnvTabItem extends TabItem {
                         StringBuilder builder = new StringBuilder();
                         if (node.getChildren().isEmpty()) {
                             // 要は子供（サーバ号機）の場合
-                            builder.append(node.getParent().getName());
+                            builder.append(node.getParentName());
                             builder.append("\r\n");
                             builder.append(node.getName());
                             builder.append("\r\n");
@@ -498,15 +525,14 @@ public class EnvTabItem extends TabItem {
                 public void drop(DropTargetEvent event) {
                     TargetNode node = (TargetNode) event.item.getData();
                     String[] files = (String[]) event.data;
-                    Menu parentMenu = new Menu(getParent().getShell(), SWT.POP_UP);
+                    Menu parentMenu = new Menu(getShell(), SWT.POP_UP);
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
                         try {
-                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, Shell.class);
+                            plugin.getClass().getDeclaredMethod("getDnDActions", TargetNode[].class, Object.class, TeratermStationShell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, files, getParent()
-                                .getShell());
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getDnDActions(new TargetNode[] { node }, files, getShell());
                         if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
                             for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;
@@ -578,11 +604,11 @@ public class EnvTabItem extends TabItem {
                     TargetNode node = (TargetNode) chkTree.getTree().getSelection()[0].getData();
                     for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
                         try {
-                            plugin.getClass().getDeclaredMethod("getActions", TargetNode[].class, Shell.class);
+                            plugin.getClass().getDeclaredMethod("getActions", TargetNode[].class, TeratermStationShell.class);
                         } catch (NoSuchMethodException | SecurityException e) {
                             continue;
                         }
-                        List<TeratermStationContextMenu> contextMenuList = plugin.getActions(new TargetNode[] { node }, getParent().getShell());
+                        List<TeratermStationContextMenu> contextMenuList = plugin.getActions(new TargetNode[] { node }, getShell());
                         if (contextMenuList != null) { // 拡張機能の無いプラグインはnullを返すので.
                             for (TeratermStationContextMenu contextMenu : contextMenuList) {
                                 Menu menu = parentMenu;
@@ -637,7 +663,6 @@ public class EnvTabItem extends TabItem {
                 }
             });
         }
-
         Composite bottomGrp = new Composite(composite, SWT.NONE);
         bottomGrp.setLayout(new GridLayout(2, true));
         GridData bottomGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
@@ -669,14 +694,14 @@ public class EnvTabItem extends TabItem {
         this.usrTxt.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 authInputChange();
-                propertyChangeSupport.firePropertyChange("authUsr", null, tab.getAuth().getGroup() + "/" + usrTxt.getText());
+                support.firePropertyChange("authUsr", null, tab.getAuth().getGroup() + "/" + usrTxt.getText());
             }
         });
 
         this.pwdTxt.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 authInputChange();
-                propertyChangeSupport.firePropertyChange("authPwd", null, tab.getAuth().getGroup() + "/" + pwdTxt.getText());
+                support.firePropertyChange("authPwd", null, tab.getAuth().getGroup() + "/" + pwdTxt.getText());
             }
         });
 
@@ -701,15 +726,19 @@ public class EnvTabItem extends TabItem {
     }
 
     private void defaultTreeData() {
-        Main main = (Main) getParent().getShell().getData("main");
-        List<String> orderList = main.getToolDefine().getOrderList(this.rootDir);
+        List<String> groupOrderList = main.getToolDefine().getOrderList(this.rootDir, "group");
+        List<String> serverOrderList = main.getToolDefine().getOrderList(this.rootDir, "server");
         this.categoryMap = targetMapCopy(this.defaultCategoryMap);
         for (Category category : this.categoryMap.values()) {
             CheckboxTreeViewer treeViewer = this.treeMap.get(category.getName());
-            if (orderList != null && !orderList.isEmpty()) {
-                category.sortTargetNode(orderList);
-            }
+            category.sortTargetNode(groupOrderList, serverOrderList);
             treeViewer.setInput(category.getTargetNode());
+            for (TargetNode group : category.getTargetNode().getChildren()) {
+                addPropertyChangeListener(group);
+                for (TargetNode server : group.getChildren()) {
+                    addPropertyChangeListener(server);
+                }
+            }
             treeViewer.refresh();
         }
         this.filterTxt.setText("");
@@ -726,15 +755,15 @@ public class EnvTabItem extends TabItem {
             this.idPwdMemoryBtn.setEnabled(false);
             this.authCheckBtn.setEnabled(false);
             if (this.authFlg) {
-                this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.FALSE);
+                this.support.firePropertyChange("authInput", null, Boolean.FALSE);
             } else {
-                this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.TRUE);
+                this.support.firePropertyChange("authInput", null, Boolean.TRUE);
             }
         } else {
             this.authInputStatus = true;
             this.idPwdMemoryBtn.setEnabled(this.memoryPwdFlg);
             this.authCheckBtn.setEnabled(this.isValidAuthCheck());
-            this.propertyChangeSupport.firePropertyChange("authInput", null, Boolean.TRUE);
+            this.support.firePropertyChange("authInput", null, Boolean.TRUE);
         }
     }
 
@@ -760,7 +789,6 @@ public class EnvTabItem extends TabItem {
             if (!selection.isEmpty()) {
                 Object selectedObject = selection.getFirstElement();
                 TargetNode node = (TargetNode) selectedObject;
-                Main main = (Main) getParent().getShell().getData("main");
                 main.setWindowTitle(getToolTipText(node));
             }
         }
@@ -774,7 +802,6 @@ public class EnvTabItem extends TabItem {
      */
     private void directCheck() {
         // 設定クラスを取得
-        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
         // まずはTTLファイルを作成するディレクトリを取得
         String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
@@ -783,7 +810,7 @@ public class EnvTabItem extends TabItem {
             try {
                 ttlDir = ttlDirFile.getCanonicalPath();
             } catch (IOException e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
             }
         }
         if (this.authFlg) {
@@ -872,7 +899,7 @@ public class EnvTabItem extends TabItem {
                 }
                 pw.println(word.toString());
             } catch (Exception e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
                 return;
             } finally {
                 pw.close();
@@ -885,14 +912,14 @@ public class EnvTabItem extends TabItem {
                 try {
                     ttpmacroexe = ttpmacroexeFile.getCanonicalPath();
                 } catch (IOException e) {
-                    MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                    MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
                 }
             }
             runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
         } catch (FileNotFoundException fnfe) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
         } catch (Exception e) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
         }
     }
 
@@ -913,10 +940,9 @@ public class EnvTabItem extends TabItem {
         }
         if (checkedTreeList.isEmpty()) {
             // １つもチェックされていなかったらエラーダイアログを出して終了
-            MessageDialog.openError(getParent().getShell(), "一括起動", "対象サーバが選択されていません。");
+            MessageDialog.openError(getShell(), "一括起動", "対象サーバが選択されていません。");
             return;
         }
-        Main main = (Main) getParent().getShell().getData("main");
 
         // 念のため確認ダイアログを出す。
         String templateCmd = null;
@@ -927,11 +953,11 @@ public class EnvTabItem extends TabItem {
         List<TeratermStationAction> bulkActionList = new ArrayList<TeratermStationAction>();
         for (TeratermStationPlugin plugin : main.getToolDefine().getPluginList(rootDir)) {
             try {
-                plugin.getClass().getDeclaredMethod("getBulkActions", TargetNode[].class, Shell.class);
+                plugin.getClass().getDeclaredMethod("getBulkActions", TargetNode[].class, TeratermStationShell.class);
             } catch (NoSuchMethodException | SecurityException e) {
                 continue;
             }
-            List<TeratermStationAction> actionList = plugin.getBulkActions(nodes, getParent().getShell());
+            List<TeratermStationAction> actionList = plugin.getBulkActions(nodes, getShell());
             if (actionList != null) { // 一括接続での拡張機能の無いプラグインはnullを返すので.
                 bulkActionList.addAll(actionList);
             }
@@ -943,13 +969,13 @@ public class EnvTabItem extends TabItem {
             dialogMsg += "\r\n（拡張機能を利用することもできます）";
             buttonArray = new String[] { "OK", "Cancel", "拡張機能選択..." };
         }
-        MessageDialog dialog = new MessageDialog(getParent().getShell(), "一括起動", null, dialogMsg, MessageDialog.QUESTION, buttonArray, 0);
+        MessageDialog dialog = new MessageDialog(getShell(), "一括起動", null, dialogMsg, MessageDialog.QUESTION, buttonArray, 0);
         int result = dialog.open();
         switch (result) {
             case 0: // OK
                 break;
             case 2: // 拡張機能の利用
-                PluginSelectDialog pluginDialog = new PluginSelectDialog(getParent().getShell(), bulkActionList);
+                PluginSelectDialog pluginDialog = new PluginSelectDialog(getShell(), bulkActionList);
                 int pluginResult = pluginDialog.open();
                 if (IDialogConstants.OK_ID != pluginResult) {
                     return;
@@ -972,7 +998,7 @@ public class EnvTabItem extends TabItem {
             }
             if (main.isTtlOnly()) {
                 // TTLファイルの作成のみだったら、ファイル作成後、ダイアログを出す。
-                MessageDialog.openInformation(getParent().getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
+                MessageDialog.openInformation(getShell(), "TTLマクロ生成", "TTLマクロを生成しました。");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -990,7 +1016,6 @@ public class EnvTabItem extends TabItem {
      */
     public void makeAndExecuteTTL(TargetNode target, int idx, String templateCmd) {
         // 設定クラスを取得
-        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
         // まずはTTLファイルを作成するディレクトリを取得
         String ttlDir = ps.getString(PreferenceConstants.WORK_DIR);
@@ -999,7 +1024,7 @@ public class EnvTabItem extends TabItem {
             try {
                 ttlDir = ttlDirFile.getCanonicalPath();
             } catch (IOException e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
             }
         }
         if (this.authFlg) {
@@ -1012,11 +1037,7 @@ public class EnvTabItem extends TabItem {
         // 例） C:\library\work\4面-新WebAP_con_t-shiozaki.ttl
         StringBuilder ttlFile = new StringBuilder(ttlDir);
         ttlFile.append("\\");
-        if (target.getParent().getName() != null) {
-            ttlFile.append(target.getParent().getName());
-        } else {
-            ttlFile.append(target.getCategory().getName());
-        }
+        ttlFile.append(target.getParentName());
         ttlFile.append("-");
         ttlFile.append(target.getName());
         ttlFile.append("_");
@@ -1043,7 +1064,7 @@ public class EnvTabItem extends TabItem {
                 // ++++++++++++++++++++ 接続、認証文字列の取得 ++++++++++++++++++++ //
                 pw.println(genConnText(target, idx, templateCmd));
             } catch (Exception e) {
-                MessageDialog.openError(getParent().getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
+                MessageDialog.openError(getShell(), "実行時エラー", "コマンドの生成でエラーが発生しました。\n" + e.getMessage());
                 return;
             } finally {
                 pw.close();
@@ -1059,15 +1080,15 @@ public class EnvTabItem extends TabItem {
                     try {
                         ttpmacroexe = ttpmacroexeFile.getCanonicalPath();
                     } catch (IOException e) {
-                        MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
+                        MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + e.getMessage());
                     }
                 }
                 runtime.exec(new String[] { ttpmacroexe, ttlFile.toString(), pwdArg });
             }
         } catch (FileNotFoundException fnfe) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "基本設定にある作業領域（ディレクトリ）はちゃんと作成されていますか？" + fnfe.getMessage());
         } catch (Exception e) {
-            MessageDialog.openError(getParent().getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
+            MessageDialog.openError(getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
         }
     }
 
@@ -1083,7 +1104,6 @@ public class EnvTabItem extends TabItem {
         StringBuilder word = new StringBuilder();
         try {
             // 設定クラスを取得
-            Main main = (Main) getParent().getShell().getData("main");
             IPreferenceStore ps = main.getPreferenceStore();
 
             // ---------- もろもろ情報を取得 ここから ----------
@@ -1091,13 +1111,9 @@ public class EnvTabItem extends TabItem {
             String authPwd = this.pwdTxt.getText();
             String ipAddr = node.getIpAddr();
             String targetSvr = node.getName();
-            String svrType = node.getParent().getName();
-            if (svrType == null) {
-                svrType = node.getCategory().getName();
-            }
-            int usrIdx = main.getLoginUserIdx();
-            String loginUsr = node.getLoginUsr(usrIdx);
-            String loginPwd = node.getLoginPwd(usrIdx);
+            String svrType = node.getParentName();
+            String loginUsr = node.getLoginUsr();
+            String loginPwd = node.getLoginPwd();
             // INIファイル
             String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
             File iniDirFile = new File(iniDir);
@@ -1174,7 +1190,6 @@ public class EnvTabItem extends TabItem {
 
     private String genLogOpen(TargetNode node, String logDir) {
         // 設定クラスを取得
-        Main main = (Main) getParent().getShell().getData("main");
         IPreferenceStore ps = main.getPreferenceStore();
 
         // 端末名を取得
@@ -1196,10 +1211,7 @@ public class EnvTabItem extends TabItem {
         String[] dirArray = new String[] { logDir, monthDir, dateDir };
 
         // ログファイル
-        String svrType = node.getParent().getName();
-        if (svrType == null) {
-            svrType = node.getCategory().getName();
-        }
+        String svrType = node.getParentName();
         String targetSvr = node.getName();
         String logFile = dateDir + "\\" + timestamp + "_" + svrType + "_" + targetSvr + "_" + pcName + ".log";
 
@@ -1237,14 +1249,14 @@ public class EnvTabItem extends TabItem {
         if (templateCmd == null) {
             return "";
         }
-        Map<String, String> valuesMap = new TreeMap<String, String>();
-        String keyValueStr = node.getKeyValue();
-        if (keyValueStr != null) {
-            for (String keyValue : keyValueStr.split(",")) {
-                valuesMap.put(keyValue.split(":")[0].trim(), keyValue.split(":")[1].trim());
-            }
+        Map<String, String> valueMap = new HashMap<String, String>();
+        // HOSTNAMEをセットしておく
+        valueMap.put("HOSTNAME", node.getHostName());
+        // あとは変数マップから
+        if (node.getVariable() != null) {
+            valueMap.putAll(node.getVariable());
         }
-        StrSubstitutor sub = new StrSubstitutor(valuesMap);
+        StrSubstitutor sub = new StrSubstitutor(valueMap);
         return sub.replace(templateCmd);
     }
 
@@ -1269,7 +1281,7 @@ public class EnvTabItem extends TabItem {
             return true;
         }
         if (!dir.mkdirs()) {
-            MessageDialog.openError(getParent().getShell(), "エラー", "ユーザーディレクトリを作成できませんでした。");
+            MessageDialog.openError(getShell(), "エラー", "ユーザーディレクトリを作成できませんでした。");
             return false;
         }
         return true;
@@ -1333,21 +1345,25 @@ public class EnvTabItem extends TabItem {
         @Override
         public Image getImage(Object element) {
             TargetNode node = (TargetNode) element;
-            Image baseImage;
             if (node.isParent()) {
-                baseImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("servers.png"));
+                boolean flg = false;
+                for (TargetNode child : node.getChildren()) {
+                    if (child.getLoginUsr().isEmpty()) {
+                        flg |= true;
+                    }
+                }
+                if (flg) {
+                    return serverGroupImageUserNull;
+                } else {
+                    return serverGroupImage;
+                }
             } else {
-                baseImage = new Image(getParent().getDisplay(), getClass().getClassLoader().getResourceAsStream("server.png"));
+                if (node.getLoginUsr().isEmpty()) {
+                    return serverImageUserNull;
+                } else {
+                    return serverImage;
+                }
             }
-            DecorationOverlayIcon icon = null;
-            ImageDescriptor statusDeco = null;
-            // if (node.isCustomDiff()) {
-            // Image statusImage = new Image(getParent().getDisplay(),
-            // getClass().getClassLoader().getResourceAsStream("custom_ov.gif"));
-            // statusDeco = ImageDescriptor.createFromImage(statusImage);
-            // }
-            icon = new DecorationOverlayIcon(baseImage, statusDeco, IDecoration.TOP_RIGHT);
-            return icon.createImage();
         }
 
         @Override
@@ -1356,17 +1372,28 @@ public class EnvTabItem extends TabItem {
             StringBuilder builder = new StringBuilder();
             if (node.getChildren().isEmpty()) {
                 // 要は子供（サーバ号機）の場合
-                Main main = (Main) getParent().getShell().getData("main");
-                int usrIdx = main.getLoginUserIdx();
-                String user = node.getLoginUsr(usrIdx);
+                String user = node.getLoginUsr();
                 builder.append(user);
                 builder.append("@");
                 builder.append(node.getIpAddr());
                 if (node.getHostName() != null) {
                     builder.append(String.format("(%s)", node.getHostName()));
                 }
+                // ID
                 if (node.getId() != null && !node.getId().isEmpty() && !node.getHostName().equals(node.getId())) {
                     builder.append(String.format("[%s]", node.getId()));
+                }
+                // Procedure
+                if (node.getProcedure() != null) {
+                    builder.append("\r\n--- procedure ---\r\n");
+                    builder.append(node.getProcedure());
+                }
+                // Variable
+                if (node.getVariable() != null && !node.getVariable().isEmpty()) {
+                    builder.append("\r\n--- variable ---\r\n");
+                    for (String key : node.getVariable().keySet()) {
+                        builder.append(String.format("%s: %s\r\n", key, node.getVariable().get(key)));
+                    }
                 }
             } else {
                 // 要は親（サーバ種別）の場合
@@ -1515,11 +1542,11 @@ public class EnvTabItem extends TabItem {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.addPropertyChangeListener(listener);
+        this.support.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.removePropertyChangeListener(listener);
+        this.support.removePropertyChangeListener(listener);
     }
 
     public Tab getTab() {
@@ -1530,9 +1557,7 @@ public class EnvTabItem extends TabItem {
         StringBuilder builder = new StringBuilder();
         if (node.getChildren().isEmpty()) {
             // 要は子供（サーバ号機）の場合
-            Main main = (Main) getParent().getShell().getData("main");
-            int usrIdx = main.getLoginUserIdx();
-            String user = node.getLoginUsr(usrIdx);
+            String user = node.getLoginUsr();
             builder.append(user);
             builder.append("@");
             builder.append(node.getIpAddr());
@@ -1554,5 +1579,13 @@ public class EnvTabItem extends TabItem {
     @Override
     protected void checkSubclass() {
         // super.checkSubclass();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        if ("userswitch".equals(event.getPropertyName())) {
+            int idx = ((Integer) event.getNewValue()).intValue();
+            support.firePropertyChange("userswitch", 0, idx);
+        }
     }
 }

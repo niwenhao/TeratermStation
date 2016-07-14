@@ -1,0 +1,24 @@
+﻿connect: connect '${ipaddress} /nossh /T=1 /f="${inifile}"'
+
+inifile: TAB.INI
+
+procedure: |
+  wait ']$'
+  sendln 'echo "TAB"'
+
+variable:
+  POSITION: TAB
+
+login:
+  - index: 1
+    user: tabaplusr
+    password: tabaplpwd
+    inifile: DEV.INI
+    procedure: |
+      wait ']$'
+      sendln 'date'
+    variable:
+      POSITION: TAB_APLUSR
+  - index: 2
+    user: tablibusr
+    password: tablibpwd

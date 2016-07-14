@@ -5,13 +5,15 @@ import java.util.Map;
 
 /**
  * 
- * group.yamlを読み込むためのクラスです。<br>
+ * server.yamlを読み込むためのクラスです。<br>
  * <br>
- * group.yamlの内容は下な感じ<br>
+ * server.yamlの内容は下な感じ<br>
  * 
  * <pre>
  * --------------------------------------------------------------------------------
- * id: group01_01
+ * id: kibanusr@addbs004
+ * ipaddress: 192.177.238.204
+ * hostname: addbs004
  * loginuser: kibanusr
  * loginpassword: kibanpwd
  * inifile: AWS.INI
@@ -27,13 +29,21 @@ import java.util.Map;
  * @author turbou
  * 
  */
-public class GroupIni {
+public class ServerIni {
     /**
-     * サーバグループID（任意）
+     * サーバID（任意）
      */
     private String id;
     /**
-     * サーバグループ全体に適用されるTera TermのINIファイル（任意）
+     * サーバに適用されるホスト名
+     */
+    private String hostname;
+    /**
+     * サーバに適用されるIPアドレス
+     */
+    private String ipaddress;
+    /**
+     * サーバに適用されるTera TermのINIファイル（任意）
      */
     private String inifile;
     /**
@@ -55,6 +65,22 @@ public class GroupIni {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    public String getIpaddress() {
+        return ipaddress;
+    }
+
+    public void setIpaddress(String ipaddress) {
+        this.ipaddress = ipaddress;
     }
 
     public String getInifile() {
@@ -92,6 +118,9 @@ public class GroupIni {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        builder.append(String.format("id            : %s\n", this.id));
+        builder.append(String.format("hostname      : %s\n", this.hostname));
+        builder.append(String.format("ipaddress     : %s\n", this.ipaddress));
         builder.append(String.format("inifile       : %s\n", this.inifile));
         builder.append(String.format("login         : %s\n", this.login));
         builder.append(String.format("procedure     : %s\n", this.procedure));
