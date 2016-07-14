@@ -47,14 +47,6 @@ public class ServerIni {
      */
     private String inifile;
     /**
-     * サーバに適用されるサーバログインユーザー（任意）
-     */
-    private String loginuser;
-    /**
-     * サーバに適用されるサーバログインパスワード（任意）
-     */
-    private String loginpassword;
-    /**
      * ログイン後の手続き（任意）
      */
     private String procedure;
@@ -99,22 +91,6 @@ public class ServerIni {
         this.inifile = inifile;
     }
 
-    public String getLoginuser() {
-        return loginuser;
-    }
-
-    public void setLoginuser(String loginuser) {
-        this.loginuser = loginuser;
-    }
-
-    public String getLoginpassword() {
-        return loginpassword;
-    }
-
-    public void setLoginpassword(String loginpassword) {
-        this.loginpassword = loginpassword;
-    }
-
     public String getProcedure() {
         return procedure;
     }
@@ -146,9 +122,7 @@ public class ServerIni {
         builder.append(String.format("hostname      : %s\n", this.hostname));
         builder.append(String.format("ipaddress     : %s\n", this.ipaddress));
         builder.append(String.format("inifile       : %s\n", this.inifile));
-        builder.append(String.format("loginuser     : %s\n", this.loginuser));
-        builder.append(String.format("loginpassword : %s\n", this.loginpassword));
-        builder.append(String.format("login          : %s\n", this.login));
+        builder.append(String.format("login         : %s\n", this.login));
         builder.append(String.format("procedure     : %s\n", this.procedure));
         builder.append(String.format("variable      : %s\n", this.variable));
         return builder.toString();
