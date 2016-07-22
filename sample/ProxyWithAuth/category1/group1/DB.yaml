@@ -1,4 +1,6 @@
 ipaddress: yyy.yyy.yyy.yyy
 hostname: db001
-loginuser: apusr
-loginpassword: appwd
+login:
+  - index: 1
+    user: apusr
+    password: appwd

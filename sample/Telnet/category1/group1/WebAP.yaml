@@ -1,4 +1,6 @@
 ipaddress: xxx.xxx.xxx.xxx
 hostname: webap001
-loginuser: apusr
-loginpassword: appwd
+login:
+  - index: 1
+    user: apusr
+    password: appwd
