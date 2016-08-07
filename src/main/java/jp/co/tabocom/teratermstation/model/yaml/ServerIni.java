@@ -14,9 +14,20 @@ import java.util.Map;
  * id: kibanusr@addbs004
  * ipaddress: 192.177.238.204
  * hostname: addbs004
- * loginuser: kibanusr
- * loginpassword: kibanpwd
- * inifile: AWS.INI
+ * login:
+ *   - index: 1
+ *     user: aplusr
+ *     password: aplpwd
+ *     inifile: DEV.INI
+ *     procedure: |
+ *       wait ']$'
+ *       sendln 'date'
+ *     variable:
+ *       APL_DIR: /APL/group01/local
+ *       APL_PKG01_DIR: /APL/group01/pkg01
+ *   - index: 2
+ *     user: libusr
+ *     password: libpwd
  * procedure: |
  *   wait ']$'
  *   sendln 'date'

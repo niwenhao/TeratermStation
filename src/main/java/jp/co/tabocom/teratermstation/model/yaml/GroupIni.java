@@ -11,10 +11,20 @@ import java.util.Map;
  * 
  * <pre>
  * --------------------------------------------------------------------------------
- * id: group01_01
- * loginuser: kibanusr
- * loginpassword: kibanpwd
- * inifile: AWS.INI
+ * login:
+ *   - index: 1
+ *     user: aplusr
+ *     password: aplpwd
+ *     inifile: DEV.INI
+ *     procedure: |
+ *       wait ']$'
+ *       sendln 'date'
+ *     variable:
+ *       APL_DIR: /APL/group01/local
+ *       APL_PKG01_DIR: /APL/group01/pkg01
+ *   - index: 2
+ *     user: libusr
+ *     password: libpwd
  * procedure: |
  *   wait ']$'
  *   sendln 'date'
