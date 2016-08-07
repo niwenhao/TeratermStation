@@ -1435,17 +1435,19 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         public boolean select(Viewer viewer, Object parentElement, Object element) {
             TargetNode targetNode = (TargetNode) element;
             List<TargetNode> childrenNodeList = targetNode.getChildren();
+            boolean flg = false;
             if (childrenNodeList == null || childrenNodeList.isEmpty()) {
-                return StringUtils.containsIgnoreCase(targetNode.getName(), filterTxt.getText());
+                flg |= StringUtils.containsIgnoreCase(targetNode.getName(), filterTxt.getText());
+                flg |= StringUtils.containsIgnoreCase(targetNode.getIpAddr(), filterTxt.getText());
+                flg |= StringUtils.containsIgnoreCase(targetNode.getHostName(), filterTxt.getText());
             } else {
-                boolean flg = false;
                 for (TargetNode childrenNode : childrenNodeList) {
                     flg |= StringUtils.containsIgnoreCase(childrenNode.getName(), filterTxt.getText());
                     flg |= StringUtils.containsIgnoreCase(childrenNode.getIpAddr(), filterTxt.getText());
                     flg |= StringUtils.containsIgnoreCase(childrenNode.getHostName(), filterTxt.getText());
                 }
-                return flg;
             }
+            return flg;
         }
     }
 
