@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -41,7 +40,7 @@ public class PathDialog extends Dialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite composite = (Composite) super.createDialogArea(parent);
-        composite.setLayout(new GridLayout(4, false));
+        composite.setLayout(new GridLayout(3, false));
         new Label(composite, SWT.LEFT).setText("定義基点ディレクトリ：");
         dirTxt = new Text(composite, SWT.BORDER);
         dirTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -73,25 +72,6 @@ public class PathDialog extends Dialog {
                 }
             }
         });
-        Button zipBtn = new Button(composite, SWT.NULL);
-        zipBtn.setText("アーカイブ");
-        zipBtn.addSelectionListener(new SelectionListener() {
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
-
-            public void widgetSelected(SelectionEvent e) {
-                FileDialog dialog = new FileDialog(getShell());
-                dialog.setText("定義基点アーカイブを指定してください。");
-                String currentPath = dirTxt.getText();
-                dialog.setFilterPath(currentPath.isEmpty() ? "C:\\" : currentPath);
-                dialog.setFilterExtensions(new String[] { "*.zip" });
-                dialog.setFilterNames(new String[] { "zipファイル(*.zip)" });
-                String zip = dialog.open();
-                if (zip != null) {
-                    dirTxt.setText(zip);
-                }
-            }
-        });
         DropTarget dropTarget = new DropTarget(dirTxt, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY);
         dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
         dropTarget.addDropListener(new DropTargetAdapter() {
@@ -105,17 +85,12 @@ public class PathDialog extends Dialog {
             @Override
             public void drop(DropTargetEvent event) {
                 String[] files = (String[]) event.data;
-                File file = new File(files[0]);
-                if (file.isDirectory()) {
+                File dir = new File(files[0]);
+                if (dir.isDirectory()) {
                     dirTxt.setText(files[0]);
-                    return;
                 } else {
-                    if (file.getPath().endsWith(".zip")) {
-                        dirTxt.setText(files[0]);
-                        return;
-                    }
+                    MessageDialog.openError(getShell(), "定義基点ディレクトリ", "ディレクトリを指定してください。");
                 }
-                MessageDialog.openError(getShell(), "定義基点ディレクトリ", "ディレクトリまたはZIPアーカイブを指定してください。");
             }
         });
 
