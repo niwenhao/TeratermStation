@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1114,6 +1115,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             String svrType = node.getParentName();
             String loginUsr = node.getLoginUsr();
             String loginPwd = node.getLoginPwd();
+            String base64auth = Base64.getEncoder().encodeToString(String.format("%s:%s", authUsr, authPwd).getBytes());
             // INIファイル
             String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
             File iniDirFile = new File(iniDir);
@@ -1136,6 +1138,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             Map<String, String> valuesMap = new TreeMap<String, String>();
             valuesMap.put("authuser", authUsr);
             valuesMap.put("authpassword", authPwd);
+            valuesMap.put("base64auth", base64auth);
             valuesMap.put("ipaddress", ipAddr);
             valuesMap.put("loginuser", loginUsr);
             valuesMap.put("loginpassword", loginPwd);
