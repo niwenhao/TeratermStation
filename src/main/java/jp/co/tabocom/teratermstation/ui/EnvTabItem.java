@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -26,7 +25,6 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1100,9 +1098,10 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         }
     }
 
-	private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap) {
+    @SuppressWarnings("unchecked")
+    private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap) {
 		File file = new File(iniFile);
-		if (!file.exists()) {
+		if (!file.exists() || file.isDirectory()) {
 			return;
 		}
 		List<String> lineBuffer = new ArrayList<String>();
@@ -1125,6 +1124,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 			}
 		}
 		String section = null;
+		boolean isSectionMode = false;
 		String key = null;
 		String value = null;
 		for (String line : lineBuffer) {
@@ -1132,12 +1132,13 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 				rwLineBuffer.add(line);
 				continue;
 			}
+            System.out.println(line);
 			if (line.startsWith("[")) {
 				section = line.replaceAll("[\\[\\]]", "");
+				isSectionMode = true;
 				rwLineBuffer.add(line);
 				continue;
 			}
-			System.out.println(line);
 			String[] array = line.split("=");
 			key = array[0].trim();
 			boolean isReplace = false;
@@ -1145,14 +1146,25 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 //				System.out.println(e.getKey() + " : " + e.getValue());
 				if (e.getValue() instanceof String) {
 					// セクション配下ではない
-					if (key.equals(e.getKey())) {
+					if (key.equals(e.getKey()) && !isSectionMode) {
 						value = (String) e.getValue();
 						rwLineBuffer.add(String.format("%s=%s", key, value));
 						isReplace = true;
 						break;
 					}
-				} else {
+				} else if (e.getValue() instanceof Map) {
 					// セクション配下
+                    if (section.equals(e.getKey()) && isSectionMode) {
+                        Map<String, Object> sectionValueMap = (Map<String, Object>)e.getValue();
+                        for (Map.Entry<String, Object> e2 : sectionValueMap.entrySet()) {
+                            if (key.equals(e2.getKey())) {
+                                value = (String) e2.getValue();
+                                rwLineBuffer.add(String.format("%s=%s", key, value));
+                                isReplace = true;
+                                break;
+                            }
+                        }                        
+                    }
 				}
 			}
 			if (!isReplace) {
