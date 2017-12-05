@@ -1100,6 +1100,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
     @SuppressWarnings("unchecked")
     private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap) {
+        // TODO 既存項目の書き換えだけでなく、存在しない項目について挿入できるようにはまだなっていない。
 		File file = new File(iniFile);
 		if (!file.exists() || file.isDirectory()) {
 			return;
