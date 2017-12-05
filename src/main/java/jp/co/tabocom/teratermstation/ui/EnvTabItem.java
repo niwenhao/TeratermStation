@@ -847,6 +847,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 // ---------- もろもろ情報を取得 ここから ----------
                 String authUsr = this.usrTxt.getText();
                 String authPwd = this.pwdTxt.getText();
+                String base64auth = Base64.getEncoder().encodeToString(String.format("%s:%s", authUsr, authPwd).getBytes());
                 // INIファイル
                 String iniDir = ps.getString(PreferenceConstants.INIFILE_DIR);
                 File iniDirFile = new File(iniDir);
@@ -868,6 +869,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 Map<String, String> valuesMap = new TreeMap<String, String>();
                 valuesMap.put("authuser", authUsr);
                 valuesMap.put("authpassword", authPwd);
+                valuesMap.put("base64auth", base64auth);
                 valuesMap.put("inidir", iniDir);
                 valuesMap.put("inifile", iniFile);
                 valuesMap.put("logdir", logDir);
