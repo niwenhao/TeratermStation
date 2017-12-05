@@ -24,6 +24,7 @@ public class Tab implements Serializable {
     private Map<Integer, Login> loginMap;
     private String iniFile;
     private List<Category> categoryList;
+    private Map<String, Object> inirewrite;
 
     public Tab() {
         this.categoryList = new ArrayList<Category>();
@@ -101,8 +102,16 @@ public class Tab implements Serializable {
     public void setCategoryList(List<Category> categoryList) {
         this.categoryList = categoryList;
     }
+    
+    public Map<String, Object> getInirewrite() {
+		return inirewrite;
+	}
 
-    @SuppressWarnings("unchecked")
+	public void setInirewrite(Map<String, Object> inirewrite) {
+		this.inirewrite = inirewrite;
+	}
+
+	@SuppressWarnings("unchecked")
     public void setLoginMap(List<Map<String, Object>> login) {
         if (login == null) {
             return;

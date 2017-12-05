@@ -94,6 +94,10 @@ public class Category implements Serializable {
         this.variable = variable;
     }
 
+    public Map<String, Object> getInirewrite() {
+        return this.tab.getInirewrite();
+	}
+
     @SuppressWarnings("unchecked")
     public void setLoginMap(List<Map<String, Object>> login) {
         if (login == null) {

@@ -163,6 +163,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     tab.setAuth(auth);
                     tab.setIniFile(tabIni.getInifile());
                     tab.setLoginMap(tabIni.getLogin());
+                    tab.setInirewrite(tabIni.getInirewrite());
                 }
                 // ========== ICON.PNG ========== //
                 if (fileName.equals("icon.png")) {

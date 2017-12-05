@@ -3,13 +3,17 @@ package jp.co.tabocom.teratermstation.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
@@ -22,21 +26,11 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import jp.co.tabocom.teratermstation.Main;
-import jp.co.tabocom.teratermstation.TeratermStationShell;
-import jp.co.tabocom.teratermstation.model.Auth;
-import jp.co.tabocom.teratermstation.model.Category;
-import jp.co.tabocom.teratermstation.model.Tab;
-import jp.co.tabocom.teratermstation.model.TargetNode;
-import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
-import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
-import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -105,6 +99,17 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+
+import jp.co.tabocom.teratermstation.Main;
+import jp.co.tabocom.teratermstation.TeratermStationShell;
+import jp.co.tabocom.teratermstation.model.Auth;
+import jp.co.tabocom.teratermstation.model.Category;
+import jp.co.tabocom.teratermstation.model.Tab;
+import jp.co.tabocom.teratermstation.model.TargetNode;
+import jp.co.tabocom.teratermstation.plugin.TeratermStationPlugin;
+import jp.co.tabocom.teratermstation.preference.PreferenceConstants;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationAction;
+import jp.co.tabocom.teratermstation.ui.action.TeratermStationContextMenu;
 
 public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
@@ -1095,6 +1100,82 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         }
     }
 
+	private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap) {
+		File file = new File(iniFile);
+		if (!file.exists()) {
+			return;
+		}
+		List<String> lineBuffer = new ArrayList<String>();
+		List<String> rwLineBuffer = new ArrayList<String>();
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "SJIS"));
+			String line;
+			while ((line = br.readLine()) != null) {
+				lineBuffer.add(line);
+			}
+		} catch (IOException e) {
+			return;
+		} finally {
+			try {
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String section = null;
+		String key = null;
+		String value = null;
+		for (String line : lineBuffer) {
+			if (line.isEmpty() || line.startsWith(";")) {
+				rwLineBuffer.add(line);
+				continue;
+			}
+			if (line.startsWith("[")) {
+				section = line.replaceAll("[\\[\\]]", "");
+				rwLineBuffer.add(line);
+				continue;
+			}
+			System.out.println(line);
+			String[] array = line.split("=");
+			key = array[0].trim();
+			boolean isReplace = false;
+			for (Map.Entry<String, Object> e : rewriteMap.entrySet()) {
+//				System.out.println(e.getKey() + " : " + e.getValue());
+				if (e.getValue() instanceof String) {
+					// セクション配下ではない
+					if (key.equals(e.getKey())) {
+						value = (String) e.getValue();
+						rwLineBuffer.add(String.format("%s=%s", key, value));
+						isReplace = true;
+						break;
+					}
+				} else {
+					// セクション配下
+				}
+			}
+			if (!isReplace) {
+				rwLineBuffer.add(line);
+			}
+		}
+		try {
+			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "SJIS"));
+			for (String line : rwLineBuffer) {
+				bw.write(line);
+				bw.newLine();
+			}
+		} catch (IOException e) {
+			return;
+		} finally {
+			try {
+				bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+    
     /**
      * genConnText<br>
      * 与えられた情報から接続用のネゴシエーション文字列を生成して返します。
@@ -1135,6 +1216,8 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 workDir = workDirFile.getCanonicalPath();
             }
             String iniFile = iniDir + "\\" + node.getIniFile();
+            rewriteIniFile(iniFile, node.getInirewrite());
+
             String seqNo = String.format("%03d. ", idx);
             // ---------- もろもろ情報を取得 ここまで ----------
             Map<String, String> valuesMap = new TreeMap<String, String>();

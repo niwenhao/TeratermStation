@@ -239,6 +239,13 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         }
     }
 
+    public Map<String, Object> getInirewrite() {
+        if (this.category != null) {
+            return this.category.getInirewrite();
+        }
+        return null;
+	}
+
     public boolean isParent() {
         return this.ipAddr == null;
     }

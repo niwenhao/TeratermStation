@@ -103,6 +103,11 @@ public class TabIni {
      */
     private List<Map<String, Object>> login;
 
+    /**
+     * INIファイルの中味を書き換える情報（任意）
+     */
+    private Map<String, Object> inirewrite;
+    
     public Map<String, Object> getAuth() {
         return auth;
     }
@@ -191,7 +196,15 @@ public class TabIni {
         return null;
     }
 
-    public String validate() {
+    public Map<String, Object> getInirewrite() {
+		return inirewrite;
+	}
+
+	public void setInirewrite(Map<String, Object> inirewrite) {
+		this.inirewrite = inirewrite;
+	}
+
+	public String validate() {
         StringBuilder builder = new StringBuilder();
         if (this.connect == null || this.connect.isEmpty()) {
             builder.append("- connect: がありません。");
