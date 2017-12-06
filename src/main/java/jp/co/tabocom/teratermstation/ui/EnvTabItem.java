@@ -1097,97 +1097,118 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             MessageDialog.openError(getShell(), "実行時エラー", "実行環境に問題があります。初期設定はお済みでしょうか？\n" + e.getMessage());
         }
     }
-
+    
     @SuppressWarnings("unchecked")
     private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap) {
-        // TODO 既存項目の書き換えだけでなく、存在しない項目について挿入できるようにはまだなっていない。
-		File file = new File(iniFile);
-		if (!file.exists() || file.isDirectory()) {
-			return;
-		}
-		List<String> lineBuffer = new ArrayList<String>();
-		List<String> rwLineBuffer = new ArrayList<String>();
-		BufferedReader br = null;
-		BufferedWriter bw = null;
-		try {
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "SJIS"));
-			String line;
-			while ((line = br.readLine()) != null) {
-				lineBuffer.add(line);
-			}
-		} catch (IOException e) {
-			return;
-		} finally {
-			try {
-				br.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		String section = null;
-		boolean isSectionMode = false;
-		String key = null;
-		String value = null;
-		for (String line : lineBuffer) {
-			if (line.isEmpty() || line.startsWith(";")) {
-				rwLineBuffer.add(line);
-				continue;
-			}
-            System.out.println(line);
-			if (line.startsWith("[")) {
-				section = line.replaceAll("[\\[\\]]", "");
-				isSectionMode = true;
-				rwLineBuffer.add(line);
-				continue;
-			}
-			String[] array = line.split("=");
-			key = array[0].trim();
-			boolean isReplace = false;
-			for (Map.Entry<String, Object> e : rewriteMap.entrySet()) {
-//				System.out.println(e.getKey() + " : " + e.getValue());
-				if (e.getValue() instanceof String) {
-					// セクション配下ではない
-					if (key.equals(e.getKey()) && !isSectionMode) {
-						value = (String) e.getValue();
-						rwLineBuffer.add(String.format("%s=%s", key, value));
-						isReplace = true;
-						break;
-					}
-				} else if (e.getValue() instanceof Map) {
-					// セクション配下
+        Map<String, Object> insertMap = targetMapCopyStrObj(rewriteMap);
+
+        File file = new File(iniFile);
+        if (!file.exists() || file.isDirectory()) {
+            return;
+        }
+        List<String> lineBuffer = new ArrayList<String>();
+        List<String> rwLineBuffer = new ArrayList<String>();
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "SJIS"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                lineBuffer.add(line);
+            }
+        } catch (IOException e) {
+            return;
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // まずは既存行の書き換え
+        String section = null;
+        boolean isSectionMode = false;
+        String key = null;
+        String value = null;
+        for (String line : lineBuffer) {
+            if (line.isEmpty() || line.startsWith(";")) {
+                rwLineBuffer.add(line);
+                continue;
+            }
+            if (line.startsWith("[")) {
+                section = line.replaceAll("[\\[\\]]", "");
+                isSectionMode = true;
+                rwLineBuffer.add(line);
+                continue;
+            }
+            String[] array = line.split("=");
+            key = array[0].trim();
+            boolean isReplace = false;
+            for (Map.Entry<String, Object> e : rewriteMap.entrySet()) {
+                // System.out.println(e.getKey() + " : " + e.getValue());
+                if (e.getValue() instanceof String) {
+                    // セクション配下ではない
+                    if (key.equals(e.getKey()) && !isSectionMode) {
+                        value = (String) e.getValue();
+                        rwLineBuffer.add(String.format("%s=%s", key, value));
+                        insertMap.remove(e.getKey());
+                        isReplace = true;
+                        break;
+                    }
+                } else if (e.getValue() instanceof Map) {
+                    // セクション配下
                     if (section.equals(e.getKey()) && isSectionMode) {
-                        Map<String, Object> sectionValueMap = (Map<String, Object>)e.getValue();
+                        Map<String, Object> sectionValueMap = (Map<String, Object>) e.getValue();
                         for (Map.Entry<String, Object> e2 : sectionValueMap.entrySet()) {
                             if (key.equals(e2.getKey())) {
                                 value = (String) e2.getValue();
                                 rwLineBuffer.add(String.format("%s=%s", key, value));
+                                ((Map<String, Object>) insertMap.get(e.getKey())).remove(e2.getKey());
                                 isReplace = true;
                                 break;
                             }
-                        }                        
+                        }
                     }
-				}
-			}
-			if (!isReplace) {
-				rwLineBuffer.add(line);
-			}
-		}
-		try {
-			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "SJIS"));
-			for (String line : rwLineBuffer) {
-				bw.write(line);
-				bw.newLine();
-			}
-		} catch (IOException e) {
-			return;
-		} finally {
-			try {
-				bw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+                }
+            }
+            if (!isReplace) {
+                rwLineBuffer.add(line);
+            }
+        }
+        // そして既存行になかった定義の追記
+        List<String> fixLineBuffer = new ArrayList<String>();
+        for (String line : rwLineBuffer) {
+            fixLineBuffer.add(line);
+            for (Map.Entry<String, Object> e : insertMap.entrySet()) {
+                String insertSection = e.getKey();
+                Map<String, Object> insertSectionValueMap = (Map<String, Object>) e.getValue();
+                if (insertSectionValueMap.isEmpty()) {
+                    continue;
+                }
+                if (line.startsWith(String.format("[%s]", insertSection))) {
+                    for (Map.Entry<String, Object> e2 : insertSectionValueMap.entrySet()) {
+                        fixLineBuffer.add(String.format("%s=%s", e2.getKey(), e2.getValue()));
+                    }
+                }
+            }
+        }
+
+        try {
+            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "SJIS"));
+            for (String line : fixLineBuffer) {
+                bw.write(line);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            return;
+        } finally {
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     
     /**
      * genConnText<br>
@@ -1370,6 +1391,21 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
             ObjectInputStream in = new ObjectInputStream(byteIn);
             return (Map<String, Category>) in.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> targetMapCopyStrObj(Map<String, Object> obj) {
+        try {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(byteOut);
+            out.writeObject(obj);
+            ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+            ObjectInputStream in = new ObjectInputStream(byteIn);
+            return (Map<String, Object>) in.readObject();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
