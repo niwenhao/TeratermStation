@@ -1175,7 +1175,8 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 rwLineBuffer.add(line);
             }
         }
-        // そして既存行になかった定義の追記
+        // そして既存行になかった定義の追記(セクションあり)
+        Map<String, Object> addMap = targetMapCopyStrObj(insertMap);
         List<String> fixLineBuffer = new ArrayList<String>();
         for (String line : rwLineBuffer) {
             fixLineBuffer.add(line);
@@ -1183,16 +1184,29 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 String insertSection = e.getKey();
                 Map<String, Object> insertSectionValueMap = (Map<String, Object>) e.getValue();
                 if (insertSectionValueMap.isEmpty()) {
+                    addMap.remove(insertSection);
                     continue;
                 }
                 if (line.startsWith(String.format("[%s]", insertSection))) {
                     for (Map.Entry<String, Object> e2 : insertSectionValueMap.entrySet()) {
                         fixLineBuffer.add(String.format("%s=%s", e2.getKey(), e2.getValue()));
                     }
+                    addMap.remove(insertSection);
                 }
             }
         }
-
+        // そして既存行になかった定義の追記(セクションも追加)
+        for (Map.Entry<String, Object> e : addMap.entrySet()) {
+            String addSection = e.getKey();
+            Map<String, Object> addSectionValueMap = (Map<String, Object>) e.getValue();
+            if (addSectionValueMap.isEmpty()) {
+                continue;
+            }
+            fixLineBuffer.add(String.format("[%s]", addSection));
+            for (Map.Entry<String, Object> e2 : addSectionValueMap.entrySet()) {
+                fixLineBuffer.add(String.format("%s=%s", e2.getKey(), e2.getValue()));
+            }
+        }
         try {
             bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "SJIS"));
             for (String line : fixLineBuffer) {
