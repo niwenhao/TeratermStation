@@ -1099,7 +1099,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
     }
     
     @SuppressWarnings("unchecked")
-    private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap) {
+    private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap, StrSubstitutor sub) throws Exception {
         Map<String, Object> insertMap = targetMapCopyStrObj(rewriteMap);
 
         File file = new File(iniFile);
@@ -1117,19 +1117,14 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 lineBuffer.add(line);
             }
         } catch (IOException e) {
-            return;
+            throw e;
         } finally {
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            br.close();
         }
         // まずは既存行の書き換え
         String section = null;
         boolean isSectionMode = false;
         String key = null;
-        String value = null;
         for (String line : lineBuffer) {
             if (line.isEmpty() || line.startsWith(";")) {
                 rwLineBuffer.add(line);
@@ -1149,8 +1144,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 if (e.getValue() instanceof String) {
                     // セクション配下ではない
                     if (key.equals(e.getKey()) && !isSectionMode) {
-                        value = (String) e.getValue();
-                        rwLineBuffer.add(String.format("%s=%s", key, value));
+                        rwLineBuffer.add(String.format("%s=%s", key, sub.replace(String.valueOf(e.getValue()))));
                         insertMap.remove(e.getKey());
                         isReplace = true;
                         break;
@@ -1161,8 +1155,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                         Map<String, Object> sectionValueMap = (Map<String, Object>) e.getValue();
                         for (Map.Entry<String, Object> e2 : sectionValueMap.entrySet()) {
                             if (key.equals(e2.getKey())) {
-                                value = (String) e2.getValue();
-                                rwLineBuffer.add(String.format("%s=%s", key, value));
+                                rwLineBuffer.add(String.format("%s=%s", key, sub.replace(String.valueOf(e2.getValue()))));
                                 ((Map<String, Object>) insertMap.get(e.getKey())).remove(e2.getKey());
                                 isReplace = true;
                                 break;
@@ -1189,7 +1182,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 }
                 if (line.startsWith(String.format("[%s]", insertSection))) {
                     for (Map.Entry<String, Object> e2 : insertSectionValueMap.entrySet()) {
-                        fixLineBuffer.add(String.format("%s=%s", e2.getKey(), e2.getValue()));
+                        fixLineBuffer.add(String.format("%s=%s", e2.getKey(), sub.replace(String.valueOf(e2.getValue()))));
                     }
                     addMap.remove(insertSection);
                 }
@@ -1204,7 +1197,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             }
             fixLineBuffer.add(String.format("[%s]", addSection));
             for (Map.Entry<String, Object> e2 : addSectionValueMap.entrySet()) {
-                fixLineBuffer.add(String.format("%s=%s", e2.getKey(), e2.getValue()));
+                fixLineBuffer.add(String.format("%s=%s", e2.getKey(), sub.replace(String.valueOf(e2.getValue()))));
             }
         }
         try {
@@ -1214,13 +1207,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 bw.newLine();
             }
         } catch (IOException e) {
-            return;
+            throw e;
         } finally {
-            try {
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            bw.close();
         }
     }
     
@@ -1264,7 +1253,6 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 workDir = workDirFile.getCanonicalPath();
             }
             String iniFile = iniDir + "\\" + node.getIniFile();
-            rewriteIniFile(iniFile, node.getInirewrite());
 
             String seqNo = String.format("%03d. ", idx);
             // ---------- もろもろ情報を取得 ここまで ----------
@@ -1281,6 +1269,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             valuesMap.put("workdir", workDir);
 
             StrSubstitutor sub = new StrSubstitutor(valuesMap);
+            rewriteIniFile(iniFile, node.getInirewrite(), sub);
 
             String connect = sub.replace(this.tab.getConnect());
 
