@@ -1100,12 +1100,14 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
     
     @SuppressWarnings("unchecked")
     private void rewriteIniFile(String iniFile, Map<String, Object> rewriteMap, StrSubstitutor sub) throws Exception {
-        Map<String, Object> insertMap = targetMapCopyStrObj(rewriteMap);
-
+        if (rewriteMap == null || rewriteMap.isEmpty()) {
+            return;
+        }
         File file = new File(iniFile);
         if (!file.exists() || file.isDirectory()) {
             return;
         }
+        Map<String, Object> insertMap = targetMapCopyStrObj(rewriteMap);
         List<String> lineBuffer = new ArrayList<String>();
         List<String> rwLineBuffer = new ArrayList<String>();
         BufferedReader br = null;
@@ -1141,15 +1143,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             boolean isReplace = false;
             for (Map.Entry<String, Object> e : rewriteMap.entrySet()) {
                 // System.out.println(e.getKey() + " : " + e.getValue());
-                if (e.getValue() instanceof String) {
-                    // セクション配下ではない
-                    if (key.equals(e.getKey()) && !isSectionMode) {
-                        rwLineBuffer.add(String.format("%s=%s", key, sub.replace(String.valueOf(e.getValue()))));
-                        insertMap.remove(e.getKey());
-                        isReplace = true;
-                        break;
-                    }
-                } else if (e.getValue() instanceof Map) {
+                if (e.getValue() instanceof Map) {
                     // セクション配下
                     if (section.equals(e.getKey()) && isSectionMode) {
                         Map<String, Object> sectionValueMap = (Map<String, Object>) e.getValue();
@@ -1175,29 +1169,34 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             fixLineBuffer.add(line);
             for (Map.Entry<String, Object> e : insertMap.entrySet()) {
                 String insertSection = e.getKey();
-                Map<String, Object> insertSectionValueMap = (Map<String, Object>) e.getValue();
-                if (insertSectionValueMap.isEmpty()) {
-                    addMap.remove(insertSection);
-                    continue;
-                }
-                if (line.startsWith(String.format("[%s]", insertSection))) {
-                    for (Map.Entry<String, Object> e2 : insertSectionValueMap.entrySet()) {
-                        fixLineBuffer.add(String.format("%s=%s", e2.getKey(), sub.replace(String.valueOf(e2.getValue()))));
+                if (e.getValue() instanceof Map) {
+                    Map<String, Object> insertSectionValueMap = (Map<String, Object>) e.getValue();
+                    if (insertSectionValueMap.isEmpty()) {
+                        addMap.remove(insertSection);
+                        continue;
                     }
-                    addMap.remove(insertSection);
+                    if (line.startsWith(String.format("[%s]", insertSection))) {
+                        for (Map.Entry<String, Object> e2 : insertSectionValueMap.entrySet()) {
+                            fixLineBuffer.add(
+                                    String.format("%s=%s", e2.getKey(), sub.replace(String.valueOf(e2.getValue()))));
+                        }
+                        addMap.remove(insertSection);
+                    }
                 }
             }
         }
         // そして既存行になかった定義の追記(セクションも追加)
         for (Map.Entry<String, Object> e : addMap.entrySet()) {
             String addSection = e.getKey();
-            Map<String, Object> addSectionValueMap = (Map<String, Object>) e.getValue();
-            if (addSectionValueMap.isEmpty()) {
-                continue;
-            }
-            fixLineBuffer.add(String.format("[%s]", addSection));
-            for (Map.Entry<String, Object> e2 : addSectionValueMap.entrySet()) {
-                fixLineBuffer.add(String.format("%s=%s", e2.getKey(), sub.replace(String.valueOf(e2.getValue()))));
+            if (e.getValue() instanceof Map) {
+                Map<String, Object> addSectionValueMap = (Map<String, Object>) e.getValue();
+                if (addSectionValueMap.isEmpty()) {
+                    continue;
+                }
+                fixLineBuffer.add(String.format("[%s]", addSection));
+                for (Map.Entry<String, Object> e2 : addSectionValueMap.entrySet()) {
+                    fixLineBuffer.add(String.format("%s=%s", e2.getKey(), sub.replace(String.valueOf(e2.getValue()))));
+                }
             }
         }
         try {
