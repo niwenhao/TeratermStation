@@ -23,6 +23,7 @@ public class Category implements Serializable {
     private String procedure;
     private Map<String, String> variable;
     private Map<Integer, Login> loginMap;
+    private Map<String, Object> inirewrite;
     private Tab tab;
 
     public Category() {
@@ -95,8 +96,11 @@ public class Category implements Serializable {
     }
 
     public Map<String, Object> getInirewrite() {
+        if (this.inirewrite != null && !this.inirewrite.isEmpty()) {
+            return this.inirewrite;
+        }
         return this.tab.getInirewrite();
-	}
+    }
 
     @SuppressWarnings("unchecked")
     public void setLoginMap(List<Map<String, Object>> login) {
@@ -113,6 +117,10 @@ public class Category implements Serializable {
             l.setVariable((Map<String, String>) map.get("variable"));
             this.loginMap.put(l.getIndex(), l);
         }
+    }
+
+    public void setInirewrite(Map<String, Object> inirewrite) {
+        this.inirewrite = inirewrite;
     }
 
     public void setTab(Tab tab) {

@@ -33,7 +33,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     private int depthCnt;
     private Map<String, Tab> tabMap;
     private Map<String, List<String>> orderListMap;
-    
+
     private StringBuilder fmtNgMsgBuilder;
 
     /**
@@ -188,6 +188,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     category.setProcedure(categoryIni.getProcedure());
                     category.setVariable(categoryIni.getVariable());
                     category.setLoginMap(categoryIni.getLogin());
+                    category.setInirewrite(categoryIni.getInirewrite());
                 } else if (fileName.endsWith(".yaml")) {
                     // ========== SERVER.YAML ========== //
                     System.out.format("サーバ定義（グループ所属なし）: %s\n", file);
@@ -206,6 +207,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     node.setProcedure(serverIni.getProcedure());
                     node.setVariable(serverIni.getVariable());
                     node.setLoginMap(serverIni.getLogin());
+                    node.setInirewrite(serverIni.getInirewrite());
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     node.setCategory(category);
@@ -230,6 +232,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     group.setProcedure(groupIni.getProcedure());
                     group.setVariable(groupIni.getVariable());
                     group.setLoginMap(groupIni.getLogin());
+                    group.setInirewrite(groupIni.getInirewrite());
                 } else if (fileName.endsWith(".yaml")) {
                     // ========== SERVER.YAML ========== //
                     System.out.format("サーバ定義: %s\n", file);
@@ -248,6 +251,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     node.setProcedure(serverIni.getProcedure());
                     node.setVariable(serverIni.getVariable());
                     node.setLoginMap(serverIni.getLogin());
+                    node.setInirewrite(serverIni.getInirewrite());
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());
                     Category category = tab.getCategory(filePath.getName(2 + this.depthCnt).toString());
                     TargetNode group = category.getChild(filePath.getName(3 + this.depthCnt).toString());

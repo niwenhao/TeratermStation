@@ -70,6 +70,11 @@ public class ServerIni {
      */
     private List<Map<String, Object>> login;
 
+    /**
+     * INIファイルの中味を書き換える情報（任意）
+     */
+    private Map<String, Object> inirewrite;
+
     public String getId() {
         return id;
     }
@@ -124,6 +129,14 @@ public class ServerIni {
 
     public void setLogin(List<Map<String, Object>> login) {
         this.login = login;
+    }
+
+    public Map<String, Object> getInirewrite() {
+        return inirewrite;
+    }
+
+    public void setInirewrite(Map<String, Object> inirewrite) {
+        this.inirewrite = inirewrite;
     }
 
     @Override

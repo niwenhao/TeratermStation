@@ -41,6 +41,7 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
     private String procedure;
     private Map<String, String> variable;
     private Map<Integer, Login> loginMap;
+    private Map<String, Object> inirewrite;
     // ========== 実データここまで ========== //
     private int loginUserIdx = 1;
 
@@ -239,12 +240,19 @@ public class TargetNode implements Comparable<TargetNode>, PropertyChangeListene
         }
     }
 
+    public void setInirewrite(Map<String, Object> inirewrite) {
+        this.inirewrite = inirewrite;
+    }
+
     public Map<String, Object> getInirewrite() {
+        if (this.inirewrite != null && !this.inirewrite.isEmpty()) {
+            return this.inirewrite;
+        }
         if (this.category != null) {
             return this.category.getInirewrite();
         }
-        return null;
-	}
+        return getParent().getInirewrite();
+    }
 
     public boolean isParent() {
         return this.ipAddr == null;
