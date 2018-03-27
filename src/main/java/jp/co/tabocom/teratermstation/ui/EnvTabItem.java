@@ -310,6 +310,13 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             }
         });
 
+        if (this.authFlg) {
+            for (Map<String, Object> optionInputs : this.tab.getAuth().getOptionInputs()) {
+                Text txt = new Text(authGrp, SWT.BORDER);
+                txt.setMessage((String)optionInputs.get("message"));
+            }
+        }
+        
         // ---------- 認証記憶ボタン ----------
         idPwdMemoryBtn = new Button(authGrp, SWT.PUSH);
         idPwdMemoryBtn.setText("記憶");

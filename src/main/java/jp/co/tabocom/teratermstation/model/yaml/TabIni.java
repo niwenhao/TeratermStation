@@ -1,5 +1,6 @@
 package jp.co.tabocom.teratermstation.model.yaml;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -204,6 +205,17 @@ public class TabIni {
             return this.auth.get("check").toString();
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getAuthOptionInputs() {
+        if (this.auth == null) {
+            return null;
+        }
+        if (this.auth.containsKey("optionInputs")) {
+            return (List<Map<String, Object>>) this.auth.get("optionInputs");
+        }
+        return new ArrayList<Map<String, Object>>();
     }
 
     public Map<String, Object> getInirewrite() {

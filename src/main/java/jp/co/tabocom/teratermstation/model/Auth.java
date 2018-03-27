@@ -1,6 +1,8 @@
 package jp.co.tabocom.teratermstation.model;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -33,6 +35,11 @@ public class Auth implements Serializable {
      * 認証チェックのためのttlのやり取り
      */
     private String check;
+
+    /**
+     * 認証チェックのためのttlのやり取り
+     */
+    private List<Map<String, Object>> optionInputs;
 
     public String getTitle() {
         return title;
@@ -72,6 +79,14 @@ public class Auth implements Serializable {
 
     public void setCheck(String check) {
         this.check = check;
+    }
+
+    public List<Map<String, Object>> getOptionInputs() {
+        return optionInputs;
+    }
+
+    public void setOptionInputs(List<Map<String, Object>> optionInputs) {
+        this.optionInputs = optionInputs;
     }
 
 }
