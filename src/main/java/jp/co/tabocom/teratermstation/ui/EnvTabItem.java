@@ -130,6 +130,8 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
     private boolean memoryPwdFlg;
     private boolean pwdAutoClearFlg;
     private String pwdGroup;
+    private List<Map<String, Object>> optionInputs;
+    private Map<String, Text> optionInputTextMap;
     private String rootDir;
 
     private Tab tab;
@@ -210,9 +212,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             this.memoryPwdFlg = this.tab.getAuth().isMemory();
             this.pwdAutoClearFlg = this.tab.getAuth().isAutoclear();
             this.pwdGroup = this.tab.getAuth().getGroup();
+            this.optionInputs = this.tab.getAuth().getOptionInputs();
         } else {
-            this.authTitle = "認証情報";
+            this.authTitle = "認証情報"; // デフォルト表示
+            this.optionInputs = new ArrayList<Map<String, Object>>(); // サイズ0で作っておく
         }
+        this.optionInputTextMap = new HashMap<String, Text>();
 
         if (this.tab.getIconPath() != null && !this.tab.getIconPath().isEmpty()) {
             try {
@@ -235,7 +240,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
         // ==================== 認証設定グループ ====================
         Group authGrp = new Group(composite, SWT.NONE);
-        GridLayout authGrpLt = new GridLayout(5, false);
+        GridLayout authGrpLt = new GridLayout(7, false);
         authGrpLt.marginWidth = 10;
         authGrpLt.horizontalSpacing = 10;
         authGrp.setLayout(authGrpLt);
@@ -251,7 +256,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
         // ---------- ユーザーID ----------
         usrTxt = new Text(authGrp, SWT.BORDER);
-        usrTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridData usrTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        usrTxtGrDt.horizontalSpan = 2;
+        usrTxt.setLayoutData(usrTxtGrDt);
         usrTxt.setMessage("ユーザーID");
         usrTxt.setEnabled(this.authFlg);
         if (this.memoryPwdFlg) {
@@ -289,7 +296,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
         // ---------- パスワード ----------
         pwdTxt = new Text(authGrp, SWT.BORDER);
-        pwdTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridData pwdTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        pwdTxtGrDt.horizontalSpan = 2;
+        pwdTxt.setLayoutData(pwdTxtGrDt);
         pwdTxt.setEchoChar('*');
         pwdTxt.setMessage("パスワード");
         pwdTxt.setEnabled(this.authFlg);
@@ -309,16 +318,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             public void focusLost(FocusEvent arg0) {
             }
         });
-
-        if (this.authFlg) {
-            for (Map<String, Object> optionInputs : this.tab.getAuth().getOptionInputs()) {
-                Text txt = new Text(authGrp, SWT.BORDER);
-                txt.setMessage((String)optionInputs.get("message"));
-            }
-        }
         
         // ---------- 認証記憶ボタン ----------
         idPwdMemoryBtn = new Button(authGrp, SWT.PUSH);
+        GridData idPwdMemoryBtnGrDt = new GridData(GridData.FILL_VERTICAL);
+        idPwdMemoryBtnGrDt.verticalSpan = this.optionInputs.size() + 1;
+        idPwdMemoryBtn.setLayoutData(idPwdMemoryBtnGrDt);
         idPwdMemoryBtn.setText("記憶");
         idPwdMemoryBtn.setEnabled(false); // 初期状態では使えなくしておく
         idPwdMemoryBtn.setToolTipText("認証情報を記憶します。");
@@ -326,6 +331,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 ps.setValue(PreferenceConstants.AUTH_USER_PWD + pwdGroup, String.format("%s/%s", usrTxt.getText(), pwdTxt.getText()));
+                for (String name : optionInputTextMap.keySet()) {
+                    ps.setValue(PreferenceConstants.AUTH_OPTION + pwdGroup + "_" + name, optionInputTextMap.get(name).getText());
+                }
                 try {
                     ps.save();
                     MessageDialog.openInformation(getShell(), "認証情報", "認証情報を記憶しました。");
@@ -342,6 +350,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         // ---------- 認証チェックボタン ----------
         authCheckBtn = new Button(authGrp, SWT.PUSH);
         authCheckBtn.setImage(new Image(getDisplay(), Main.class.getClassLoader().getResourceAsStream("check_icon.png")));
+        GridData authCheckBtnGrDt = new GridData(GridData.FILL_VERTICAL);
+        authCheckBtnGrDt.verticalSpan = this.optionInputs.size() + 1;
+        authCheckBtn.setLayoutData(authCheckBtnGrDt);
         authCheckBtn.setText("認証チェック");
         authCheckBtn.setEnabled(false);
         authCheckBtn.addSelectionListener(new SelectionListener() {
@@ -354,6 +365,25 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             public void widgetDefaultSelected(SelectionEvent event) {
             }
         });
+
+        // 認証オプション入力エリア
+        for (Map<String, Object> optionInputs : this.optionInputs) {
+            Label lbl = new Label(authGrp, SWT.NONE);
+            lbl.setText(optionInputs.get("label").toString() + ":");
+            Text txt = new Text(authGrp, SWT.BORDER);
+            GridData txtGrDt = new GridData(GridData.FILL_HORIZONTAL);
+            txtGrDt.horizontalSpan = 4;
+            txt.setLayoutData(txtGrDt);
+            if (optionInputs.containsKey("message")) {
+                txt.setMessage(optionInputs.get("message").toString());
+            }
+            String initData = ps.getString(PreferenceConstants.AUTH_OPTION + this.pwdGroup + "_" + optionInputs.get("name").toString());
+            if (initData != null && !initData.isEmpty()) {
+                txt.setText(initData);
+            }
+            // Map保持
+            this.optionInputTextMap.put(optionInputs.get("name").toString(), txt);
+        }
 
         // ---------- サーバフィルタリング ----------
         filterTxt = new Text(composite, SWT.BORDER);
@@ -888,6 +918,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 valuesMap.put("inifile", iniFile);
                 valuesMap.put("logdir", logDir);
                 valuesMap.put("workdir", workDir);
+                // 認証オプションの値
+                for (Map<String, Object> optionInputs : this.optionInputs) {
+                    String name = optionInputs.get("name").toString();
+                    String value = optionInputTextMap.get(name).getText();
+                    valuesMap.put(name, value);
+                }
 
                 StrSubstitutor sub = new StrSubstitutor(valuesMap);
                 String NEW_LINE = System.getProperty("line.separator");
@@ -1277,6 +1313,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             valuesMap.put("inifile", iniFile);
             valuesMap.put("logdir", logDir);
             valuesMap.put("workdir", workDir);
+            // 認証オプションの値
+            for (Map<String, Object> optionInputs : this.optionInputs) {
+                String name = optionInputs.get("name").toString();
+                String value = optionInputTextMap.get(name).getText();
+                valuesMap.put(name, value);
+            }
 
             StrSubstitutor sub = new StrSubstitutor(valuesMap);
             rewriteIniFile(iniFile, node.getInirewrite(), sub);
