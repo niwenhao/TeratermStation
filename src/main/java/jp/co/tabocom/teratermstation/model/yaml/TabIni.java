@@ -156,6 +156,16 @@ public class TabIni {
         this.login = login;
     }
 
+    public String getAuthTitle() {
+        if (this.auth == null) {
+            return "認証情報";
+        }
+        if (this.auth.containsKey("title")) {
+            return this.auth.get("title").toString();
+        }
+        return "認証情報";
+    }
+   
     public boolean isAuthMemory() {
         if (this.auth == null) {
             return false;

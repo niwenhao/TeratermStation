@@ -152,6 +152,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     Auth auth = null;
                     if (tabIni.getAuth() != null) {
                         auth = new Auth();
+                        auth.setTitle(tabIni.getAuthTitle());
                         auth.setMemory(tabIni.isAuthMemory());
                         auth.setAutoclear(tabIni.isAuthAutoclear());
                         auth.setGroup(tabIni.getAuthGroup());

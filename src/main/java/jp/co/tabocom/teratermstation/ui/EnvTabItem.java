@@ -126,6 +126,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
     private PropertyChangeSupport support = new PropertyChangeSupport(this);
     private boolean authInputStatus;
     private boolean authFlg;
+    private String authTitle;
     private boolean memoryPwdFlg;
     private boolean pwdAutoClearFlg;
     private String pwdGroup;
@@ -205,9 +206,12 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         this.categoryMap = targetMapCopy(this.defaultCategoryMap);
         if (this.tab.getAuth() != null) {
             this.authFlg = true;
+            this.authTitle = this.tab.getAuth().getTitle();
             this.memoryPwdFlg = this.tab.getAuth().isMemory();
             this.pwdAutoClearFlg = this.tab.getAuth().isAutoclear();
             this.pwdGroup = this.tab.getAuth().getGroup();
+        } else {
+            this.authTitle = "認証情報";
         }
 
         if (this.tab.getIconPath() != null && !this.tab.getIconPath().isEmpty()) {
@@ -238,7 +242,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         GridData authGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
         authGrpGrDt.horizontalSpan = this.categoryMap.size();
         authGrp.setLayoutData(authGrpGrDt);
-        authGrp.setText("認証情報");
+        authGrp.setText(this.authTitle);
         authGrp.setEnabled(this.authFlg);
 
         // 保存されているProxy接続情報を取得（開発用でのみ使用）

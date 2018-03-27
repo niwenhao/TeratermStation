@@ -14,6 +14,10 @@ public class Auth implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 認証グループのタイトル
+     */
+    private String title;
+    /**
      * 認証情報の記憶を可能とするか否か
      */
     private boolean memory;
@@ -29,6 +33,14 @@ public class Auth implements Serializable {
      * 認証チェックのためのttlのやり取り
      */
     private String check;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public boolean isMemory() {
         return memory;
