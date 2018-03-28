@@ -152,10 +152,12 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
                     Auth auth = null;
                     if (tabIni.getAuth() != null) {
                         auth = new Auth();
+                        auth.setTitle(tabIni.getAuthTitle());
                         auth.setMemory(tabIni.isAuthMemory());
                         auth.setAutoclear(tabIni.isAuthAutoclear());
                         auth.setGroup(tabIni.getAuthGroup());
                         auth.setCheck(tabIni.getAuthCheck());
+                        auth.setOptionInputs(tabIni.getAuthOptionInputs());
                     }
 
                     Tab tab = this.tabMap.get(filePath.getName(1 + this.depthCnt).toString());

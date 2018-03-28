@@ -1,5 +1,6 @@
 package jp.co.tabocom.teratermstation.model.yaml;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -156,6 +157,16 @@ public class TabIni {
         this.login = login;
     }
 
+    public String getAuthTitle() {
+        if (this.auth == null) {
+            return "認証情報";
+        }
+        if (this.auth.containsKey("title")) {
+            return this.auth.get("title").toString();
+        }
+        return "認証情報";
+    }
+   
     public boolean isAuthMemory() {
         if (this.auth == null) {
             return false;
@@ -196,6 +207,17 @@ public class TabIni {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getAuthOptionInputs() {
+        if (this.auth == null) {
+            return null;
+        }
+        if (this.auth.containsKey("optionInputs")) {
+            return (List<Map<String, Object>>) this.auth.get("optionInputs");
+        }
+        return new ArrayList<Map<String, Object>>();
+    }
+
     public Map<String, Object> getInirewrite() {
 		return inirewrite;
 	}
@@ -209,6 +231,19 @@ public class TabIni {
         if (this.connect == null || this.connect.isEmpty()) {
             builder.append("- connect: がありません。");
         }
+        // 認証オプションの中身チェック
+        List<Map<String, Object>> optionInputs = getAuthOptionInputs();
+        if (optionInputs != null) {
+            for (Map<String, Object> optionInput : optionInputs) {
+                if (!optionInput.containsKey("label")) {
+                    builder.append("- optionInputs.label: がありません。");
+                }
+                if (!optionInput.containsKey("name")) {
+                    builder.append("- optionInputs.name: がありません。");
+                }
+            }
+        }
+
         if (builder.length() > 0) {
             return builder.toString();
         }
@@ -218,14 +253,15 @@ public class TabIni {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("connect        : \n%s\n", this.connect));
-        builder.append(String.format("inifile        : %s\n", this.inifile));
-        builder.append(String.format("login          : %s\n", this.login));
-        builder.append(String.format("auth           : %s\n", this.auth == null ? "false" : "true"));
-        builder.append(String.format("auth_memory    : %s\n", isAuthMemory()));
-        builder.append(String.format("auth_autoclear : %s\n", isAuthAutoclear()));
-        builder.append(String.format("auth_group     : %s\n", getAuthGroup()));
-        builder.append(String.format("auth_check     : \n%s", getAuthCheck()));
+        builder.append(String.format("connect           : \n%s\n", this.connect));
+        builder.append(String.format("inifile           : %s\n", this.inifile));
+        builder.append(String.format("login             : %s\n", this.login));
+        builder.append(String.format("auth              : %s\n", this.auth == null ? "false" : "true"));
+        builder.append(String.format("auth_memory       : %s\n", isAuthMemory()));
+        builder.append(String.format("auth_autoclear    : %s\n", isAuthAutoclear()));
+        builder.append(String.format("auth_group        : %s\n", getAuthGroup()));
+        builder.append(String.format("auth_check        : \n%s\n", getAuthCheck()));
+        builder.append(String.format("auth_optionInputs : \n%s", getAuthOptionInputs()));
         return builder.toString();
     }
 
