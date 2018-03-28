@@ -98,6 +98,7 @@ public class Main implements PropertyChangeListener, WindowProc {
     private String authPwdCache;
     private String authUsrGroup;
     private String authPwdGroup;
+    private Map<String, Map<String, String>> optionInputsCache;
 
     private HDEVNOTIFY hDevNotify;
     private HWND hWnd;
@@ -327,6 +328,8 @@ public class Main implements PropertyChangeListener, WindowProc {
         this.preferenceStore.setDefault(PreferenceConstants.WORK_DIR, "work");
         this.preferenceStore.setDefault(PreferenceConstants.LOG_DIR, "log");
         this.preferenceStore.setDefault(PreferenceConstants.INIFILE_DIR, "ini");
+        
+        this.optionInputsCache = new HashMap<String, Map<String, String>>();
     }
 
     private void createPart() {
@@ -482,7 +485,7 @@ public class Main implements PropertyChangeListener, WindowProc {
                 TabFolder folder = (TabFolder) event.getSource();
                 EnvTabItem tabItem = (EnvTabItem) folder.getItem(folder.getSelectionIndex());
                 tabItem.propertyChangeUpdate();
-                tabItem.setAuthUsrPwdText(authUsrGroup, authUsrCache, authPwdGroup, authPwdCache);
+                tabItem.setAuthUsrPwdText(authUsrGroup, authUsrCache, authPwdGroup, authPwdCache, optionInputsCache);
             }
         });
 
@@ -669,6 +672,19 @@ public class Main implements PropertyChangeListener, WindowProc {
                 this.authPwdCache = value.split("/")[1];
             } else {
                 this.authPwdCache = "";
+            }
+        } else if ("optionInputs".equals(event.getPropertyName())) {
+            String oldValue = (String) event.getOldValue();
+            String value = (String) event.getNewValue();
+            String group = oldValue.split("/")[0];
+            String name = oldValue.split("/")[1];
+            if (this.optionInputsCache.containsKey(group)) {
+                Map<String, String> inputs = this.optionInputsCache.get(group);
+                inputs.put(name, value);
+            } else {
+                Map<String, String> inputs = new HashMap<String, String>();
+                inputs.put(name, value);
+                this.optionInputsCache.put(group, inputs);
             }
         }
     }

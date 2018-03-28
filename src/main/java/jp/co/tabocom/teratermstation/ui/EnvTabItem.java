@@ -381,6 +381,13 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             if (initData != null && !initData.isEmpty()) {
                 txt.setText(initData);
             }
+            // リスナー
+            txt.addModifyListener(new ModifyListener() {
+                public void modifyText(ModifyEvent e) {
+                    authInputChange();
+                    support.firePropertyChange("optionInputs", tab.getAuth().getGroup() + "/" + optionInputs.get("name"), txt.getText());
+                }
+            });
             // Map保持
             this.optionInputTextMap.put(optionInputs.get("name").toString(), txt);
         }
@@ -1696,7 +1703,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
     }
 
-    public void setAuthUsrPwdText(String usrGrp, String usr, String pwdGrp, String pwd) {
+    public void setAuthUsrPwdText(String usrGrp, String usr, String pwdGrp, String pwd, Map<String, Map<String, String>> optionInputs) {
         if (usrGrp != null && usr != null) {
             if (this.tab.getAuth() != null) {
                 if (usrGrp.equals(this.tab.getAuth().getGroup())) {
@@ -1708,6 +1715,17 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             if (this.tab.getAuth() != null) {
                 if (pwdGrp.equals(this.tab.getAuth().getGroup())) {
                     this.pwdTxt.setText(pwd);
+                }
+            }
+        }
+        // OptionInputs
+        if (optionInputs.containsKey(this.tab.getAuth().getGroup())) {
+            Map<String, String> inputs = optionInputs.get(this.tab.getAuth().getGroup());
+            for (String key : inputs.keySet()) {
+                String value = inputs.get(key);
+                if (optionInputTextMap.containsKey(key)) {
+                    Text txt = optionInputTextMap.get(key);
+                    txt.setText(value);
                 }
             }
         }
