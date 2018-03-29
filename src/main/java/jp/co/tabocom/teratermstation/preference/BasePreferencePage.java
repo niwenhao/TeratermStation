@@ -215,6 +215,26 @@ public class BasePreferencePage extends PreferencePage {
                     downBtn.setEnabled(true);
                 }
             }
+            @Override
+            public void widgetDefaultSelected(SelectionEvent arg0) {
+                int index = table.getSelectionIndex();
+                TableItem[] items = table.getSelection();
+                boolean chked = viewer.getChecked(items[0].getText());
+                PathDialog pathDialog = new PathDialog(getShell(), items[0].getText());
+                int result = pathDialog.open();
+                if (IDialogConstants.OK_ID != result) {
+                    return;
+                }
+                String path = pathDialog.getDirPath();
+                if (dirList.contains(path)) {
+                    MessageDialog.openError(composite.getShell(), "定義基点ディレクトリ", "すでに設定されているパスです。");
+                    return;
+                }
+                dirList.remove(index);
+                dirList.add(index, path);
+                viewer.refresh();
+                viewer.setChecked(path, chked);
+            }
         });
 
         Button restartBtn = new Button(composite, SWT.NULL);
