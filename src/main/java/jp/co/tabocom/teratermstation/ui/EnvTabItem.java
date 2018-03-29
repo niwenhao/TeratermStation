@@ -1719,13 +1719,15 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             }
         }
         // OptionInputs
-        if (optionInputs.containsKey(this.tab.getAuth().getGroup())) {
-            Map<String, String> inputs = optionInputs.get(this.tab.getAuth().getGroup());
-            for (String key : inputs.keySet()) {
-                String value = inputs.get(key);
-                if (optionInputTextMap.containsKey(key)) {
-                    Text txt = optionInputTextMap.get(key);
-                    txt.setText(value);
+        if (this.authFlg) {
+            if (optionInputs.containsKey(this.tab.getAuth().getGroup())) {
+                Map<String, String> inputs = optionInputs.get(this.tab.getAuth().getGroup());
+                for (String key : inputs.keySet()) {
+                    String value = inputs.get(key);
+                    if (optionInputTextMap.containsKey(key)) {
+                        Text txt = optionInputTextMap.get(key);
+                        txt.setText(value);
+                    }
                 }
             }
         }

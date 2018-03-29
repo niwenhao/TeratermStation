@@ -142,7 +142,7 @@ public class PathPreferencePage extends PreferencePage {
         mkDirBtnGrDt.horizontalSpan = 3;
         mkDirBtnGrDt.horizontalAlignment = SWT.RIGHT;
         mkDirBtn.setLayoutData(mkDirBtnGrDt);
-        mkDirBtn.setText("ディレクトリを作成する");
+        mkDirBtn.setText("設定にあわせてディレクトリを作成する");
         mkDirBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }

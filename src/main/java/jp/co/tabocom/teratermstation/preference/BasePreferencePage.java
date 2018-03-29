@@ -1,5 +1,6 @@
 package jp.co.tabocom.teratermstation.preference;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -199,6 +200,25 @@ public class BasePreferencePage extends PreferencePage {
             }
         });
 
+        final Button explorerBtn = new Button(buttonGrp, SWT.NULL);
+        explorerBtn.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        explorerBtn.setText("開く");
+        explorerBtn.setEnabled(false);
+        explorerBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                TableItem[] items = table.getSelection();
+                Desktop desktop = Desktop.getDesktop();
+                File dirToOpen = null;
+                try {
+                    dirToOpen = new File(items[0].getText());
+                    desktop.open(dirToOpen);
+                } catch (Exception e) {
+                    MessageDialog.openError(composite.getShell(), "定義基点ディレクトリ", "ディレクトリが見つかりません。");
+                }
+            }
+        });
+
         table.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -208,12 +228,34 @@ public class BasePreferencePage extends PreferencePage {
                     rmvBtn.setEnabled(false);
                     upBtn.setEnabled(false);
                     downBtn.setEnabled(false);
+                    explorerBtn.setEnabled(false);
                 } else {
                     chgBtn.setEnabled(true);
                     rmvBtn.setEnabled(true);
                     upBtn.setEnabled(true);
                     downBtn.setEnabled(true);
+                    explorerBtn.setEnabled(true);
                 }
+            }
+            @Override
+            public void widgetDefaultSelected(SelectionEvent arg0) {
+                int index = table.getSelectionIndex();
+                TableItem[] items = table.getSelection();
+                boolean chked = viewer.getChecked(items[0].getText());
+                PathDialog pathDialog = new PathDialog(getShell(), items[0].getText());
+                int result = pathDialog.open();
+                if (IDialogConstants.OK_ID != result) {
+                    return;
+                }
+                String path = pathDialog.getDirPath();
+                if (dirList.contains(path)) {
+                    MessageDialog.openError(composite.getShell(), "定義基点ディレクトリ", "すでに設定されているパスです。");
+                    return;
+                }
+                dirList.remove(index);
+                dirList.add(index, path);
+                viewer.refresh();
+                viewer.setChecked(path, chked);
             }
         });
 

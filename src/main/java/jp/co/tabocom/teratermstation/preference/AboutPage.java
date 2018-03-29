@@ -2,15 +2,21 @@ package jp.co.tabocom.teratermstation.preference;
 
 import jp.co.tabocom.teratermstation.Main;
 
+import java.awt.Desktop;
+import java.net.URI;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 
 public class AboutPage extends PreferencePage {
 
@@ -46,7 +52,7 @@ public class AboutPage extends PreferencePage {
         Label versionValueLbl = new Label(appGrp, SWT.NONE);
         GridData versionValueLblGrDt = new GridData();
         versionValueLbl.setLayoutData(versionValueLblGrDt);
-        versionValueLbl.setText("2.2.0");
+        versionValueLbl.setText("2.2.1");
 
         Label copyrightLbl = new Label(appGrp, SWT.NONE);
         GridData copyrightLblGrDt = new GridData();
@@ -54,11 +60,33 @@ public class AboutPage extends PreferencePage {
         copyrightLbl.setLayoutData(copyrightLblGrDt);
         copyrightLbl.setText("Copyright (C) 2015 - 2018 Tabocom All Rights Reserved.");
 
-        Label urlLbl = new Label(appGrp, SWT.NONE);
+        Link urlLbl = new Link(appGrp, SWT.NONE);
         GridData urlLblGrDt = new GridData();
         urlLblGrDt.horizontalSpan = 2;
         urlLbl.setLayoutData(urlLblGrDt);
-        urlLbl.setText("https://github.com/turbou/TeratermStation");
+        urlLbl.setText("<a>https://github.com/turbou/TeratermStation</a>\r\n- <a>wiki</a>\r\n- <a>releases</a>");
+        urlLbl.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                String url = "https://github.com/turbou/TeratermStation";
+                if (event.text.equals("wiki")) {
+                    url = "https://github.com/turbou/TeratermStation/wiki";
+                } else if (event.text.equals("releases")) {
+                    url = "https://github.com/turbou/TeratermStation/releases";
+                }
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    URI uri = new URI(url);
+                    desktop.browse(uri);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
 
         Composite licenseGrp = new Composite(parent, SWT.NONE);
         GridLayout licenseGrpGrLt = new GridLayout(1, false);
