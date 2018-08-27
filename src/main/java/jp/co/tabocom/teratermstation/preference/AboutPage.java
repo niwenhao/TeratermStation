@@ -52,7 +52,7 @@ public class AboutPage extends PreferencePage {
         Label versionValueLbl = new Label(appGrp, SWT.NONE);
         GridData versionValueLblGrDt = new GridData();
         versionValueLbl.setLayoutData(versionValueLblGrDt);
-        versionValueLbl.setText("2.2.1");
+        versionValueLbl.setText("2.2.2");
 
         Label copyrightLbl = new Label(appGrp, SWT.NONE);
         GridData copyrightLblGrDt = new GridData();
