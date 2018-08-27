@@ -3,6 +3,9 @@ package jp.co.tabocom.teratermstation.preference;
 public class PreferenceConstants {
 
     // サーバツリー基点ディレクトリリスト
+    public static final String CURRENT_PROP_PATH = new String("jp.co.tabocom.teratermstation.currentPropPath");
+
+    // サーバツリー基点ディレクトリリスト
     public static final String TARGET_DIRS = new String("jp.co.tabocom.teratermstation.targetDirs");
 
     // TeraTermマクロexeのフルパス

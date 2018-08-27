@@ -245,9 +245,12 @@ public class Main implements PropertyChangeListener, WindowProc {
             this.preferenceStore = new PreferenceStore(homeDir + "\\teratermstation.properties");
             try {
                 this.preferenceStore.load();
+                this.preferenceStore.setValue(PreferenceConstants.CURRENT_PROP_PATH, homeDir + "\\teratermstation.properties");
             } catch (FileNotFoundException fnfe) {
                 this.preferenceStore = new PreferenceStore("teratermstation.properties");
                 this.preferenceStore.load();
+                File propFile = new File("teratermstation.properties");
+                this.preferenceStore.setValue(PreferenceConstants.CURRENT_PROP_PATH, propFile.getCanonicalPath());
             }
 
             // ROOT_DIRの絶対パスを取得しておく

@@ -33,9 +33,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 public class BasePreferencePage extends PreferencePage {
 
@@ -52,6 +54,44 @@ public class BasePreferencePage extends PreferencePage {
         composite.setLayout(new GridLayout(3, false));
         IPreferenceStore preferenceStore = getPreferenceStore();
 
+        // ========== 現在読み込んでいる設定ファイル(teratermstation.properties)のパス ========== //
+        Composite propPathGrp = new Composite(composite, SWT.NONE);
+        GridLayout propPathGrpLt = new GridLayout(3, false);
+        propPathGrpLt.marginBottom = 15;
+        propPathGrp.setLayout(propPathGrpLt);
+        GridData propPathGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        propPathGrpGrDt.horizontalSpan = 3;
+        propPathGrp.setLayoutData(propPathGrpGrDt);
+
+        new Label(propPathGrp, SWT.LEFT).setText("現在の設定ファイル：");
+        Text propPathTxt = new Text(propPathGrp, SWT.BORDER);
+        propPathTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        propPathTxt.setText(preferenceStore.getString(PreferenceConstants.CURRENT_PROP_PATH));
+        propPathTxt.setEditable(false);
+        Button ttmacroBtn = new Button(propPathGrp, SWT.NULL);
+        ttmacroBtn.setText("フォルダを開く");
+        ttmacroBtn.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent event) {
+            }
+
+            public void widgetSelected(SelectionEvent event) {
+                try {
+                    Runtime runtime = Runtime.getRuntime();
+                    runtime.exec(new String[] { "explorer.exe", "/select," + preferenceStore.getString(PreferenceConstants.CURRENT_PROP_PATH) });
+                } catch (Exception e) {
+                    MessageDialog.openError(composite.getShell(), "現在の設定ファイル", "ディレクトリが見つかりません。");
+                }
+            }
+        });
+
+        new Label(propPathGrp, SWT.LEFT).setText("");
+        Label propPathDesc = new Label(propPathGrp, SWT.LEFT);
+        GridData propPathDescGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        propPathDescGrDt.horizontalSpan = 2;
+        propPathDesc.setLayoutData(propPathDescGrDt);
+        propPathDesc.setText("※ TeratermStationの使用中に設定内容を変更しないでください。");
+
+        // ========== 接続定義テーブル ========== //
         String dirStrs = preferenceStore.getString(PreferenceConstants.TARGET_DIRS);
         List<String> validDirList = new ArrayList<String>();
         Pattern ptn = Pattern.compile("^<([^<>]+)>$", Pattern.DOTALL);
