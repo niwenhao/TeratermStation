@@ -1343,6 +1343,10 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             valuesMap.put("inifile", iniFile);
             valuesMap.put("logdir", logDir);
             valuesMap.put("workdir", workDir);
+            // オプション変数
+            for (Map.Entry<String, String> entry : node.getVariable().entrySet()) {
+                valuesMap.put(entry.getKey(), entry.getValue());
+            }
             // 認証オプションの値
             for (Map<String, Object> optionInputs : this.optionInputs) {
                 String name = optionInputs.get("name").toString();
