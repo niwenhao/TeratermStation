@@ -46,6 +46,7 @@ task copyToLib(type: Copy) {
 }
 
 jar {
+    baseName = 'TeratermStation'
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA' 
     manifest {
         attributes 'Implementation-Title': 'Gradle Quickstart',
