@@ -618,6 +618,18 @@ public class Main implements PropertyChangeListener, WindowProc {
             }
         });
 
+        Composite customBtnGrp = new Composite(executeGrp, SWT.NONE);
+        GridLayout customBtnGrpLt = new GridLayout(1, false);
+        customBtnGrpLt.verticalSpacing = 5;
+        customBtnGrp.setLayout(customBtnGrpLt);
+        GridData customBtnGrpGrDt = new GridData(GridData.FILL_BOTH);
+        customBtnGrpGrDt.horizontalSpan = 1;
+        customBtnGrp.setLayoutData(customBtnGrpGrDt);
+
+        Button teratermAssistBtn = new Button(customBtnGrp, SWT.PUSH);
+        teratermAssistBtn.setLayoutData(new GridData(GridData.FILL_BOTH));
+        teratermAssistBtn.setText("TeraTermAssist");
+
         Logger logger = Logger.getLogger("conntool");
 
         uiUpdate();
