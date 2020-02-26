@@ -50,6 +50,7 @@ public class PathPreferencePage extends PreferencePage {
     private Text workDirTxt;
     private Text logDirTxt;
     private Text iniFileDirTxt;
+    private Text ttassistTxt;
     private List<Text> textList;
 
     public PathPreferencePage() {
@@ -189,6 +190,29 @@ public class PathPreferencePage extends PreferencePage {
             }
         });
 
+        // ========== TeraTermAssistの場所 ========== //
+        new Label(composite, SWT.LEFT).setText("TeraTermAssist.exeのパス：");
+        ttassistTxt = new Text(composite, SWT.BORDER);
+        ttassistTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        ttassistTxt.setText(preferenceStore.getString(PreferenceConstants.TTASSIST_EXE));
+        Button ttassistBtn = new Button(composite, SWT.NULL);
+        ttassistBtn.setText("参照");
+        ttassistBtn.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                FileDialog dialog = new FileDialog(getShell());
+                dialog.setText("TeraTermAssistを指定してください。");
+                dialog.setFilterPath("C:\\Program Files (x86)");
+                dialog.setFilterExtensions(new String[] { "*.exe" });
+                String file = dialog.open();
+                if (file != null) {
+                    ttassistTxt.setText(file);
+                }
+            }
+        });
+
         noDefaultAndApplyButton();
         return composite;
     }
@@ -210,6 +234,9 @@ public class PathPreferencePage extends PreferencePage {
         }
         if (this.iniFileDirTxt != null) {
             ps.setValue(PreferenceConstants.INIFILE_DIR, this.iniFileDirTxt.getText());
+        }
+        if (this.ttassistTxt != null) {
+            ps.setValue(PreferenceConstants.TTASSIST_EXE, this.ttassistTxt.getText());
         }
         return true;
     }

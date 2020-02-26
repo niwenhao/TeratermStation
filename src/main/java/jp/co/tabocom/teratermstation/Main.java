@@ -55,6 +55,7 @@ import jp.co.tabocom.teratermstation.ui.EnvTabItem;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
@@ -629,6 +630,31 @@ public class Main implements PropertyChangeListener, WindowProc {
         Button teratermAssistBtn = new Button(customBtnGrp, SWT.PUSH);
         teratermAssistBtn.setLayoutData(new GridData(GridData.FILL_BOTH));
         teratermAssistBtn.setText("TeraTermAssist");
+        teratermAssistBtn.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                IPreferenceStore ps = getPreferenceStore();
+                String ttassistexe = ps.getString(PreferenceConstants.TTASSIST_EXE);
+                File ttpassistexeFile = new File(ttassistexe);
+                if (!ttpassistexeFile.isAbsolute()) {
+                    try {
+                        ttassistexe = ttpassistexeFile.getCanonicalPath();
+                    } catch (IOException e) {
+                        MessageDialog.openError(shell, "起動エラー", e.getMessage());
+                    }
+                }
+                Runtime runtime = Runtime.getRuntime();
+                try {
+                    runtime.exec(new String[] { ttassistexe });
+                } catch (Exception e) {
+                    MessageDialog.openError(shell, "実行時エラー", e.getMessage());
+                }
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) {
+            }
+        });
 
         Logger logger = Logger.getLogger("conntool");
 
