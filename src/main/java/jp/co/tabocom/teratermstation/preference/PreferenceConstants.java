@@ -40,8 +40,6 @@ public class PreferenceConstants {
     public static final String LOG_DIR = new String("jp.co.tabocom.teratermstation.logDir");
     // TeraTermのINIファイルの置き場所（基本この中のINIファイルを使用します）
     public static final String INIFILE_DIR = new String("jp.co.tabocom.teratermstation.inifileDir");
-    // TeraTermAssistのフルパス
-    public static final String TTASSIST_EXE = new String("jp.co.tabocom.teratermstation.ttassistExe");
 
     // ========== TTLマクロ生成に関する設定 ========== //
     // TTLファイルの出力文字コード
