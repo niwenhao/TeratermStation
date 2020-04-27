@@ -50,6 +50,9 @@ public class PathPreferencePage extends PreferencePage {
     private Text workDirTxt;
     private Text logDirTxt;
     private Text iniFileDirTxt;
+    private Text ttlLogDirPathTxt;
+    private Text ttlLogFileNameTxt;
+    private Text ttlLogopenOptionTxt;
     private List<Text> textList;
 
     public PathPreferencePage() {
@@ -96,7 +99,7 @@ public class PathPreferencePage extends PreferencePage {
         GridData dirGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
         dirGrpGrDt.horizontalSpan = 3;
         dirGrp.setLayoutData(dirGrpGrDt);
-        dirGrp.setText("作業領域");
+        dirGrp.setText("基点ディレクトリ");
 
         this.textList = new ArrayList<Text>();
 
@@ -165,7 +168,7 @@ public class PathPreferencePage extends PreferencePage {
         mkDirBtnGrDt.horizontalSpan = 3;
         mkDirBtnGrDt.horizontalAlignment = SWT.RIGHT;
         mkDirBtn.setLayoutData(mkDirBtnGrDt);
-        mkDirBtn.setText("設定にあわせてディレクトリを作成する");
+        mkDirBtn.setText("設定にあわせて基点ディレクトリを作成する");
         mkDirBtn.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
@@ -189,6 +192,58 @@ public class PathPreferencePage extends PreferencePage {
             }
         });
 
+        Group logOpenGrp = new Group(composite, SWT.NONE);
+        logOpenGrp.setLayout(new GridLayout(3, false));
+        GridData logOpenGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        logOpenGrDt.horizontalSpan = 3;
+        logOpenGrp.setLayoutData(logOpenGrDt);
+        logOpenGrp.setText("ログ出力設定");
+
+        // パスに使用できる変数に関するToolTip
+        StringBuilder varTipBuffer = new StringBuilder();
+        varTipBuffer.append("以下の変数が使用できます。\r\n");
+        varTipBuffer.append("環境変数： COMPUTERNAME, USERNAME, USERDOMAIN\r\n");
+        varTipBuffer.append("日時：yyyy, MM, dd, yyyyMM, yyyyMMdd, HHmm, HHmmss, yyyyMMdd-HHmmss\r\n");
+        varTipBuffer.append("その他：authuser, loginuser, tab, category, group, server");
+
+        // ========== Teratermのログディレクトリ階層 ========== //
+        new Label(logOpenGrp, SWT.LEFT).setText("ログディレクトリ階層：");
+        new Label(logOpenGrp, SWT.LEFT).setText("C\\library\\log\\");
+        ttlLogDirPathTxt = new Text(logOpenGrp, SWT.BORDER);
+        ttlLogDirPathTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        ttlLogDirPathTxt.setText(preferenceStore.getString(PreferenceConstants.LOGDIR_PATH));
+        ttlLogDirPathTxt.setMessage("${yyyyMM}\\${yyyyMMdd}（省略時）");
+        ttlLogDirPathTxt.setToolTipText(varTipBuffer.toString());
+
+        // ========== Teratermのログファイル名 ========== //
+        new Label(logOpenGrp, SWT.LEFT).setText("ログファイル名：");
+        ttlLogFileNameTxt = new Text(logOpenGrp, SWT.BORDER);
+        GridData ttlLogFileNameTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        ttlLogFileNameTxtGrDt.horizontalSpan = 2;
+        ttlLogFileNameTxt.setLayoutData(ttlLogFileNameTxtGrDt);
+        ttlLogFileNameTxt.setText(preferenceStore.getString(PreferenceConstants.LOGFILE_NAME));
+        ttlLogFileNameTxt.setMessage("${yyyyMMdd}-${HHmmss}_${group}_${server}_${COMPUTERNAME}.log（省略時）");
+        ttlLogFileNameTxt.setToolTipText(varTipBuffer.toString());
+
+        // ========== Teratermのlogopenオプション ========== //
+        new Label(logOpenGrp, SWT.LEFT).setText("logopenのオプション：");
+        ttlLogopenOptionTxt = new Text(logOpenGrp, SWT.BORDER);
+        GridData ttlLogopenOptionTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        ttlLogopenOptionTxtGrDt.horizontalSpan = 2;
+        ttlLogopenOptionTxt.setLayoutData(ttlLogopenOptionTxtGrDt);
+        ttlLogopenOptionTxt.setText(preferenceStore.getString(PreferenceConstants.LOGOPEN_OPTION));
+        ttlLogopenOptionTxt.setMessage("省略時は \"0 0 0 0 1\" となります。");
+        new Label(logOpenGrp, SWT.LEFT).setText("");
+        Label ttlLogopenOptionDescLbl = new Label(logOpenGrp, SWT.LEFT);
+        GridData ttlLogopenOptionDescLblGrDt = new GridData(GridData.FILL_HORIZONTAL);
+        ttlLogopenOptionDescLblGrDt.horizontalSpan = 2;
+        ttlLogopenOptionDescLbl.setLayoutData(ttlLogopenOptionDescLblGrDt);
+        StringBuilder builder2 = new StringBuilder();
+        builder2.append("logopen <filename> 0 0 0 0 1 のfilenameの後ろのオプションを指定できます。\r\n");
+        builder2.append("例) \"0 0\", \"0 0 0 1 1\"など。省略した場合は0 0 0 0 1になります。\r\n");
+        builder2.append("詳細はTera Termのマニュアルを見てください。");
+        ttlLogopenOptionDescLbl.setText(builder2.toString());
+
         noDefaultAndApplyButton();
         return composite;
     }
@@ -210,6 +265,15 @@ public class PathPreferencePage extends PreferencePage {
         }
         if (this.iniFileDirTxt != null) {
             ps.setValue(PreferenceConstants.INIFILE_DIR, this.iniFileDirTxt.getText());
+        }
+        if (this.ttlLogDirPathTxt != null) {
+            ps.setValue(PreferenceConstants.LOGDIR_PATH, this.ttlLogDirPathTxt.getText());
+        }
+        if (this.ttlLogFileNameTxt != null) {
+            ps.setValue(PreferenceConstants.LOGFILE_NAME, this.ttlLogFileNameTxt.getText());
+        }
+        if (this.ttlLogopenOptionTxt != null) {
+            ps.setValue(PreferenceConstants.LOGOPEN_OPTION, this.ttlLogopenOptionTxt.getText());
         }
         return true;
     }

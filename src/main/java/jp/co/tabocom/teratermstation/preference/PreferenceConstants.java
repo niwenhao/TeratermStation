@@ -46,6 +46,12 @@ public class PreferenceConstants {
     public static final String TTL_CHARCODE = new String("jp.co.tabocom.teratermstation.ttlCharCode");
     // 認証パスワード伏字文字列
     public static final String TTL_AUTH_PWD_HIDE = new String("jp.co.tabocom.teratermstation.ttlAuthPwdHide");
+
+    // ========== TTLマクロ生成に関する設定 ========== //
+    // ログ階層ディレクトリ
+    public static final String LOGDIR_PATH = new String("jp.co.tabocom.teratermstation.logDirPath");
+    // ログファイル名
+    public static final String LOGFILE_NAME = new String("jp.co.tabocom.teratermstation.logFileName");
     // Teratermのlogopenのオプションについて
     public static final String LOGOPEN_OPTION = new String("jp.co.tabocom.teratermstation.logopenOption");
 
