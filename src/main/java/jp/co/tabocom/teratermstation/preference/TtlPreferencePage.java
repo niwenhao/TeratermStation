@@ -37,7 +37,6 @@ public class TtlPreferencePage extends PreferencePage {
 
     private Text ttlCharCodeTxt;
     private Text ttlAuthPwdHideTxt;
-    private Text ttlLogopenOptionTxt;
 
     public TtlPreferencePage() {
         super("TTL出力設定");
@@ -87,25 +86,6 @@ public class TtlPreferencePage extends PreferencePage {
         builder.append("引数としてパスワードが渡される仕組みになっています。");
         ttlAuthPwdHideTxtDescLbl.setText(builder.toString());
 
-        // ========== Teratermのlogopenオプション ========== //
-        new Label(composite, SWT.LEFT).setText("logopenのオプション：");
-        ttlLogopenOptionTxt = new Text(composite, SWT.BORDER);
-        GridData ttlLogopenOptionTxtGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        ttlLogopenOptionTxtGrDt.horizontalSpan = 2;
-        ttlLogopenOptionTxt.setLayoutData(ttlLogopenOptionTxtGrDt);
-        ttlLogopenOptionTxt.setText(preferenceStore.getString(PreferenceConstants.LOGOPEN_OPTION));
-        ttlLogopenOptionTxt.setMessage("省略時は \"0 0 0 0 1\" となります。");
-        new Label(composite, SWT.LEFT).setText("");
-        Label ttlLogopenOptionDescLbl = new Label(composite, SWT.LEFT);
-        GridData ttlLogopenOptionDescLblGrDt = new GridData(GridData.FILL_HORIZONTAL);
-        ttlLogopenOptionDescLblGrDt.horizontalSpan = 2;
-        ttlLogopenOptionDescLbl.setLayoutData(ttlLogopenOptionDescLblGrDt);
-        StringBuilder builder2 = new StringBuilder();
-        builder2.append("logopen <filename> 0 0 0 0 1 のfilenameの後ろのオプションを指定できます。\r\n");
-        builder2.append("例) \"0 0\", \"0 0 0 1 1\"など。省略した場合は0 0 0 0 1になります。\r\n");
-        builder2.append("詳細はTera Termのマニュアルを見てください。");
-        ttlLogopenOptionDescLbl.setText(builder2.toString());
-
         noDefaultAndApplyButton();
         return composite;
     }
@@ -121,9 +101,6 @@ public class TtlPreferencePage extends PreferencePage {
         }
         if (this.ttlAuthPwdHideTxt != null) {
             ps.setValue(PreferenceConstants.TTL_AUTH_PWD_HIDE, this.ttlAuthPwdHideTxt.getText());
-        }
-        if (this.ttlLogopenOptionTxt != null) {
-            ps.setValue(PreferenceConstants.LOGOPEN_OPTION, this.ttlLogopenOptionTxt.getText());
         }
         return true;
     }

@@ -136,6 +136,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
     private static final int BULK_INTERVAL = 1700;
     private static final int FILE_INTERVAL = 300;
+    public static final String[] EMBEDED_DATE_FORMAT = { "yyyy", "MM", "dd", "yyyyMM", "yyyyMMdd", "HHmm", "HHmmss", "yyyyMMdd-HHmmss"};
+    private static final String DEFAULT_LOGDIR_PATH = "${yyyyMM}\\${yyyyMMdd}";
+    private static final String DEFAULT_LOGFILE_NAME = "${yyyyMMdd}-${HHmmss}_${group}_${server}_${COMPUTERNAME}.log";
 
     private Map<String, CheckboxTreeViewer> treeMap;
     private Map<String, Category> categoryMap;
@@ -1323,6 +1326,9 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             if (!logDirFile.isAbsolute()) {
                 logDir = logDirFile.getCanonicalPath();
             }
+            String logDirPath = ps.getString(PreferenceConstants.LOGDIR_PATH);
+            String logFileName = ps.getString(PreferenceConstants.LOGFILE_NAME);
+
             String workDir = ps.getString(PreferenceConstants.WORK_DIR);
             File workDirFile = new File(workDir);
             if (!workDirFile.isAbsolute()) {
@@ -1385,7 +1391,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 word.append(line.trim() + NEW_LINE);
             }
             word.append("settitle '" + seqNo + svrType + " - " + targetSvr + "'" + NEW_LINE); // タイトルはサーバ種別とサーバ名
-            word.append(genLogOpen(node, logDir));
+            word.append(genLogOpen(node, logDir, logDirPath, logFileName, valuesMap));
             // ここまで
             if (node.getProcedure() != null) {
                 String procedure = sub.replace(node.getProcedure());
@@ -1401,32 +1407,58 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         return word.toString();
     }
 
-    private String genLogOpen(TargetNode node, String logDir) {
+    private String genLogOpen(TargetNode node, String logDir, String logDirPath, String logFileName, Map<String, String> valuesMap) throws IOException {
         // 設定クラスを取得
         IPreferenceStore ps = main.getPreferenceStore();
 
-        // 端末名を取得
-        String pcName = System.getenv("COMPUTERNAME");
+        Map<String, String> valuesNewMap = new TreeMap<String, String>();
+        valuesNewMap.putAll(valuesMap);
 
         // タイムスタンプを取得
         Calendar objCal = Calendar.getInstance();
-        SimpleDateFormat monthFmt = new SimpleDateFormat("yyyyMM");
-        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat timeFmt = new SimpleDateFormat("yyyyMMdd-HHmmss");
-        String month = monthFmt.format(objCal.getTime());
-        String date = dateFmt.format(objCal.getTime());
-        String timestamp = timeFmt.format(objCal.getTime());
+        for (String fmt : EMBEDED_DATE_FORMAT) {
+            valuesNewMap.put(fmt, new SimpleDateFormat(fmt).format(objCal.getTime()));
+        }
+        // Node情報
+        valuesNewMap.put("server", node.getName());
+        if (node.getCategory() == null) {
+            // グループ所属あり
+            valuesNewMap.put("group", node.getParentName());
+            valuesNewMap.put("category", node.getParent().getCategory().getName());
+            valuesNewMap.put("tab", node.getParent().getCategory().getTab().getName());
+        } else {
+            // グループ所属なし
+            valuesNewMap.put("group", "なし");
+            valuesNewMap.put("category", node.getCategory().getName());
+            valuesNewMap.put("tab", node.getCategory().getTab().getName());
+        }
+        // システム環境変数
+        valuesNewMap.put("COMPUTERNAME", System.getenv("COMPUTERNAME"));
+        valuesNewMap.put("USERNAME", System.getenv("USERNAME"));
+        valuesNewMap.put("USERDOMAIN", System.getenv("USERDOMAIN"));
+        System.out.println(valuesNewMap);
 
-        // ログファイルのパスは結局は下のような構成です。
+        StrSubstitutor sub = new StrSubstitutor(valuesNewMap);
+        if (StringUtils.isEmpty(logDirPath)) {
+            logDirPath = DEFAULT_LOGDIR_PATH;
+        }
+        if (StringUtils.isEmpty(logFileName)) {
+            logFileName = DEFAULT_LOGFILE_NAME;
+        }
+        logDirPath = sub.replace(logDirPath);
+        logFileName = sub.replace(logFileName);
+        StringBuilder dirPathBuilder = new StringBuilder(logDir);
+        List<String> dirArray = new ArrayList<String>();
+        for (String dirPath : logDirPath.split("\\\\")) {
+            dirPathBuilder.append("\\");
+            dirPathBuilder.append(dirPath);
+            dirArray.add(dirPathBuilder.toString());
+        }
+        // ログファイルのデフォルトパスは結局は下のような構成です。
         // C:\library\log\201207\20120710\20120710-121212_WebAP_WebAP(A)#1_PTP95049.log
-        String monthDir = logDir + "\\" + month;
-        String dateDir = logDir + "\\" + month + "\\" + date;
-        String[] dirArray = new String[] { logDir, monthDir, dateDir };
 
         // ログファイル
-        String svrType = node.getParentName();
-        String targetSvr = node.getName();
-        String logFile = dateDir + "\\" + timestamp + "_" + svrType + "_" + targetSvr + "_" + pcName + ".log";
+        String logFile = dirPathBuilder.toString() + "\\" + logFileName;
 
         StringBuilder word = new StringBuilder();
         String NEW_LINE = System.getProperty("line.separator");
