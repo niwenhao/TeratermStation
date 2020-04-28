@@ -95,6 +95,29 @@ public class PathPreferencePage extends PreferencePage {
         ttmacroDesc.setLayoutData(ttmacroDescGrDt);
         ttmacroDesc.setText("- Tera Term 4.58以上をサポートします。\r\n- ttermpro.exe　ではなく ttpmacro.exe を指定してください。");
 
+        // ========== TeraTermAssistの場所 ========== //
+        new Label(composite, SWT.LEFT).setText("TeraTermAssist.exeのパス：");
+        ttassistTxt = new Text(composite, SWT.BORDER);
+        ttassistTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        ttassistTxt.setText(preferenceStore.getString(PreferenceConstants.TTASSIST_EXE));
+        Button ttassistBtn = new Button(composite, SWT.NULL);
+        ttassistBtn.setText("参照");
+        ttassistBtn.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                FileDialog dialog = new FileDialog(getShell());
+                dialog.setText("TeraTermAssistを指定してください。");
+                dialog.setFilterPath("C:\\Program Files (x86)");
+                dialog.setFilterExtensions(new String[] { "*.exe" });
+                String file = dialog.open();
+                if (file != null) {
+                    ttassistTxt.setText(file);
+                }
+            }
+        });
+
         Group dirGrp = new Group(composite, SWT.NONE);
         dirGrp.setLayout(new GridLayout(3, false));
         GridData dirGrpGrDt = new GridData(GridData.FILL_HORIZONTAL);
@@ -193,28 +216,6 @@ public class PathPreferencePage extends PreferencePage {
             }
         });
 
-        // ========== TeraTermAssistの場所 ========== //
-        new Label(composite, SWT.LEFT).setText("TeraTermAssist.exeのパス：");
-        ttassistTxt = new Text(composite, SWT.BORDER);
-        ttassistTxt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        ttassistTxt.setText(preferenceStore.getString(PreferenceConstants.TTASSIST_EXE));
-        Button ttassistBtn = new Button(composite, SWT.NULL);
-        ttassistBtn.setText("参照");
-        ttassistBtn.addSelectionListener(new SelectionListener() {
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
-
-            public void widgetSelected(SelectionEvent e) {
-                FileDialog dialog = new FileDialog(getShell());
-                dialog.setText("TeraTermAssistを指定してください。");
-                dialog.setFilterPath("C:\\Program Files (x86)");
-                dialog.setFilterExtensions(new String[] { "*.exe" });
-                String file = dialog.open();
-                if (file != null) {
-                    ttassistTxt.setText(file);
-                }
-            }
-        });
         Group logOpenGrp = new Group(composite, SWT.NONE);
         logOpenGrp.setLayout(new GridLayout(3, false));
         GridData logOpenGrDt = new GridData(GridData.FILL_HORIZONTAL);
