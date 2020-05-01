@@ -1412,23 +1412,23 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                     word.append("endif" + NEW_LINE);
                 }
             }
-            // 1. ログfoldercreate文作成
             word.append(genLogDirCreate(logDir, logDirPath, valuesMap));
-            // 2. connect文作成
+            boolean isAfterConnect = false;
             for (String line : sub.replace(connect).split("\r\n")) {
+                if (isAfterConnect) {
+                    isAfterConnect = false;
+                    word.append(genLogOpen(logDir, logDirPath, logFileName, logopenOption, valuesMap));
+                }
                 word.append(line.trim() + NEW_LINE);
+                if (line.trim().startsWith("connect")) {
+                    isAfterConnect = true;
+                }
             }
-            // 3. settitle文作成
             word.append("settitle '" + seqNo + svrType + " - " + targetSvr + "'" + NEW_LINE); // タイトルはサーバ種別とサーバ名
-            // 4. logopen文作成
-            word.append(genLogOpen(logDir, logDirPath, logFileName, logopenOption, valuesMap));
-            // 5. プロシージャ文作成
             if (node.getProcedure() != null) {
                 String procedure = sub.replace(node.getProcedure());
                 word.append(procedure);
             }
-
-            // テンプレート文作成
             word.append(genTemplateCmd(node, templateCmd));
         } catch (Exception e) {
             e.printStackTrace();
