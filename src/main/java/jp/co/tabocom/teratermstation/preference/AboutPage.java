@@ -75,13 +75,13 @@ public class AboutPage extends PreferencePage {
         Label versionValueLbl = new Label(appGrp, SWT.NONE);
         GridData versionValueLblGrDt = new GridData();
         versionValueLbl.setLayoutData(versionValueLblGrDt);
-        versionValueLbl.setText("2.3.0");
+        versionValueLbl.setText("2.4.0");
 
         Label copyrightLbl = new Label(appGrp, SWT.NONE);
         GridData copyrightLblGrDt = new GridData();
         copyrightLblGrDt.horizontalSpan = 2;
         copyrightLbl.setLayoutData(copyrightLblGrDt);
-        copyrightLbl.setText("Copyright (C) 2015-2019 Tabocom All Rights Reserved.");
+        copyrightLbl.setText("Copyright (C) 2015-2020 Tabocom All Rights Reserved.");
 
         Link urlLbl = new Link(appGrp, SWT.NONE);
         GridData urlLblGrDt = new GridData();
