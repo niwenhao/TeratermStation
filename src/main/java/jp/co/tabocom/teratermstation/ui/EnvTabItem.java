@@ -1422,7 +1422,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                     isAddedLogOpen = true;
                 }
                 word.append(line.trim() + NEW_LINE);
-                if (line.trim().startsWith("connect")) {
+                if (line.trim().startsWith("connect ")) {
                     isAfterConnect = true;
                 }
             }
