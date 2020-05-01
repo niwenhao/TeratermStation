@@ -1328,6 +1328,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             }
             String logDirPath = ps.getString(PreferenceConstants.LOGDIR_PATH);
             String logFileName = ps.getString(PreferenceConstants.LOGFILE_NAME);
+            String logopenOption = ps.getString(PreferenceConstants.LOGOPEN_OPTION);
 
             String workDir = ps.getString(PreferenceConstants.WORK_DIR);
             File workDirFile = new File(workDir);
@@ -1338,6 +1339,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
             String seqNo = String.format("%03d. ", idx);
             // ---------- もろもろ情報を取得 ここまで ----------
+            // ---------- 変数マップ ここから ----------
             Map<String, String> valuesMap = new TreeMap<String, String>();
             valuesMap.put("authuser", authUsr);
             valuesMap.put("authpassword", authPwd);
@@ -1361,8 +1363,31 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                 String value = optionInputTextMap.get(name).getText();
                 valuesMap.put(name, value);
             }
-
+            // タイムスタンプを取得
+            Calendar objCal = Calendar.getInstance();
+            for (String fmt : EMBEDED_DATE_FORMAT) {
+                valuesMap.put(fmt, new SimpleDateFormat(fmt).format(objCal.getTime()));
+            }
+            // Node情報
+            valuesMap.put("server", node.getName());
+            if (node.getCategory() == null) {
+                // グループ所属あり
+                valuesMap.put("group", node.getParentName());
+                valuesMap.put("category", node.getParent().getCategory().getName());
+                valuesMap.put("tab", node.getParent().getCategory().getTab().getName());
+            } else {
+                // グループ所属なし
+                valuesMap.put("group", "なし");
+                valuesMap.put("category", node.getCategory().getName());
+                valuesMap.put("tab", node.getCategory().getTab().getName());
+            }
+            // システム環境変数
+            valuesMap.put("COMPUTERNAME", System.getenv("COMPUTERNAME"));
+            valuesMap.put("USERNAME", System.getenv("USERNAME"));
+            valuesMap.put("USERDOMAIN", System.getenv("USERDOMAIN"));
+            // ---------- 変数マップ ここまで ----------
             StrSubstitutor sub = new StrSubstitutor(valuesMap);
+
             rewriteIniFile(iniFile, node.getInirewrite(), sub);
 
             String connect = sub.replace(this.tab.getConnect());
@@ -1387,18 +1412,23 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
                     word.append("endif" + NEW_LINE);
                 }
             }
+            // 1. ログfoldercreate文作成
+            word.append(genLogDirCreate(logDir, logDirPath, valuesMap));
+            // 2. connect文作成
             for (String line : sub.replace(connect).split("\r\n")) {
                 word.append(line.trim() + NEW_LINE);
             }
+            // 3. settitle文作成
             word.append("settitle '" + seqNo + svrType + " - " + targetSvr + "'" + NEW_LINE); // タイトルはサーバ種別とサーバ名
-            word.append(genLogOpen(node, logDir, logDirPath, logFileName, valuesMap));
-            // ここまで
+            // 4. logopen文作成
+            word.append(genLogOpen(logDir, logDirPath, logFileName, logopenOption, valuesMap));
+            // 5. プロシージャ文作成
             if (node.getProcedure() != null) {
                 String procedure = sub.replace(node.getProcedure());
                 word.append(procedure);
             }
 
-            // テンプレート対応
+            // テンプレート文作成
             word.append(genTemplateCmd(node, templateCmd));
         } catch (Exception e) {
             e.printStackTrace();
@@ -1407,38 +1437,48 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
         return word.toString();
     }
 
-    private String genLogOpen(TargetNode node, String logDir, String logDirPath, String logFileName, Map<String, String> valuesMap) throws IOException {
-        // 設定クラスを取得
-        IPreferenceStore ps = main.getPreferenceStore();
-
-        Map<String, String> valuesNewMap = new TreeMap<String, String>();
-        valuesNewMap.putAll(valuesMap);
-
-        // タイムスタンプを取得
-        Calendar objCal = Calendar.getInstance();
-        for (String fmt : EMBEDED_DATE_FORMAT) {
-            valuesNewMap.put(fmt, new SimpleDateFormat(fmt).format(objCal.getTime()));
+    private String genLogDirCreate(String logDir, String logDirPath, Map<String, String> valuesMap) throws IOException {
+        StrSubstitutor sub = new StrSubstitutor(valuesMap);
+        if (StringUtils.isEmpty(logDirPath)) {
+            logDirPath = DEFAULT_LOGDIR_PATH;
         }
-        // Node情報
-        valuesNewMap.put("server", node.getName());
-        if (node.getCategory() == null) {
-            // グループ所属あり
-            valuesNewMap.put("group", node.getParentName());
-            valuesNewMap.put("category", node.getParent().getCategory().getName());
-            valuesNewMap.put("tab", node.getParent().getCategory().getTab().getName());
-        } else {
-            // グループ所属なし
-            valuesNewMap.put("group", "なし");
-            valuesNewMap.put("category", node.getCategory().getName());
-            valuesNewMap.put("tab", node.getCategory().getTab().getName());
+        logDirPath = sub.replace(logDirPath);
+        StringBuilder dirPathBuilder = new StringBuilder(logDir);
+        List<String> dirArray = new ArrayList<String>();
+        for (String dirPath : logDirPath.split("\\\\")) {
+            dirPathBuilder.append("\\");
+            dirPathBuilder.append(dirPath);
+            dirArray.add(dirPathBuilder.toString());
         }
-        // システム環境変数
-        valuesNewMap.put("COMPUTERNAME", System.getenv("COMPUTERNAME"));
-        valuesNewMap.put("USERNAME", System.getenv("USERNAME"));
-        valuesNewMap.put("USERDOMAIN", System.getenv("USERDOMAIN"));
-        System.out.println(valuesNewMap);
+        // ログファイルのデフォルトパスは結局は下のような構成です。
+        // C:\library\log\201207\20120710\20120710-121212_WebAP_WebAP(A)#1_PTP95049.log
 
-        StrSubstitutor sub = new StrSubstitutor(valuesNewMap);
+        StringBuilder word = new StringBuilder();
+        String NEW_LINE = System.getProperty("line.separator");
+        // dirArrayには 'YYYYMM' と 'YYYYMM\YYYYMMDD' が入っているので
+        // このループでは最初にYYYYMMについてチェックなければ作成を行い
+        // 次にYYYYMMDDのチェックなければ作成をやっている。
+        // まあディレクトリが違うだけでまったく同じ処理なのでループにしただけです。
+        for (String dir : dirArray) {
+            word.append("logdir = '" + dir + "'" + NEW_LINE);
+            word.append("filesearch logdir" + NEW_LINE);
+            word.append("if result = 0 then" + NEW_LINE);
+            word.append("    foldercreate logdir" + NEW_LINE);
+            word.append("    if result != 0 then" + NEW_LINE);
+            word.append("        desc = '\\nのディレクトリ作成に失敗しました。\\n管理者に問い合わせてください。'" + NEW_LINE);
+            word.append("        strspecial desc" + NEW_LINE);
+            word.append("        sprintf2 msg '%s%s' logdir desc" + NEW_LINE);
+            word.append("        messagebox msg ''" + NEW_LINE);
+            word.append("        closett" + NEW_LINE);
+            word.append("        end" + NEW_LINE);
+            word.append("    endif" + NEW_LINE);
+            word.append("endif" + NEW_LINE);
+        }
+        return word.toString();
+    }
+
+    private String genLogOpen(String logDir, String logDirPath, String logFileName, String logopenOption, Map<String, String> valuesMap) throws IOException {
+        StrSubstitutor sub = new StrSubstitutor(valuesMap);
         if (StringUtils.isEmpty(logDirPath)) {
             logDirPath = DEFAULT_LOGDIR_PATH;
         }
@@ -1462,27 +1502,7 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
 
         StringBuilder word = new StringBuilder();
         String NEW_LINE = System.getProperty("line.separator");
-        // dirArrayには 'YYYYMM' と 'YYYYMM\YYYYMMDD' が入っているので
-        // このループでは最初にYYYYMMについてチェックなければ作成を行い
-        // 次にYYYYMMDDのチェックなければ作成をやっている。
-        // まあディレクトリが違うだけでまったく同じ処理なのでループにしただけです。
-        for (String dir : dirArray) {
-            word.append("logdir = '" + dir + "'" + NEW_LINE);
-            word.append("filesearch logdir" + NEW_LINE);
-            word.append("if result = 0 then" + NEW_LINE);
-            word.append("    foldercreate logdir" + NEW_LINE);
-            word.append("    if result != 0 then" + NEW_LINE);
-            word.append("        desc = '\\nのディレクトリ作成に失敗しました。\\n管理者に問い合わせてください。'" + NEW_LINE);
-            word.append("        strspecial desc" + NEW_LINE);
-            word.append("        sprintf2 msg '%s%s' logdir desc" + NEW_LINE);
-            word.append("        messagebox msg ''" + NEW_LINE);
-            word.append("        closett" + NEW_LINE);
-            word.append("        end" + NEW_LINE);
-            word.append("    endif" + NEW_LINE);
-            word.append("endif" + NEW_LINE);
-        }
         // ログをOPEN
-        String logopenOption = ps.getString(PreferenceConstants.LOGOPEN_OPTION);
         if (logopenOption == null || logopenOption.isEmpty()) {
             logopenOption = "0 0 0 0 1";
         }
