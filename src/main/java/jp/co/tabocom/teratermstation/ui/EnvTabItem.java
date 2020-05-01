@@ -1414,15 +1414,20 @@ public class EnvTabItem extends TabItem implements PropertyChangeListener {
             }
             word.append(genLogDirCreate(logDir, logDirPath, valuesMap));
             boolean isAfterConnect = false;
-            for (String line : sub.replace(connect).split("\r\n")) {
+            boolean isAddedLogOpen = false;
+            for (String line : sub.replace(connect).split("\n")) {
                 if (isAfterConnect) {
                     isAfterConnect = false;
                     word.append(genLogOpen(logDir, logDirPath, logFileName, logopenOption, valuesMap));
+                    isAddedLogOpen = true;
                 }
                 word.append(line.trim() + NEW_LINE);
                 if (line.trim().startsWith("connect")) {
                     isAfterConnect = true;
                 }
+            }
+            if (!isAddedLogOpen) {
+                word.append(genLogOpen(logDir, logDirPath, logFileName, logopenOption, valuesMap));
             }
             word.append("settitle '" + seqNo + svrType + " - " + targetSvr + "'" + NEW_LINE); // タイトルはサーバ種別とサーバ名
             if (node.getProcedure() != null) {
